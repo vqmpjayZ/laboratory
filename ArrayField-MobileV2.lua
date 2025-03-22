@@ -1038,8 +1038,6 @@ function CloseSearch()
 	TweenService:Create(SearchBar.Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
 	delay(.3,function()
 		SearchBar.Input.Visible = false
-		SearchBar.Input.Active = false
-		SearchBar.Input.ClearTextOnFocus = true
 	end)
 	wait(0.5)
 	SearchBar.Visible = false
@@ -1049,8 +1047,6 @@ function OpenSearch()
 	Debounce = true
 	SearchBar.Visible = true
 	SearchBar.Input.Visible = true
-	SearchBar.Input.ClearTextOnFocus = false
-	SearchBar.Input.Active = true
 	TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0, 480,0, 40)}):Play()
 	TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
 	TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
@@ -1063,19 +1059,51 @@ function OpenSearch()
 end
 SearchBar.Input:GetPropertyChangedSignal('Text'):Connect(function()
 	local InputText=string.upper(SearchBar.Input.Text)
-	for _,page in ipairs(Elements:GetChildren()) do
-		if page ~= 'Template' then
-			for _,Element in pairs(page:GetChildren())do
-				if Element:IsA("Frame") and Element.Name ~= 'Placeholder' and Element.Name ~= 'SectionSpacing' then
-					if InputText==""or string.find(string.upper(Element.Name),InputText)~=nil then
-						Element.Visible=true
-					else
-						Element.Visible=false
-					end
-				end
-			end
-		end
-	end
+    SearchBar.Input:GetPropertyChangedSignal('Text'):Connect(function()
+        local InputText = string.upper(SearchBar.Input.Text)
+        
+        local function searchInContainer(container)
+            for _, Element in pairs(container:GetChildren()) do
+                if Element:IsA("Frame") and Element.Name ~= 'Placeholder' and Element.Name ~= 'SectionSpacing' and Element.Name ~= 'Template' then
+                    if Element:FindFirstChild("Holder") then
+                        searchInContainer(Element.Holder)
+
+                        local anyChildVisible = false
+                        for _, child in pairs(Element.Holder:GetChildren()) do
+                            if child:IsA("Frame") and child.Visible then
+                                anyChildVisible = true
+                                break
+                            end
+                        end
+
+                        if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil or anyChildVisible then
+                            Element.Visible = true
+                        else
+                            Element.Visible = false
+                        end
+                    else
+                        if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil then
+                            Element.Visible = true
+                            
+                            local parent = Element.Parent
+                            while parent and parent ~= Elements do
+                                parent.Visible = true
+                                parent = parent.Parent
+                            end
+                        else
+                            Element.Visible = false
+                        end
+                    end
+                end
+            end
+        end
+
+        for _, page in ipairs(Elements:GetChildren()) do
+            if page.Name ~= 'Template' then
+                searchInContainer(page)
+            end
+        end
+    end)    
 end)
 SearchBar.Clear.MouseButton1Down:Connect(function()
 	Filler.Position = UDim2.new(0.957,0,.5,0)
