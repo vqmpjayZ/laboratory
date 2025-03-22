@@ -2008,7 +2008,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
                 local contentHeight = charCount * 0.4
 
-                contentHeight = contentHeight + 20
+                contentHeight = contentHeight + 30
 
                 contentHeight = math.max(25, contentHeight)
 
