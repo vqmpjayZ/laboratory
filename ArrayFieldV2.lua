@@ -2003,23 +2003,36 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
-            -- Calculate a more accurate height based on text
-            local function calculateTextHeight(text, width)
-                -- Count lines from explicit line breaks
+            -- Calculate height based on text content
+            local function calculateTextHeight(text)
+                -- Count explicit line breaks
                 local _, lineBreakCount = string.gsub(text, "\n", "")
                 
-                -- Estimate lines from text wrapping (more conservative)
-                local textLength = string.len(text)
-                local charsPerLine = math.floor(width / 7) -- Approximate characters per line width
-                local wrappedLines = math.ceil(textLength / charsPerLine) * 0.7 -- Apply a reduction factor
+                -- Count words as a better estimate for wrapped text
+                local wordCount = 0
+                for _ in string.gmatch(text, "%S+") do
+                    wordCount = wordCount + 1
+                end
                 
-                -- Use the larger of the two estimates with a small buffer
-                local totalLines = math.max(lineBreakCount + 1, wrappedLines)
-                return math.floor(totalLines * 18) + 5 -- 18 pixels per line + small buffer
+                -- Estimate lines (assuming ~10 words per line on average)
+                local estimatedLines = math.ceil(wordCount / 10)
+                
+                -- Add explicit line breaks
+                estimatedLines = estimatedLines + lineBreakCount
+                
+                -- Calculate height (16 pixels per line with minimal buffer)
+                return estimatedLines * 16 + 2
             end
             
-            -- Calculate height and set sizes
-            local contentHeight = calculateTextHeight(ParagraphSettings.Content, 438)
+            -- Set sizes based on calculated height
+            local contentHeight = calculateTextHeight(ParagraphSettings.Content)
+            
+            -- Get TextBounds height as a minimum
+            local minHeight = Paragraph.Content.TextBounds.Y
+            
+            -- Use the larger of the two to ensure no cutoff
+            contentHeight = math.max(contentHeight, minHeight)
+            
             Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
             
             -- Different sizing based on parent
@@ -2053,7 +2066,10 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Content.Text = NewParagraphSettings.Content
                 
                 -- Recalculate height based on new text
-                local contentHeight = calculateTextHeight(NewParagraphSettings.Content, 438)
+                local contentHeight = calculateTextHeight(NewParagraphSettings.Content)
+                local minHeight = Paragraph.Content.TextBounds.Y
+                contentHeight = math.max(contentHeight, minHeight)
+                
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
                 
                 if Paragraph.Parent == TabPage then
@@ -2064,7 +2080,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end
             
             return ParagraphValue
-        end                                          
+        end                                               
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
