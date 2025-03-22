@@ -2008,7 +2008,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
                 local contentHeight = charCount * 0.4
 
-                contentHeight = contentHeight + 25
+                contentHeight = contentHeight + 20
 
                 contentHeight = math.max(25, contentHeight)
 
@@ -3581,5 +3581,4 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
         Descendant.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     end
 end
-
 return ArrayFieldLibrary
