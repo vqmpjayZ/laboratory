@@ -2012,11 +2012,16 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 -- When in a section - use a simple character-based calculation
                 local charCount = string.len(ParagraphSettings.Content)
                 
-                -- Fine-tuned multiplier: 0.38 pixels per character
-                local contentHeight = charCount * 0.38
+                -- Count explicit line breaks
+                local lineBreaks = select(2, string.gsub(ParagraphSettings.Content, "\n", "")) + 1
                 
-                -- Add a smaller fixed amount
-                contentHeight = contentHeight + 8
+                -- Fine-tuned multiplier: 0.39 pixels per character
+                local contentHeight = charCount * 0.39
+                
+                -- Add a fixed amount based on line count
+                -- More lines = slightly more padding
+                local padding = 5 + (lineBreaks * 2)
+                contentHeight = contentHeight + padding
                 
                 -- Minimum height of 20 pixels
                 contentHeight = math.max(20, contentHeight)
@@ -2053,9 +2058,11 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
                 else
                     local charCount = string.len(NewParagraphSettings.Content)
+                    local lineBreaks = select(2, string.gsub(NewParagraphSettings.Content, "\n", "")) + 1
                     
-                    local contentHeight = charCount * 0.38
-                    contentHeight = contentHeight + 8
+                    local contentHeight = charCount * 0.39
+                    local padding = 5 + (lineBreaks * 2)
+                    contentHeight = contentHeight + padding
                     contentHeight = math.max(20, contentHeight)
                     
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
