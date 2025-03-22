@@ -3466,8 +3466,8 @@ function ArrayFieldLibrary:LoadConfiguration()
 end
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
-Arrayfield.Main.Topbar.Theme.Visible = false
-local Search = Arrayfield.Main.Topbar:FindFirstChild("Search")
+ArrayField.Main.Topbar.Theme.Visible = false
+local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
 
 if Search then
     Search.Parent = nil
@@ -3479,7 +3479,7 @@ else
     warn("Search button not found!")
 end
 
-local Sections = Arrayfield.Main:GetChildren()
+local Sections = ArrayField.Main:GetChildren()
 
 for _, section in pairs(Sections) do
     if section:IsA("Frame") then
@@ -3495,7 +3495,7 @@ for _, section in pairs(Sections) do
     end
 end
 
-local Sections = Arrayfield.Main:GetChildren()
+local Sections = ArrayField.Main:GetChildren()
 
 for _, section in pairs(Sections) do
     if section:IsA("Frame") then
@@ -3509,7 +3509,7 @@ for _, section in pairs(Sections) do
     end
 end
 
-local Elements = game:GetService("CoreGui").HUI.Arrayfield.Main.Elements
+local Elements = game:GetService("CoreGui").HUI.ArrayField.Main.Elements
 
 for _, Descendant in ipairs(Elements:GetDescendants()) do
     if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
