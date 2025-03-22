@@ -7,12 +7,24 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
+vqmpjay | Designing + Programming
 
 ]]
 
---break test
+--[[
 
-local Release = "Release 2B" --0.1
+Change Logs:
+- Added Lucide icons support to Tabs and Notifications
+- Added rich text support to Paragraphs and Labels
+- Fixed Paragraphs not appearing when not parented to sections
+- Fixed long Paragraphs getting cut off when parented to sections
+- Fixed Search not being able to search for elements parented to sections
+- Removed Themes Button (pointless)
+- Revamped Design
+
+]]
+
+local Release = "Release 2B"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -1639,7 +1651,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
         
         if Image then
             if typeof(Image) == 'string' and not tonumber(Image) then
-                -- This is a Lucide icon name
                 local asset = getIcon(Image)
                 
                 TopTabButton.Image.Image = 'rbxassetid://' .. asset.id
@@ -1650,12 +1661,10 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 SideTabButton.Image.ImageRectOffset = asset.imageRectOffset
                 SideTabButton.Image.ImageRectSize = asset.imageRectSize
             else
-                -- This is a direct asset ID
                 TopTabButton.Image.Image = "rbxassetid://" .. Image
                 SideTabButton.Image.Image = "rbxassetid://" .. Image
             end
             
-            -- Apply styling for tabs with images
             TopTabButton.Title.AnchorPoint = Vector2.new(0, 0.5)
             TopTabButton.Title.Position = UDim2.new(0, 37, 0.5, 0)
             TopTabButton.Image.Visible = true
@@ -1664,7 +1673,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             
             SideTabButton.Image.Visible = true
         else
-            -- No image provided
             TopTabButton.Image.Visible = false
             SideTabButton.Image.Visible = false
         end
@@ -3658,4 +3666,5 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
         Descendant.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     end
 end
+
 return ArrayFieldLibrary
