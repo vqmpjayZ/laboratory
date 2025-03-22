@@ -7,10 +7,24 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
+vqmpjay | Designing + Programming
 
 ]]
 
-local Release = "Release 2A"
+--[[
+
+Change Logs:
+- Added Lucide icons support to Tabs and Notifications
+- Added rich text support to Paragraphs and Labels
+- Fixed Paragraphs not appearing when not parented to sections
+- Fixed long Paragraphs getting cut off when parented to sections
+- Fixed Search not being able to search for elements parented to sections
+- Removed Themes Button (pointless)
+- Revamped Design
+
+]]
+
+local Release = "Release 2B"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -185,6 +199,8 @@ local Notifications = ArrayField.Notifications
 
 local SelectedTheme = ArrayFieldLibrary.Theme.Default
 
+local Icons = useStudio and require(script.Parent.icons) or loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
+
 function ChangeTheme(ThemeName)
 	SelectedTheme = ArrayField.Theme[ThemeName]
 	for _, obj in ipairs(ArrayField:GetDescendants()) do
@@ -254,6 +270,34 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 	end)
+end
+
+local function getIcon(name : string)
+	name = string.match(string.lower(name), "^%s*(.*)%s*$") :: string
+	local sizedicons = Icons['48px']
+
+	local r = sizedicons[name]
+	if not r then
+		error("Lucide Icons: Failed to find icon by the name of \"" .. name .. "\".", 2)
+	end
+
+	local rirs = r[2]
+	local riro = r[3]
+
+	if type(r[1]) ~= "number" or type(rirs) ~= "table" or type(riro) ~= "table" then
+		error("Lucide Icons: Internal error: Invalid auto-generated asset entry")
+	end
+
+	local irs = Vector2.new(rirs[1], rirs[2])
+	local iro = Vector2.new(riro[1], riro[2])
+
+	local asset = {
+		id = r[1],
+		imageRectSize = irs,
+		imageRectOffset = iro,
+	}
+
+	return asset
 end
 
 function BoolToText(Bool)
