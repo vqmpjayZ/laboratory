@@ -2003,21 +2003,41 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
+            -- Function to calculate adaptive height based on content
+            local function calculateAdaptiveHeight(text)
+                -- Count lines (both explicit and estimated from wrapping)
+                local lineBreaks = select(2, string.gsub(text, "\n", "")) + 1
+                
+                -- Count words for a better estimate of wrapped lines
+                local wordCount = 0
+                for _ in string.gmatch(text, "%S+") do
+                    wordCount = wordCount + 1
+                end
+                
+                -- Estimate wrapped lines (assuming ~8 words per line)
+                local wrappedLines = math.ceil(wordCount / 8)
+                
+                -- Use the larger of explicit line breaks or estimated wrapped lines
+                local estimatedLines = math.max(lineBreaks, wrappedLines)
+                
+                -- Calculate height (18 pixels per line with minimal padding)
+                return estimatedLines * 18 + 5
+            end
+            
             -- Set sizes based on parent
             if Paragraph.Parent == TabPage then
                 -- When directly in TabPage - use original logic
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                 Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
-                -- When in a section - use fixed height based on content length
-                local contentLength = string.len(ParagraphSettings.Content)
-                local lineBreaks = select(2, string.gsub(ParagraphSettings.Content, "\n", "")) + 1
+                -- When in a section - use adaptive height calculation
+                local adaptiveHeight = calculateAdaptiveHeight(ParagraphSettings.Content)
                 
-                -- Calculate a height that will definitely fit the content
-                local height = math.max(100, contentLength / 3, lineBreaks * 25)
+                -- Add a small multiplier for safety in sections (1.2 = 20% extra space)
+                adaptiveHeight = adaptiveHeight * 1.2
                 
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, height)
-                Paragraph.Size = UDim2.new(1, -10, 0, height + 40)
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, adaptiveHeight)
+                Paragraph.Size = UDim2.new(1, -10, 0, adaptiveHeight + 40)
             end
             
             -- Set initial transparency for animation
@@ -2046,18 +2066,16 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                     Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
                 else
-                    local contentLength = string.len(NewParagraphSettings.Content)
-                    local lineBreaks = select(2, string.gsub(NewParagraphSettings.Content, "\n", "")) + 1
+                    local adaptiveHeight = calculateAdaptiveHeight(NewParagraphSettings.Content)
+                    adaptiveHeight = adaptiveHeight * 1.2
                     
-                    local height = math.max(100, contentLength / 3, lineBreaks * 25)
-                    
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, height)
-                    Paragraph.Size = UDim2.new(1, -10, 0, height + 40)
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, adaptiveHeight)
+                    Paragraph.Size = UDim2.new(1, -10, 0, adaptiveHeight + 40)
                 end
             end
             
             return ParagraphValue
-        end        
+        end          
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
