@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.7
+local Release = "Release 2A" --0.8
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2000,29 +2000,35 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Parent = TabPage
             end
             
-            -- Ensure text wrapping is enabled
+            -- Ensure text wrapping is enabled and set other text properties
             Paragraph.Content.TextWrapped = true
+            Paragraph.Content.TextScaled = false
+            Paragraph.Content.RichText = true
             
-            -- First set a temporary size to calculate text bounds properly
-            Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000) -- Temporary large height
+            -- Calculate approximate height based on text length and width
+            local textLength = string.len(ParagraphSettings.Content)
+            local approxCharsPerLine = 60  -- Approximate characters per line
+            local lineHeight = 18  -- Approximate height per line in pixels
+            local numLines = math.ceil(textLength / approxCharsPerLine)
             
-            -- Wait a frame for TextBounds to update with the new wrapped text
-            task.defer(function()
-                -- Now get the actual text bounds after wrapping
-                local textHeight = Paragraph.Content.TextBounds.Y
-                
-                -- Set the proper size based on the calculated text height
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
-                
-                -- Different sizing based on parent
-                if Paragraph.Parent == TabPage then
-                    -- When directly in TabPage
-                    Paragraph.Size = UDim2.new(0, 465, 0, textHeight + 40)
-                else
-                    -- When in a section - ensure it doesn't get cut off
-                    Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
-                end
-            end)
+            -- Count actual line breaks
+            local _, lineBreakCount = string.gsub(ParagraphSettings.Content, "\n", "")
+            numLines = numLines + lineBreakCount
+            
+            -- Calculate height with some extra padding
+            local calculatedHeight = numLines * lineHeight + 20  -- Add padding
+            
+            -- Set sizes based on calculated height
+            Paragraph.Content.Size = UDim2.new(0, 438, 0, calculatedHeight)
+            
+            -- Different sizing based on parent
+            if Paragraph.Parent == TabPage then
+                -- When directly in TabPage
+                Paragraph.Size = UDim2.new(0, 465, 0, calculatedHeight + 40)
+            else
+                -- When in a section - ensure it doesn't get cut off
+                Paragraph.Size = UDim2.new(1, -10, 0, calculatedHeight + 40)
+            end
             
             -- Set initial transparency for animation
             Paragraph.BackgroundTransparency = 1
@@ -2045,26 +2051,31 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
                 
-                -- Temporarily set a large height to calculate proper text bounds
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000)
+                -- Recalculate height based on new text
+                local textLength = string.len(NewParagraphSettings.Content)
+                local approxCharsPerLine = 60
+                local lineHeight = 18
+                local numLines = math.ceil(textLength / approxCharsPerLine)
                 
-                -- Wait a frame for TextBounds to update
-                task.defer(function()
-                    local textHeight = Paragraph.Content.TextBounds.Y
-                    
-                    -- Set the proper size based on the calculated text height
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
-                    
-                    if Paragraph.Parent == TabPage then
-                        Paragraph.Size = UDim2.new(0, 465, 0, textHeight + 40)
-                    else
-                        Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
-                    end
-                end)
+                -- Count actual line breaks
+                local _, lineBreakCount = string.gsub(NewParagraphSettings.Content, "\n", "")
+                numLines = numLines + lineBreakCount
+                
+                -- Calculate height with some extra padding
+                local calculatedHeight = numLines * lineHeight + 20
+                
+                -- Update sizes
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, calculatedHeight)
+                
+                if Paragraph.Parent == TabPage then
+                    Paragraph.Size = UDim2.new(0, 465, 0, calculatedHeight + 40)
+                else
+                    Paragraph.Size = UDim2.new(1, -10, 0, calculatedHeight + 40)
+                end
             end
             
             return ParagraphValue
-        end                              
+        end                                    
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
