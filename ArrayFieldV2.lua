@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.1
+local Release = "Release 2A" --0.2
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -186,6 +186,8 @@ local Notifications = ArrayField.Notifications
 
 local SelectedTheme = ArrayFieldLibrary.Theme.Default
 
+local Icons = useStudio and require(script.Parent.icons) or loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
+
 function ChangeTheme(ThemeName)
 	SelectedTheme = ArrayField.Theme[ThemeName]
 	for _, obj in ipairs(ArrayField:GetDescendants()) do
@@ -245,6 +247,34 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 	end)
+end
+
+local function getIcon(name : string)
+	name = string.match(string.lower(name), "^%s*(.*)%s*$") :: string
+	local sizedicons = Icons['48px']
+
+	local r = sizedicons[name]
+	if not r then
+		error("Lucide Icons: Failed to find icon by the name of \"" .. name .. "\".", 2)
+	end
+
+	local rirs = r[2]
+	local riro = r[3]
+
+	if type(r[1]) ~= "number" or type(rirs) ~= "table" or type(riro) ~= "table" then
+		error("Lucide Icons: Internal error: Invalid auto-generated asset entry")
+	end
+
+	local irs = Vector2.new(rirs[1], rirs[2])
+	local iro = Vector2.new(riro[1], riro[2])
+
+	local asset = {
+		id = r[1],
+		imageRectSize = irs,
+		imageRectOffset = iro,
+	}
+
+	return asset
 end
 
 function BoolToText(Bool)
@@ -1554,6 +1584,8 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 		TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 30, 0, 30)
 
 		if Image then
+            local asset = getIcon(Image)
+
 			TopTabButton.Image.Image = "rbxassetid://"..Image
 			SideTabButton.Image.Image = "rbxassetid://"..Image
 
@@ -1562,6 +1594,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			TopTabButton.Image.Visible = true
 			TopTabButton.Title.TextXAlignment = Enum.TextXAlignment.Left
 			TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 46, 0, 30)
+        else
+            TopTabButton.Image.Image = "rbxassetid://"..Image
+            SideTabButton.Image.Image = "rbxassetid://"..Image
 		end
 
 		TopTabButton.BackgroundTransparency = 1
