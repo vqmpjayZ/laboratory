@@ -2003,26 +2003,36 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
+            -- Function to calculate height based on character count and width
+            local function calculateHeightFromText(text, width)
+                -- Count characters (excluding newlines for this calculation)
+                local charCount = string.len(text:gsub("\n", ""))
+                
+                -- Estimate characters per line based on width (438 pixels)
+                -- Assuming average character width of ~7 pixels
+                local charsPerLine = math.floor(width / 7)
+                
+                -- Calculate lines from character count
+                local linesFromChars = math.ceil(charCount / charsPerLine)
+                
+                -- Count explicit newlines
+                local explicitLines = select(2, string.gsub(text, "\n", "")) + 1
+                
+                -- Use the maximum of calculated lines or explicit lines
+                local totalLines = math.max(linesFromChars, explicitLines)
+                
+                -- Calculate height (18 pixels per line)
+                return totalLines * 18
+            end
+            
             -- Different handling based on parent
             if Paragraph.Parent == TabPage then
                 -- When directly in TabPage - use original logic
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                 Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
-                -- When in a section - use direct size manipulation
-                
-                -- First, set a reasonable size to start with
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, 100)
-                
-                -- Force UI update
-                task.wait(0.05)
-                
-                -- Now directly set the size based on text content
-                local textLines = string.split(ParagraphSettings.Content, "\n")
-                local lineCount = #textLines
-                
-                -- Calculate height: 20 pixels per line
-                local contentHeight = lineCount * 20
+                -- When in a section - calculate height based on text content
+                local contentHeight = calculateHeightFromText(ParagraphSettings.Content, 438)
                 
                 -- Set sizes directly
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
@@ -2055,10 +2065,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                     Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
                 else
-                    local textLines = string.split(NewParagraphSettings.Content, "\n")
-                    local lineCount = #textLines
-                    
-                    local contentHeight = lineCount * 20
+                    local contentHeight = calculateHeightFromText(NewParagraphSettings.Content, 438)
                     
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
                     Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
@@ -2066,7 +2073,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end
             
             return ParagraphValue
-        end              
+        end        
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
