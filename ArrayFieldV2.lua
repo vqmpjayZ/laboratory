@@ -1848,119 +1848,207 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 		end
 
 		-- Section
-		function Tab:CreateSection(SectionName,Display)
-
-			local SectionValue = {
-				Holder = ArrayField.Holding,
-				Open = true
-			}
-			local Debounce = false
-			local Section = Elements.Template.SectionTitle:Clone()
-			SectionValue.Holder = Section.Holder
-			Section.Title.Text = SectionName
-			Section.Visible = true
-			Section.Parent = TabPage
-
-			Tab.Elements[SectionName] = {
-				type = 'section',
-				display = Display,
-				sectionholder = Section.Holder,
-				element = Section
-			}
-
-			Section.Title.TextTransparency = 1
-			TweenService:Create(Section.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
-			function SectionValue:Set(NewSection)
-				Section.Title.Text = NewSection
-			end
-			if Display then
-				Section._UIPadding_:Destroy()
-				Section.Holder.Visible = false
-				Section.BackgroundTransparency = 1
-				SectionValue.Holder.Parent = ArrayField.Holding
-				Section.Title.ImageButton.Visible = false
-			end
-			Section.Title.ImageButton.MouseButton1Down:Connect(function()
-				if Debounce then return end
-				if SectionValue.Open then
-					--Section.Holder.Visible = true
-					Debounce = true
-					TweenService:Create(Section._UIPadding_, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {PaddingBottom = UDim.new(0,0)}):Play()
-					for _, element in ipairs(Section.Holder:GetChildren()) do
-						if element.ClassName == "Frame" then
-							if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and element.Name ~= 'Topholder' then
-								if element.Name == "SectionTitle" then
-									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-								else
-									TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-									TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-								end
-								for _, child in ipairs(element:GetChildren()) do
-									if child.ClassName == "Frame" then --or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
-										child.Visible = false
-									end
-								end
-							end
-							element.Visible = false
-						end
-					end
-					TweenService:Create(Section.Title.ImageButton,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Rotation = 180}):Play()
-					SectionValue.Open = false
-					Debounce = false
-				else
-					Debounce = true
-					TweenService:Create(Section._UIPadding_, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {PaddingBottom = UDim.new(0,8)}):Play()
-					for _, element in ipairs(Section.Holder:GetChildren()) do
-						if element.ClassName == "Frame" then
-							if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and element.Name ~= 'Topholder' and not element:FindFirstChild('ColorPickerIs') then
-								if element.Name == "SectionTitle" then
-									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-								else
-									TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-									TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-								end
-								for _, child in ipairs(element:GetChildren()) do
-									if (child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel") then
-										child.Visible = true
-									end
-								end
-							elseif element:FindFirstChild('ColorPickerIs') then
-								TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-								TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-								TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-								if element.ColorPickerIs.Value then
-									element.ColorSlider.Visible = true
-									element.HexInput.Visible = true
-									element.RGB.Visible = true
-								end
-								element.CPBackground.Visible = true
-								element.Lock.Visible = true
-								element.Interact.Visible = true
-								element.Title.Visible = true
-
-							end
-							element.Visible = true
-						end
-					end
-					TweenService:Create(Section.Title.ImageButton,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Rotation = 0}):Play()
-					SectionValue.Open = true
-					wait(.3)
-					Debounce = false
-				end
-			end)
-			SDone = true
-			function SectionValue:Lock(Reason)
-
-			end
-			function SectionValue:Unlock(Reason)
-
-			end
-
-			return SectionValue
-		end
+        function Tab:CreateSection(SectionName, SectionImage, Display)
+            local SectionValue = {
+                Holder = ArrayField.Holding,
+                Open = true
+            }
+            local Debounce = false
+            local Section = Elements.Template.SectionTitle:Clone()
+            SectionValue.Holder = Section.Holder
+            Section.Title.Text = SectionName
+            Section.Visible = true
+            Section.Parent = TabPage
+        
+            Tab.Elements[SectionName] = {
+                type = 'section',
+                display = Display,
+                sectionholder = Section.Holder,
+                element = Section
+            }
+        
+            -- Handle icon if provided
+            if SectionImage then
+                -- Create an icon if it doesn't exist
+                if not Section.Title:FindFirstChild("Icon") then
+                    local Icon = Instance.new("ImageLabel")
+                    Icon.Name = "Icon"
+                    Icon.BackgroundTransparency = 1
+                    Icon.Size = UDim2.new(0, 20, 0, 20)
+                    Icon.Position = UDim2.new(0, 5, 0.5, 0)
+                    Icon.AnchorPoint = Vector2.new(0, 0.5)
+                    Icon.Parent = Section.Title
+                    
+                    -- Adjust title position to make room for icon
+                    Section.Title.Text = "   " .. SectionName
+                end
+                
+                local Icon = Section.Title.Icon
+                
+                -- Handle Lucide icons vs direct asset IDs
+                if typeof(SectionImage) == 'string' and not tonumber(SectionImage) then
+                    -- This is a Lucide icon name
+                    pcall(function()
+                        local asset = getIcon(SectionImage)
+                        Icon.Image = 'rbxassetid://' .. asset.id
+                        Icon.ImageRectOffset = asset.imageRectOffset
+                        Icon.ImageRectSize = asset.imageRectSize
+                    end)
+                else
+                    -- This is a direct asset ID
+                    Icon.Image = "rbxassetid://" .. tostring(SectionImage)
+                    Icon.ImageRectOffset = Vector2.new(0, 0)
+                    Icon.ImageRectSize = Vector2.new(0, 0)
+                end
+                
+                -- Make icon visible with animation
+                Icon.ImageTransparency = 1
+                TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            else
+                -- If no image, ensure title is at normal position
+                Section.Title.Text = SectionName
+                
+                -- Remove icon if it exists
+                if Section.Title:FindFirstChild("Icon") then
+                    Section.Title.Icon:Destroy()
+                end
+            end
+        
+            Section.Title.TextTransparency = 1
+            TweenService:Create(Section.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        
+            function SectionValue:Set(NewSection)
+                Section.Title.Text = NewSection
+            end
+            
+            function SectionValue:SetImage(NewImage)
+                if not Section.Title:FindFirstChild("Icon") then
+                    -- Create icon if it doesn't exist
+                    local Icon = Instance.new("ImageLabel")
+                    Icon.Name = "Icon"
+                    Icon.BackgroundTransparency = 1
+                    Icon.Size = UDim2.new(0, 20, 0, 20)
+                    Icon.Position = UDim2.new(0, 5, 0.5, 0)
+                    Icon.AnchorPoint = Vector2.new(0, 0.5)
+                    Icon.Parent = Section.Title
+                    
+                    -- Adjust title position
+                    Section.Title.Text = "   " .. SectionName
+                end
+                
+                local Icon = Section.Title.Icon
+                
+                -- Handle Lucide icons vs direct asset IDs
+                if typeof(NewImage) == 'string' and not tonumber(NewImage) then
+                    -- This is a Lucide icon name
+                    pcall(function()
+                        local asset = getIcon(NewImage)
+                        Icon.Image = 'rbxassetid://' .. asset.id
+                        Icon.ImageRectOffset = asset.imageRectOffset
+                        Icon.ImageRectSize = asset.imageRectSize
+                    end)
+                else
+                    -- This is a direct asset ID
+                    Icon.Image = "rbxassetid://" .. tostring(NewImage)
+                    Icon.ImageRectOffset = Vector2.new(0, 0)
+                    Icon.ImageRectSize = Vector2.new(0, 0)
+                end
+                
+                -- Make icon visible with animation
+                Icon.ImageTransparency = 1
+                TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            end
+            
+            if Display then
+                Section._UIPadding_:Destroy()
+                Section.Holder.Visible = false
+                Section.BackgroundTransparency = 1
+                SectionValue.Holder.Parent = ArrayField.Holding
+                Section.Title.ImageButton.Visible = false
+            end
+            
+            Section.Title.ImageButton.MouseButton1Down:Connect(function()
+                if Debounce then return end
+                if SectionValue.Open then
+                    --Section.Holder.Visible = true
+                    Debounce = true
+                    TweenService:Create(Section._UIPadding_, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {PaddingBottom = UDim.new(0,0)}):Play()
+                    for _, element in ipairs(Section.Holder:GetChildren()) do
+                        if element.ClassName == "Frame" then
+                            if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and element.Name ~= 'Topholder' then
+                                if element.Name == "SectionTitle" then
+                                    TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                                else
+                                    TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                                    TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                                    TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                                end
+                                for _, child in ipairs(element:GetChildren()) do
+                                    if child.ClassName == "Frame" then --or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
+                                        child.Visible = false
+                                    end
+                                end
+                            end
+                            element.Visible = false
+                        end
+                    end
+                    TweenService:Create(Section.Title.ImageButton,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Rotation = 180}):Play()
+                    SectionValue.Open = false
+                    Debounce = false
+                else
+                    Debounce = true
+                    TweenService:Create(Section._UIPadding_, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {PaddingBottom = UDim.new(0,8)}):Play()
+                    for _, element in ipairs(Section.Holder:GetChildren()) do
+                        if element.ClassName == "Frame" then
+                            if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and element.Name ~= 'Topholder' and not element:FindFirstChild('ColorPickerIs') then
+                                if element.Name == "SectionTitle" then
+                                    TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                                else
+                                    TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+                                    TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                                    TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                                end
+                                for _, child in ipairs(element:GetChildren()) do
+                                    if (child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel") then
+                                        child.Visible = true
+                                    end
+                                end
+                            elseif element:FindFirstChild('ColorPickerIs') then
+                                TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                                TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                                if element.ColorPickerIs.Value then
+                                    element.ColorSlider.Visible = true
+                                    element.HexInput.Visible = true
+                                    element.RGB.Visible = true
+                                end
+                                element.CPBackground.Visible = true
+                                element.Lock.Visible = true
+                                element.Interact.Visible = true
+                                element.Title.Visible = true
+                            end
+                            element.Visible = true
+                        end
+                    end
+                    TweenService:Create(Section.Title.ImageButton,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Rotation = 0}):Play()
+                    SectionValue.Open = true
+                    wait(.3)
+                    Debounce = false
+                end
+            end)
+            
+            SDone = true
+            
+            function SectionValue:Lock(Reason)
+                -- Lock implementation
+            end
+            
+            function SectionValue:Unlock(Reason)
+                -- Unlock implementation
+            end
+        
+            return SectionValue
+        end
 
 		-- Spacing
 		function Tab:CreateSpacing(SectionParent,Size)
