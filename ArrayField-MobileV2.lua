@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming
+vqmpjay | Designing + Programming + New Features
 
 ]]
 
@@ -20,7 +20,8 @@ Change Logs:
 - Fixed long Paragraphs getting cut off when parented to sections
 - Fixed Search not being able to search for elements parented to sections
 - Removed Themes Button (pointless)
-- Revamped Design
+- Revamped Unhide Button Design and added dragging functionality
+- Revamped UI Design
 
 ]]
 
@@ -3652,60 +3653,204 @@ ContextActionService:BindAction("Field",function(name,inputState,inputObject)
 end,true)
 --]]
 
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local FieldScreen = Instance.new("ScreenGui")
 FieldScreen.DisplayOrder = 100
 FieldScreen.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
 FieldScreen.Name = "Uni" .. tostring(math.random(1000,9999))
 FieldScreen.Parent = gethui and gethui() or game:GetService("CoreGui")
 
-local UniButton = Instance.new("ImageLabel")
+local UniButton = Instance.new("Frame")
 UniButton.Name = "UniButton"
-UniButton.Image = "rbxassetid://14958620447"
-UniButton.Active = false
---UniButton.AnchorPoint = Vector2.new(0.5,0.5)
+UniButton.Active = true
 UniButton.ZIndex = 10
-UniButton.Position = UDim2.new(0.8,0,0,0)
+UniButton.Position = UDim2.new(1, -45, 0, 10)
 UniButton.BorderSizePixel = 0
-UniButton.BackgroundTransparency = 1
-UniButton.Size = UDim2.new(0, 42, 0, 42)
+UniButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+UniButton.Size = UDim2.new(0, 36, 0, 36)
 UniButton.SizeConstraint = Enum.SizeConstraint.RelativeXY
 UniButton.Parent = FieldScreen
 
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0.3, 0)
+UICorner.Parent = UniButton
+
+local UIGradient = Instance.new("UIGradient")
+UIGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 120, 120)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
+})
+UIGradient.Rotation = 45
+UIGradient.Parent = UniButton
+
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(255, 255, 255)
+UIStroke.Thickness = 1.5
+UIStroke.Transparency = 0.2
+UIStroke.Parent = UniButton
+
+local Glow = Instance.new("ImageLabel")
+Glow.Name = "Glow"
+Glow.BackgroundTransparency = 1
+Glow.Position = UDim2.new(0.5, 0, 0.5, 0)
+Glow.AnchorPoint = Vector2.new(0.5, 0.5)
+Glow.Size = UDim2.new(1.5, 0, 1.5, 0)
+Glow.ZIndex = 9
+Glow.Image = "rbxassetid://4996891970" 
+Glow.ImageColor3 = Color3.fromRGB(255, 255, 255)
+Glow.ImageTransparency = 0.9
+Glow.Parent = UniButton
+
+local Shadow = Instance.new("ImageLabel")
+Shadow.Name = "Shadow"
+Shadow.BackgroundTransparency = 1
+Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+Shadow.Size = UDim2.new(1.2, 0, 1.2, 0)
+Shadow.ZIndex = 8
+Shadow.Image = "rbxassetid://7912134082"
+Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+Shadow.ImageTransparency = 0.6
+Shadow.Parent = UniButton
+
+local EyeIcon = Instance.new("ImageLabel")
+EyeIcon.Name = "EyeIcon"
+EyeIcon.BackgroundTransparency = 1
+EyeIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+EyeIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+EyeIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+EyeIcon.ZIndex = 12
+EyeIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+EyeIcon.Parent = UniButton
+
+local eyeAsset = getIcon("eye")
+EyeIcon.Image = "rbxassetid://" .. eyeAsset.id
+EyeIcon.ImageRectSize = eyeAsset.imageRectSize
+EyeIcon.ImageRectOffset = eyeAsset.imageRectOffset
+
 local UniBoxButton = Instance.new("TextButton")
 UniBoxButton.Name = "UniBoxButton"
---UniBoxButton.AnchorPoint = Vector2.new(0.5,0.5)
-UniBoxButton.ZIndex = 10
-UniBoxButton.AnchorPoint = Vector2.new(0.5, 0)
-UniBoxButton.Position = UDim2.new(0.5, 0, 0, 0)
-UniBoxButton.Size = UDim2.new(0, 42+21, 0, 42)
+UniBoxButton.ZIndex = 11
+UniBoxButton.AnchorPoint = Vector2.new(0.5, 0.5)
+UniBoxButton.Position = UDim2.new(0.5, 0, 0.5, 0)
+UniBoxButton.Size = UDim2.new(1, 0, 1, 0)
 UniBoxButton.BorderSizePixel = 0
 UniBoxButton.BackgroundTransparency = 1
 UniBoxButton.Text = ""
-UniBoxButton.SizeConstraint = Enum.SizeConstraint.RelativeXY
 UniBoxButton.Parent = UniButton
+
+local dragging = false
+local dragStart
+local startPos
+
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    UniButton.Position = UDim2.new(
+        startPos.X.Scale, 
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale, 
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+UniBoxButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = UniButton.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updateDrag(input)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+UniBoxButton.MouseEnter:Connect(function()
+    TweenService:Create(UniButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+        BackgroundColor3 = Color3.fromRGB(110, 110, 110)
+    }):Play()
+    
+    TweenService:Create(Glow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+        ImageTransparency = 0.7
+    }):Play()
+    
+    TweenService:Create(UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+        Transparency = 0
+    }):Play()
+end)
+
+UniBoxButton.MouseLeave:Connect(function()
+    TweenService:Create(UniButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+        BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    }):Play()
+    
+    TweenService:Create(Glow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+        ImageTransparency = 0.9
+    }):Play()
+    
+    TweenService:Create(UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+        Transparency = 0.2
+    }):Play()
+end)
+
+UniBoxButton.MouseButton1Click:Connect(function()
+    if Debounce then return end
+    
+    TweenService:Create(UniButton, TweenInfo.new(0.05, Enum.EasingStyle.Quint), {
+        Size = UDim2.new(0, 32, 0, 32)
+    }):Play()
+    
+    TweenService:Create(Glow, TweenInfo.new(0.05, Enum.EasingStyle.Quint), {
+        ImageTransparency = 0.5,
+        Size = UDim2.new(1.7, 0, 1.7, 0)
+    }):Play()
+    
+    task.delay(0.05, function()
+        TweenService:Create(UniButton, TweenInfo.new(0.05, Enum.EasingStyle.Quint), {
+            Size = UDim2.new(0, 36, 0, 36)
+        }):Play()
+        
+        TweenService:Create(Glow, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {
+            ImageTransparency = 0.9,
+            Size = UDim2.new(1.5, 0, 1.5, 0)
+        }):Play()
+    end)
+    
+    if Hidden then
+        Hidden = false
+        local eyeAsset = getIcon("eye")
+        EyeIcon.Image = "rbxassetid://" .. eyeAsset.id
+        EyeIcon.ImageRectSize = eyeAsset.imageRectSize
+        EyeIcon.ImageRectOffset = eyeAsset.imageRectOffset
+        Unhide()
+    else
+        if not SearchHided then spawn(CloseSearch) end
+        Hidden = true
+        local eyeOffAsset = getIcon("eye-off")
+        EyeIcon.Image = "rbxassetid://" .. eyeOffAsset.id
+        EyeIcon.ImageRectSize = eyeOffAsset.imageRectSize
+        EyeIcon.ImageRectOffset = eyeOffAsset.imageRectOffset
+        Hide()
+    end
+end)
 
 ArrayFieldLibrary.UniButton = UniButton
 
 function ArrayFieldLibrary:Destroy()
-	ArrayField:Destroy()
-	FieldScreen:Destroy()
-	if KeyMainUI then KeyMainUI:Destroy() end
-	if KeyUI then KeyUI:Destroy() end
+    ArrayField:Destroy()
+    FieldScreen:Destroy()
+    if KeyMainUI then KeyMainUI:Destroy() end
+    if KeyUI then KeyUI:Destroy() end
 end
-
-UniButtonClicked = function(name,inputState,inputObject)
-	if Debounce then return end
-	if Hidden then
-		Hidden = false
-		Unhide()
-	else
-		if not SearchHided then spawn(CloseSearch) end
-		Hidden = true
-		Hide()
-	end
-end
-
-UniBoxButton.MouseButton1Click:Connect(UniButtonClicked)
 
 --[[
 local Field = ContextActionService:GetButton("Field")
