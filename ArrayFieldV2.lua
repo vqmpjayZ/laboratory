@@ -2003,8 +2003,8 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
-            -- Function to calculate height based on character count and width
-            local function calculateHeightFromText(text, width)
+            -- Function to calculate precise height based on character count and width
+            local function calculatePreciseHeight(text, width)
                 -- Count characters (excluding newlines for this calculation)
                 local charCount = string.len(text:gsub("\n", ""))
                 
@@ -2021,8 +2021,16 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 -- Use the maximum of calculated lines or explicit lines
                 local totalLines = math.max(linesFromChars, explicitLines)
                 
-                -- Calculate height (18 pixels per line)
-                return totalLines * 18
+                -- Calculate height (16 pixels per line)
+                -- Add minimal padding based on text length
+                local baseHeight = totalLines * 16
+                
+                -- Add minimal padding that scales with content length
+                -- Short content (1-2 lines): almost no padding
+                -- Longer content: slightly more padding
+                local padding = math.min(5, totalLines * 0.5)
+                
+                return baseHeight + padding
             end
             
             -- Different handling based on parent
@@ -2031,8 +2039,8 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                 Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
-                -- When in a section - calculate height based on text content
-                local contentHeight = calculateHeightFromText(ParagraphSettings.Content, 438)
+                -- When in a section - calculate precise height
+                local contentHeight = calculatePreciseHeight(ParagraphSettings.Content, 438)
                 
                 -- Set sizes directly
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
@@ -2065,7 +2073,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                     Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
                 else
-                    local contentHeight = calculateHeightFromText(NewParagraphSettings.Content, 438)
+                    local contentHeight = calculatePreciseHeight(NewParagraphSettings.Content, 438)
                     
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
                     Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
@@ -2073,7 +2081,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end
             
             return ParagraphValue
-        end        
+        end             
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
