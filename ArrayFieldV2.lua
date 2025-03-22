@@ -2000,7 +2000,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Parent = TabPage
             end
             
-            -- CRITICAL: Ensure text wrapping is enabled
+            -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
             -- Different handling based on parent
@@ -2009,23 +2009,24 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                 Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
-                -- When in a section - use a different approach
+                -- When in a section - use direct size manipulation
                 
-                -- First, set a large temporary height to ensure all text is visible
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000)
+                -- First, set a reasonable size to start with
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, 100)
                 
                 -- Force UI update
                 task.wait(0.05)
                 
-                -- Now get the actual text height with wrapping applied
-                local textHeight = Paragraph.Content.TextBounds.Y
+                -- Now directly set the size based on text content
+                local textLines = string.split(ParagraphSettings.Content, "\n")
+                local lineCount = #textLines
                 
-                -- Add extra space for safety (30%)
-                textHeight = textHeight * 1.3
+                -- Calculate height: 20 pixels per line
+                local contentHeight = lineCount * 20
                 
-                -- Set final sizes
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
-                Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
+                -- Set sizes directly
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
+                Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
             end
             
             -- Set initial transparency for animation
@@ -2054,26 +2055,18 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                     Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
                 else
-                    -- Set large temporary height
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000)
+                    local textLines = string.split(NewParagraphSettings.Content, "\n")
+                    local lineCount = #textLines
                     
-                    -- Force UI update
-                    task.wait(0.05)
+                    local contentHeight = lineCount * 20
                     
-                    -- Get actual text height with wrapping
-                    local textHeight = Paragraph.Content.TextBounds.Y
-                    
-                    -- Add extra space (30%)
-                    textHeight = textHeight * 1.3
-                    
-                    -- Set final sizes
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
-                    Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
+                    Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
                 end
             end
             
             return ParagraphValue
-        end        
+        end              
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
