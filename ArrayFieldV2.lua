@@ -31,8 +31,6 @@ local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
 local ConfigurationExtension = ".rfld"
 local ArrayFieldQuality = {}
 
-local debug = "0.01"
-
 local ArrayFieldLibrary = {
 	Flags = {},
 	Theme = {
