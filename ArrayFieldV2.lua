@@ -2010,7 +2010,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Icon.Parent = Label
                     
                     -- Adjust title position to make room for icon
-                    Label.Title.Position = UDim2.new(0, 40, 0, 0)
+                    -- Keep the Y position the same, just adjust X
+                    local originalPosition = Label.Title.Position
+                    Label.Title.Position = UDim2.new(0, 40, originalPosition.Y.Scale, originalPosition.Y.Offset)
                 end
                 
                 local Icon = Label.Icon
@@ -2035,8 +2037,8 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Icon.ImageTransparency = 1
                 TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
             else
-                -- If no image, ensure title is at normal position
-                Label.Title.Position = UDim2.new(0, 10, 0, 0)
+                -- If no image, ensure title is at original position
+                -- Don't modify the position if no icon is present
                 
                 -- Remove icon if it exists
                 if Label:FindFirstChild("Icon") then
@@ -2070,8 +2072,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Icon.AnchorPoint = Vector2.new(0, 0.5)
                     Icon.Parent = Label
                     
-                    -- Adjust title position
-                    Label.Title.Position = UDim2.new(0, 40, 0, 0)
+                    -- Adjust title position - keep Y the same
+                    local originalPosition = Label.Title.Position
+                    Label.Title.Position = UDim2.new(0, 40, originalPosition.Y.Scale, originalPosition.Y.Offset)
                 end
                 
                 local Icon = Label.Icon
@@ -2098,166 +2101,184 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end
             
             return LabelValue
-        end
+        end        
 
 		-- Paragraph
- function Tab:CreateParagraph(ParagraphSettings, SectionParent)
-    local ParagraphValue = {}
-    
-    local Paragraph = Elements.Template.Paragraph:Clone()
-    Paragraph.Title.Text = ParagraphSettings.Title
-    Paragraph.Content.Text = ParagraphSettings.Content
-    Paragraph.Visible = true
-    
-    Tab.Elements[ParagraphSettings.Title] = {
-        type = 'paragraph',
-        section = SectionParent or ParagraphSettings.SectionParent,
-        element = Paragraph
-    }
-    
-    if SectionParent then
-        Paragraph.Parent = SectionParent.Holder
-    elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
-        Paragraph.Parent = ParagraphSettings.SectionParent.Holder
-    else
-        Paragraph.Parent = TabPage
-    end
-    
-    -- Handle icon if provided
-    if ParagraphSettings.Image then
-        -- Create an icon if it doesn't exist
-        if not Paragraph:FindFirstChild("Icon") then
-            local Icon = Instance.new("ImageLabel")
-            Icon.Name = "Icon"
-            Icon.BackgroundTransparency = 1
-            Icon.Size = UDim2.new(0, 20, 0, 20)
-            Icon.Position = UDim2.new(0, 10, 0, 10) -- Position near the title
-            Icon.Parent = Paragraph
+        function Tab:CreateParagraph(ParagraphSettings, SectionParent)
+            local ParagraphValue = {}
             
-            -- Adjust title position to make room for icon
-            Paragraph.Title.Position = UDim2.new(0, 40, 0, 0)
-        end
-        
-        local Icon = Paragraph.Icon
-        
-        -- Handle Lucide icons vs direct asset IDs
-        if typeof(ParagraphSettings.Image) == 'string' and not tonumber(ParagraphSettings.Image) then
-            -- This is a Lucide icon name
-            pcall(function()
-                local asset = getIcon(ParagraphSettings.Image)
-                Icon.Image = 'rbxassetid://' .. asset.id
-                Icon.ImageRectOffset = asset.imageRectOffset
-                Icon.ImageRectSize = asset.imageRectSize
-            end)
-        else
-            -- This is a direct asset ID
-            Icon.Image = "rbxassetid://" .. tostring(ParagraphSettings.Image)
-            Icon.ImageRectOffset = Vector2.new(0, 0)
-            Icon.ImageRectSize = Vector2.new(0, 0)
-        end
-        
-        -- Make icon visible with animation
-        Icon.ImageTransparency = 1
-        TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-    else
-        -- If no image, ensure title is at normal position
-        Paragraph.Title.Position = UDim2.new(0, 10, 0, 0)
-        
-        -- Remove icon if it exists
-        if Paragraph:FindFirstChild("Icon") then
-            Paragraph.Icon:Destroy()
-        end
-    end
-    
-    Paragraph.Content.TextWrapped = true
-    
-    if Paragraph.Parent == TabPage then
-        Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-        Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
-    else
-        local charCount = string.len(ParagraphSettings.Content)
-        
-        local contentHeight = charCount * 0.37
-        
-        contentHeight = contentHeight + 2
-        
-        contentHeight = math.max(20, contentHeight)
-        
-        Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
-        Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
-    end
-    
-    Paragraph.BackgroundTransparency = 1
-    Paragraph.UIStroke.Transparency = 1
-    Paragraph.Title.TextTransparency = 1
-    Paragraph.Content.TextTransparency = 1
-    
-    Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-    Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-    
-    TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-    TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    
-    function ParagraphValue:Set(NewParagraphSettings)
-        Paragraph.Title.Text = NewParagraphSettings.Title
-        Paragraph.Content.Text = NewParagraphSettings.Content
-        
-        if Paragraph.Parent == TabPage then
-            Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-            Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
-        else
-            local charCount = string.len(NewParagraphSettings.Content)
+            local Paragraph = Elements.Template.Paragraph:Clone()
+            Paragraph.Title.Text = ParagraphSettings.Title
+            Paragraph.Content.Text = ParagraphSettings.Content
+            Paragraph.Visible = true
             
-            local contentHeight = charCount * 0.37
-            contentHeight = contentHeight + 2
-            contentHeight = math.max(20, contentHeight)
+            Tab.Elements[ParagraphSettings.Title] = {
+                type = 'paragraph',
+                section = SectionParent or ParagraphSettings.SectionParent,
+                element = Paragraph
+            }
             
-            Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
-            Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
-        end
-    end
-    
-    function ParagraphValue:SetImage(NewImage)
-        if not Paragraph:FindFirstChild("Icon") then
-            -- Create icon if it doesn't exist
-            local Icon = Instance.new("ImageLabel")
-            Icon.Name = "Icon"
-            Icon.BackgroundTransparency = 1
-            Icon.Size = UDim2.new(0, 20, 0, 20)
-            Icon.Position = UDim2.new(0, 10, 0, 10)
-            Icon.Parent = Paragraph
+            if SectionParent then
+                Paragraph.Parent = SectionParent.Holder
+            elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
+                Paragraph.Parent = ParagraphSettings.SectionParent.Holder
+            else
+                Paragraph.Parent = TabPage
+            end
             
-            -- Adjust title position
-            Paragraph.Title.Position = UDim2.new(0, 40, 0, 0)
+            -- Store original positions
+            local originalTitlePosition = Paragraph.Title.Position
+            local originalContentPosition = Paragraph.Content.Position
+            
+            -- Handle icon if provided
+            if ParagraphSettings.Image then
+                -- Create an icon if it doesn't exist
+                if not Paragraph:FindFirstChild("Icon") then
+                    local Icon = Instance.new("ImageLabel")
+                    Icon.Name = "Icon"
+                    Icon.BackgroundTransparency = 1
+                    Icon.Size = UDim2.new(0, 20, 0, 20)
+                    Icon.Position = UDim2.new(0, 10, 0, 10) -- Position near the title
+                    Icon.AnchorPoint = Vector2.new(0, 0.5)
+                    Icon.Parent = Paragraph
+                    
+                    -- Adjust title position to make room for icon - only adjust X
+                    Paragraph.Title.Position = UDim2.new(0, 40, originalTitlePosition.Y.Scale, originalTitlePosition.Y.Offset)
+                    
+                    -- Don't change content position, just make sure it's visible
+                    Paragraph.Content.Visible = true
+                end
+                
+                local Icon = Paragraph.Icon
+                
+                -- Handle Lucide icons vs direct asset IDs
+                if typeof(ParagraphSettings.Image) == 'string' and not tonumber(ParagraphSettings.Image) then
+                    -- This is a Lucide icon name
+                    pcall(function()
+                        local asset = getIcon(ParagraphSettings.Image)
+                        Icon.Image = 'rbxassetid://' .. asset.id
+                        Icon.ImageRectOffset = asset.imageRectOffset
+                        Icon.ImageRectSize = asset.imageRectSize
+                    end)
+                else
+                    -- This is a direct asset ID
+                    Icon.Image = "rbxassetid://" .. tostring(ParagraphSettings.Image)
+                    Icon.ImageRectOffset = Vector2.new(0, 0)
+                    Icon.ImageRectSize = Vector2.new(0, 0)
+                end
+                
+                -- Make icon visible with animation
+                Icon.ImageTransparency = 1
+                TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            else
+                -- If no image, ensure title and content are at original positions
+                Paragraph.Title.Position = originalTitlePosition
+                Paragraph.Content.Position = originalContentPosition
+                Paragraph.Content.Visible = true
+                
+                -- Remove icon if it exists
+                if Paragraph:FindFirstChild("Icon") then
+                    Paragraph.Icon:Destroy()
+                end
+            end
+            
+            Paragraph.Content.TextWrapped = true
+            
+            if Paragraph.Parent == TabPage then
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+            else
+                local charCount = string.len(ParagraphSettings.Content)
+                
+                local contentHeight = charCount * 0.37
+                
+                contentHeight = contentHeight + 2
+                
+                contentHeight = math.max(20, contentHeight)
+                
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
+                Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
+            end
+            
+            Paragraph.BackgroundTransparency = 1
+            Paragraph.UIStroke.Transparency = 1
+            Paragraph.Title.TextTransparency = 1
+            Paragraph.Content.TextTransparency = 1
+            
+            Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+            Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+            
+            TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+            TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            
+            function ParagraphValue:Set(NewParagraphSettings)
+                Paragraph.Title.Text = NewParagraphSettings.Title
+                Paragraph.Content.Text = NewParagraphSettings.Content
+                
+                if Paragraph.Parent == TabPage then
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+                else
+                    local charCount = string.len(NewParagraphSettings.Content)
+                    
+                    local contentHeight = charCount * 0.37
+                    contentHeight = contentHeight + 2
+                    contentHeight = math.max(20, contentHeight)
+                    
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
+                    Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
+                end
+            end
+            
+            function ParagraphValue:SetImage(NewImage)
+                -- Store original positions if not already stored
+                local origTitlePos = originalTitlePosition or Paragraph.Title.Position
+                local origContentPos = originalContentPosition or Paragraph.Content.Position
+                
+                if not Paragraph:FindFirstChild("Icon") then
+                    -- Create icon if it doesn't exist
+                    local Icon = Instance.new("ImageLabel")
+                    Icon.Name = "Icon"
+                    Icon.BackgroundTransparency = 1
+                    Icon.Size = UDim2.new(0, 20, 0, 20)
+                    Icon.Position = UDim2.new(0, 10, 0, 10)
+                    Icon.AnchorPoint = Vector2.new(0, 0.5)
+                    Icon.Parent = Paragraph
+                    
+                    -- Adjust title position - only adjust X
+                    Paragraph.Title.Position = UDim2.new(0, 40, origTitlePos.Y.Scale, origTitlePos.Y.Offset)
+                    
+                    -- Make sure content is visible
+                    Paragraph.Content.Visible = true
+                end
+                
+                local Icon = Paragraph.Icon
+                
+                -- Handle Lucide icons vs direct asset IDs
+                if typeof(NewImage) == 'string' and not tonumber(NewImage) then
+                    -- This is a Lucide icon name
+                    pcall(function()
+                        local asset = getIcon(NewImage)
+                        Icon.Image = 'rbxassetid://' .. asset.id
+                        Icon.ImageRectOffset = asset.imageRectOffset
+                        Icon.ImageRectSize = asset.imageRectSize
+                    end)
+                else
+                    -- This is a direct asset ID
+                    Icon.Image = "rbxassetid://" .. tostring(NewImage)
+                    Icon.ImageRectOffset = Vector2.new(0, 0)
+                    Icon.ImageRectSize = Vector2.new(0, 0)
+                end
+                
+                -- Make icon visible with animation
+                Icon.ImageTransparency = 1
+                TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            end
+            
+            return ParagraphValue
         end
-        
-        local Icon = Paragraph.Icon
-        
-        -- Handle Lucide icons vs direct asset IDs
-        if typeof(NewImage) == 'string' and not tonumber(NewImage) then
-            -- This is a Lucide icon name
-            pcall(function()
-                local asset = getIcon(NewImage)
-                Icon.Image = 'rbxassetid://' .. asset.id
-                Icon.ImageRectOffset = asset.imageRectOffset
-                Icon.ImageRectSize = asset.imageRectSize
-            end)
-        else
-            -- This is a direct asset ID
-            Icon.Image = "rbxassetid://" .. tostring(NewImage)
-            Icon.ImageRectOffset = Vector2.new(0, 0)
-            Icon.ImageRectSize = Vector2.new(0, 0)
-        end
-        
-        -- Make icon visible with animation
-        Icon.ImageTransparency = 1
-        TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-    end
-    
-    return ParagraphValue
-end
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
