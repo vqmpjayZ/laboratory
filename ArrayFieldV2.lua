@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.4
+local Release = "Release 2A" --0.5
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2000,24 +2000,21 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Parent = TabPage
             end
             
-            -- Adjust content text properties to fix unwanted spacing
-            Paragraph.Content.TextXAlignment = Enum.TextXAlignment.Left
-            Paragraph.Content.TextYAlignment = Enum.TextYAlignment.Top
-            Paragraph.Content.TextWrapped = true
-            
-            -- Consistent sizing regardless of parent
+            -- Apply different sizing based on parent
             if Paragraph.Parent == TabPage then
-                -- When directly in TabPage
+                -- When in TabPage directly
                 Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
-                Paragraph.Content.Size = UDim2.new(1, -20, 0, Paragraph.Content.TextBounds.Y)
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                Paragraph.Content.Position = UDim2.new(0, 10, 0, 30)
             else
                 -- When in a section
                 Paragraph.Size = UDim2.new(1, 0, 0, Paragraph.Content.TextBounds.Y + 40)
-                Paragraph.Content.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y)
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                Paragraph.Content.Position = UDim2.new(0, 10, 0, 30)
             end
             
-            -- Position content properly to avoid unwanted spacing
-            Paragraph.Content.Position = UDim2.new(0, 10, 0, 30)
+            -- Ensure text wrapping is enabled
+            Paragraph.Content.TextWrapped = true
             
             -- Set initial transparency for animation
             Paragraph.BackgroundTransparency = 1
@@ -2043,15 +2040,14 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 -- Readjust size to fit new content
                 if Paragraph.Parent == TabPage then
                     Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
-                    Paragraph.Content.Size = UDim2.new(1, -20, 0, Paragraph.Content.TextBounds.Y)
                 else
                     Paragraph.Size = UDim2.new(1, 0, 0, Paragraph.Content.TextBounds.Y + 40)
-                    Paragraph.Content.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y)
                 end
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
             end
             
             return ParagraphValue
-        end           
+        end                 
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
