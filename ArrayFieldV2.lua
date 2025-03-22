@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.6
+local Release = "Release 2A" --0.7
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2000,17 +2000,29 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Parent = TabPage
             end
             
-            -- Adjust content size to accommodate text with line breaks
-            Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+            -- Ensure text wrapping is enabled
+            Paragraph.Content.TextWrapped = true
             
-            -- Different sizing based on parent
-            if Paragraph.Parent == TabPage then
-                -- When directly in TabPage - fix the width issue
-                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
-            else
-                -- When in a section
-                Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
-            end
+            -- First set a temporary size to calculate text bounds properly
+            Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000) -- Temporary large height
+            
+            -- Wait a frame for TextBounds to update with the new wrapped text
+            task.defer(function()
+                -- Now get the actual text bounds after wrapping
+                local textHeight = Paragraph.Content.TextBounds.Y
+                
+                -- Set the proper size based on the calculated text height
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
+                
+                -- Different sizing based on parent
+                if Paragraph.Parent == TabPage then
+                    -- When directly in TabPage
+                    Paragraph.Size = UDim2.new(0, 465, 0, textHeight + 40)
+                else
+                    -- When in a section - ensure it doesn't get cut off
+                    Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
+                end
+            end)
             
             -- Set initial transparency for animation
             Paragraph.BackgroundTransparency = 1
@@ -2033,18 +2045,26 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
                 
-                -- Readjust size to fit new content
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                -- Temporarily set a large height to calculate proper text bounds
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000)
                 
-                if Paragraph.Parent == TabPage then
-                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
-                else
-                    Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
-                end
+                -- Wait a frame for TextBounds to update
+                task.defer(function()
+                    local textHeight = Paragraph.Content.TextBounds.Y
+                    
+                    -- Set the proper size based on the calculated text height
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
+                    
+                    if Paragraph.Parent == TabPage then
+                        Paragraph.Size = UDim2.new(0, 465, 0, textHeight + 40)
+                    else
+                        Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
+                    end
+                end)
             end
             
             return ParagraphValue
-        end                        
+        end                              
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
