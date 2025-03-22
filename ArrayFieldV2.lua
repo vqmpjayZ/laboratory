@@ -2051,7 +2051,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 else
                     local charCount = string.len(NewParagraphSettings.Content)
                     
-                    local contentHeight = charCount * 0.25
+                    local contentHeight = charCount * 0.50
                     contentHeight = math.max(20, contentHeight)
                     
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
