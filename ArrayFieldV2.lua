@@ -1035,19 +1035,51 @@ function OpenSearch()
 end
 SearchBar.Input:GetPropertyChangedSignal('Text'):Connect(function()
 	local InputText=string.upper(SearchBar.Input.Text)
-	for _,page in ipairs(Elements:GetChildren()) do
-		if page ~= 'Template' then
-			for _,Element in pairs(page:GetChildren())do
-				if Element:IsA("Frame") and Element.Name ~= 'Placeholder' and Element.Name ~= 'SectionSpacing' then
-					if InputText==""or string.find(string.upper(Element.Name),InputText)~=nil then
-						Element.Visible=true
-					else
-						Element.Visible=false
-					end
-				end
-			end
-		end
-	end
+    SearchBar.Input:GetPropertyChangedSignal('Text'):Connect(function()
+        local InputText = string.upper(SearchBar.Input.Text)
+        
+        local function searchInContainer(container)
+            for _, Element in pairs(container:GetChildren()) do
+                if Element:IsA("Frame") and Element.Name ~= 'Placeholder' and Element.Name ~= 'SectionSpacing' and Element.Name ~= 'Template' then
+                    if Element:FindFirstChild("Holder") then
+                        searchInContainer(Element.Holder)
+
+                        local anyChildVisible = false
+                        for _, child in pairs(Element.Holder:GetChildren()) do
+                            if child:IsA("Frame") and child.Visible then
+                                anyChildVisible = true
+                                break
+                            end
+                        end
+
+                        if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil or anyChildVisible then
+                            Element.Visible = true
+                        else
+                            Element.Visible = false
+                        end
+                    else
+                        if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil then
+                            Element.Visible = true
+                            
+                            local parent = Element.Parent
+                            while parent and parent ~= Elements do
+                                parent.Visible = true
+                                parent = parent.Parent
+                            end
+                        else
+                            Element.Visible = false
+                        end
+                    end
+                end
+            end
+        end
+
+        for _, page in ipairs(Elements:GetChildren()) do
+            if page.Name ~= 'Template' then
+                searchInContainer(page)
+            end
+        end
+    end)    
 end)
 SearchBar.Clear.MouseButton1Down:Connect(function()
 	Filler.Position = UDim2.new(0.957,0,.5,0)
