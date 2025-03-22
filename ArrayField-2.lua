@@ -699,147 +699,166 @@ function ClosePrompt()
 	Prompt.Visible = false
 end
 function ArrayFieldLibrary:Notify(NotificationSettings)
-	spawn(function()
-		local ActionCompleted = true
-		local Notification = Notifications.Template:Clone()
-		Notification.Parent = Notifications
-		Notification.Name = NotificationSettings.Title or "Unknown Title"
-		Notification.Visible = true
+    spawn(function()
+        local ActionCompleted = true
+        local Notification = Notifications.Template:Clone()
+        Notification.Parent = Notifications
+        Notification.Name = NotificationSettings.Title or "Unknown Title"
+        Notification.Visible = true
 
-		local blurlight = nil
-		if not false then
-			blurlight = Instance.new("DepthOfFieldEffect",game:GetService("Lighting"))
-			blurlight.Enabled = true
-			blurlight.FarIntensity = 0
-			blurlight.FocusDistance = 51.6
-			blurlight.InFocusRadius = 50
-			blurlight.NearIntensity = 1
-			game:GetService("Debris"):AddItem(script,0)
-		end
+        local blurlight = nil
+        if not false then
+            blurlight = Instance.new("DepthOfFieldEffect", game:GetService("Lighting"))
+            blurlight.Enabled = true
+            blurlight.FarIntensity = 0
+            blurlight.FocusDistance = 51.6
+            blurlight.InFocusRadius = 50
+            blurlight.NearIntensity = 1
+            game:GetService("Debris"):AddItem(script, 0)
+        end
 
-		Notification.Actions.Template.Visible = false
+        Notification.Actions.Template.Visible = false
 
-		if NotificationSettings.Actions then
-			for _, Action in pairs(NotificationSettings.Actions) do
-				ActionCompleted = false
-				local NewAction = Notification.Actions.Template:Clone()
-				NewAction.BackgroundColor3 = SelectedTheme.NotificationActionsBackground
-				if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
-					NewAction.TextColor3 = SelectedTheme.TextColor
-				end
-				NewAction.Name = Action.Name
-				NewAction.Visible = true
-				NewAction.Parent = Notification.Actions
-				NewAction.Text = Action.Name
-				NewAction.BackgroundTransparency = 1
-				NewAction.TextTransparency = 1
-				NewAction.Size = UDim2.new(0, NewAction.TextBounds.X + 27, 0, 36)
+        if NotificationSettings.Actions then
+            for _, Action in pairs(NotificationSettings.Actions) do
+                ActionCompleted = false
+                local NewAction = Notification.Actions.Template:Clone()
+                NewAction.BackgroundColor3 = SelectedTheme.NotificationActionsBackground
+                if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
+                    NewAction.TextColor3 = SelectedTheme.TextColor
+                end
+                NewAction.Name = Action.Name
+                NewAction.Visible = true
+                NewAction.Parent = Notification.Actions
+                NewAction.Text = Action.Name
+                NewAction.BackgroundTransparency = 1
+                NewAction.TextTransparency = 1
+                NewAction.Size = UDim2.new(0, NewAction.TextBounds.X + 27, 0, 36)
 
-				NewAction.MouseButton1Click:Connect(function()
-					local Success, Response = pcall(Action.Callback)
-					if not Success then
-						print("ArrayField | Action: "..Action.Name.." Callback Error " ..tostring(Response))
-					end
-					ActionCompleted = true
-				end)
-			end
-		end
-		Notification.BackgroundColor3 = SelectedTheme.Background
-		Notification.Title.Text = NotificationSettings.Title or "Unknown"
-		Notification.Title.TextTransparency = 1
-		Notification.Title.TextColor3 = SelectedTheme.TextColor
-		Notification.Description.Text = NotificationSettings.Content or "Unknown"
-		Notification.Description.TextTransparency = 1
-		Notification.Description.TextColor3 = SelectedTheme.TextColor
-		Notification.Icon.ImageColor3 = SelectedTheme.TextColor
-		if NotificationSettings.Image then
-			Notification.Icon.Image = "rbxassetid://"..tostring(NotificationSettings.Image) 
-		else
-			Notification.Icon.Image = "rbxassetid://3944680095"
-		end
+                NewAction.MouseButton1Click:Connect(function()
+                    local Success, Response = pcall(Action.Callback)
+                    if not Success then
+                        print("ArrayField | Action: "..Action.Name.." Callback Error " ..tostring(Response))
+                    end
+                    ActionCompleted = true
+                end)
+            end
+        end
+        
+        Notification.BackgroundColor3 = SelectedTheme.Background
+        Notification.Title.Text = NotificationSettings.Title or "Unknown"
+        Notification.Title.TextTransparency = 1
+        Notification.Title.TextColor3 = SelectedTheme.TextColor
+        Notification.Description.Text = NotificationSettings.Content or "Unknown"
+        Notification.Description.TextTransparency = 1
+        Notification.Description.TextColor3 = SelectedTheme.TextColor
+        Notification.Icon.ImageColor3 = SelectedTheme.TextColor
+        
+        -- Handle icon with Lucide support
+        if NotificationSettings.Image then
+            pcall(function()
+                if type(NotificationSettings.Image) == "string" and not tonumber(NotificationSettings.Image) then
+                    -- This is a Lucide icon name
+                    local asset = getIcon(NotificationSettings.Image)
+                    Notification.Icon.Image = "rbxassetid://" .. asset.id
+                    Notification.Icon.ImageRectOffset = asset.imageRectOffset
+                    Notification.Icon.ImageRectSize = asset.imageRectSize
+                else
+                    -- This is a direct asset ID
+                    Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
+                    -- Reset ImageRect properties when using direct IDs
+                    Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
+                    Notification.Icon.ImageRectSize = Vector2.new(0, 0)
+                end
+            end)
+        else
+            Notification.Icon.Image = "rbxassetid://3944680095" -- Default icon
+            Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
+            Notification.Icon.ImageRectSize = Vector2.new(0, 0)
+        end
 
-		Notification.Icon.ImageTransparency = 1
+        Notification.Icon.ImageTransparency = 1
 
-		Notification.Parent = Notifications
-		Notification.Size = UDim2.new(0, 260, 0, 80)
-		Notification.BackgroundTransparency = 1
+        Notification.Parent = Notifications
+        Notification.Size = UDim2.new(0, 260, 0, 80)
+        Notification.BackgroundTransparency = 1
 
-		TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 91)}):Play()
-		TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
-		Notification:TweenPosition(UDim2.new(0.5,0,0.915,0),'Out','Quint',0.8,true)
+        TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 91)}):Play()
+        TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
+        Notification:TweenPosition(UDim2.new(0.5,0,0.915,0),'Out','Quint',0.8,true)
 
-		wait(0.3)
-		TweenService:Create(Notification.Icon, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-		TweenService:Create(Notification.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-		TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-		wait(0.2)
+        wait(0.3)
+        TweenService:Create(Notification.Icon, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+        TweenService:Create(Notification.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
+        wait(0.2)
 
+        -- Requires Graphics Level 8-10
+        if false == nil then
+            TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
+        else
+            if not false then
+                TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
+            else
+                TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+            end
+        end
 
+        if ArrayField.Name == "ArrayField" then
+            neon:BindFrame(Notification.BlurModule, {
+                Transparency = 0.98;
+                BrickColor = BrickColor.new("Institutional white");
+            })
+        end
 
-		-- Requires Graphics Level 8-10
-		if false == nil then
-			TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
-		else
-			if not false then
-				TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
-			else 
-				TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-			end
-		end
+        if not NotificationSettings.Actions then
+            wait(NotificationSettings.Duration or NotificationDuration - 0.5)
+        else
+            wait(0.8)
+            TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 132)}):Play()
+            wait(0.3)
+            for _, Action in ipairs(Notification.Actions:GetChildren()) do
+                if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
+                    TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
+                    TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                    wait(0.05)
+                end
+            end
+        end
 
-		if ArrayField.Name == "ArrayField" then
-			neon:BindFrame(Notification.BlurModule, {
-				Transparency = 0.98;
-				BrickColor = BrickColor.new("Institutional white");
-			})
-		end
+        repeat wait(0.001) until ActionCompleted
 
-		if not NotificationSettings.Actions then
-			wait(NotificationSettings.Duration or NotificationDuration - 0.5)
-		else
-			wait(0.8)
-			TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 132)}):Play()
-			wait(0.3)
-			for _, Action in ipairs(Notification.Actions:GetChildren()) do
-				if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
-					TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
-					TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-					wait(0.05)
-				end
-			end
-		end
+        for _, Action in ipairs(Notification.Actions:GetChildren()) do
+            if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
+                TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            end
+        end
 
-		repeat wait(0.001) until ActionCompleted
+        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.47, 0,0.234, 0)}):Play()
+        TweenService:Create(Notification.Description, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0.528, 0,0.637, 0)}):Play()
+        TweenService:Create(Notification, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 280, 0, 83)}):Play()
+        TweenService:Create(Notification.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+        TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
 
-		for _, Action in ipairs(Notification.Actions:GetChildren()) do
-			if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
-				TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-				TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-			end
-		end
-
-		TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.47, 0,0.234, 0)}):Play()
-		TweenService:Create(Notification.Description, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0.528, 0,0.637, 0)}):Play()
-		TweenService:Create(Notification, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 280, 0, 83)}):Play()
-		TweenService:Create(Notification.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-		TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
-
-		wait(0.3)
-		TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
-		TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
-		wait(0.4)
-		TweenService:Create(Notification, TweenInfo.new(0.9, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 260, 0, 0)}):Play()
-		TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-		TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-		TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-		wait(0.2)
-		if not false then
-			neon:UnbindFrame(Notification.BlurModule)
-			blurlight:Destroy()
-		end
-		wait(0.9)
-		Notification:Destroy()
-	end)
+        wait(0.3)
+        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
+        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
+        wait(0.4)
+        TweenService:Create(Notification, TweenInfo.new(0.9, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 260, 0, 0)}):Play()
+        TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        wait(0.2)
+        
+        if not false then
+            neon:UnbindFrame(Notification.BlurModule)
+            blurlight:Destroy()
+        end
+        
+        wait(0.9)
+        Notification:Destroy()
+    end)
 end
 
 function CloseSideBar()
