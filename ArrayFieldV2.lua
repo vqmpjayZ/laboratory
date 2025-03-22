@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.11
+local Release = "Release 2A" --0.12
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2003,30 +2003,20 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
-            -- Set the AutomaticSize property to handle text sizing automatically
-            Paragraph.Content.AutomaticSize = Enum.AutomaticSize.Y
-            
-            -- Set fixed width but let height adjust automatically
-            Paragraph.Content.Size = UDim2.new(0, 438, 0, 0)
-            
-            -- Connect to the size change event to update the paragraph size
-            Paragraph.Content:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-                local contentHeight = Paragraph.Content.AbsoluteSize.Y
-                
-                if Paragraph.Parent == TabPage then
-                    -- When directly in TabPage
-                    Paragraph.Size = UDim2.new(0, 465, 0, contentHeight + 40)
-                else
-                    -- When in a section
-                    Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
-                end
-            end)
-            
-            -- Different sizing based on parent (initial size before content loads)
+            -- Different handling based on parent
             if Paragraph.Parent == TabPage then
-                Paragraph.Size = UDim2.new(0, 465, 0, 40)
+                -- When directly in TabPage - use original sizing logic
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
-                Paragraph.Size = UDim2.new(1, -10, 0, 40)
+                -- When in a section - use AutomaticSize for proper height
+                Paragraph.Content.AutomaticSize = Enum.AutomaticSize.Y
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, 0)
+                
+                -- Use a timer to allow AutomaticSize to take effect
+                task.delay(0.05, function()
+                    Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.AbsoluteSize.Y + 40)
+                end)
             end
             
             -- Set initial transparency for animation
@@ -2049,11 +2039,22 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
-                -- Size will update automatically through the property changed connection
+                
+                -- Different handling based on parent
+                if Paragraph.Parent == TabPage then
+                    -- When directly in TabPage
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+                else
+                    -- When in a section
+                    task.delay(0.05, function()
+                        Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.AbsoluteSize.Y + 40)
+                    end)
+                end
             end
             
             return ParagraphValue
-        end                                                     
+        end                                                          
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
