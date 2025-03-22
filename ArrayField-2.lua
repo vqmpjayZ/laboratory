@@ -1978,11 +1978,14 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 		end
 
 		-- Label
-        function Tab:CreateLabel(LabelText, SectionParent, LabelImage)
+        function Tab:CreateLabel(LabelText, SectionParent)
             local LabelValue = {}
-            
+        
             local Label = Elements.Template.Label:Clone()
             Label.Title.Text = LabelText
+            
+            Label.Title.RichText = true
+            
             Label.Visible = true
             
             Tab.Elements[LabelText] = {
@@ -1996,114 +1999,22 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             else
                 Label.Parent = TabPage
             end
-            
-            -- Store the original position of the title
-            local originalTitlePosition = Label.Title.Position
-            
-            -- Handle icon if provided
-            if LabelImage then
-                -- Create an icon if it doesn't exist
-                if not Label:FindFirstChild("Icon") then
-                    local Icon = Instance.new("ImageLabel")
-                    Icon.Name = "Icon"
-                    Icon.BackgroundTransparency = 1
-                    Icon.Size = UDim2.new(0, 20, 0, 20)
-                    Icon.Position = UDim2.new(0, 10, 0.5, 0)
-                    Icon.AnchorPoint = Vector2.new(0, 0.5)
-                    Icon.Parent = Label
-                    
-                    -- Add padding to the title text instead of moving it
-                    Label.Title.UIPadding = Instance.new("UIPadding")
-                    Label.Title.UIPadding.PaddingLeft = UDim.new(0, 30)
-                end
-                
-                local Icon = Label.Icon
-                
-                -- Handle Lucide icons vs direct asset IDs
-                if typeof(LabelImage) == 'string' and not tonumber(LabelImage) then
-                    -- This is a Lucide icon name
-                    pcall(function()
-                        local asset = getIcon(LabelImage)
-                        Icon.Image = 'rbxassetid://' .. asset.id
-                        Icon.ImageRectOffset = asset.imageRectOffset
-                        Icon.ImageRectSize = asset.imageRectSize
-                    end)
-                else
-                    -- This is a direct asset ID
-                    Icon.Image = "rbxassetid://" .. tostring(LabelImage)
-                    Icon.ImageRectOffset = Vector2.new(0, 0)
-                    Icon.ImageRectSize = Vector2.new(0, 0)
-                end
-                
-                -- Make icon visible with animation
-                Icon.ImageTransparency = 1
-                TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-            else
-                -- If no image, remove padding if it exists
-                if Label.Title:FindFirstChild("UIPadding") then
-                    Label.Title.UIPadding:Destroy()
-                end
-                
-                -- Remove icon if it exists
-                if Label:FindFirstChild("Icon") then
-                    Label.Icon:Destroy()
-                end
-            end
-            
+        
             Label.BackgroundTransparency = 1
             Label.UIStroke.Transparency = 1
             Label.Title.TextTransparency = 1
-            
+        
             Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
             Label.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-            
+        
             TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
             TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
             TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            
+        
             function LabelValue:Set(NewLabel)
                 Label.Title.Text = NewLabel
             end
-            
-            function LabelValue:SetImage(NewImage)
-                if not Label:FindFirstChild("Icon") then
-                    -- Create icon if it doesn't exist
-                    local Icon = Instance.new("ImageLabel")
-                    Icon.Name = "Icon"
-                    Icon.BackgroundTransparency = 1
-                    Icon.Size = UDim2.new(0, 20, 0, 20)
-                    Icon.Position = UDim2.new(0, 10, 0.5, 0)
-                    Icon.AnchorPoint = Vector2.new(0, 0.5)
-                    Icon.Parent = Label
-                    
-                    -- Add padding to the title text
-                    Label.Title.UIPadding = Instance.new("UIPadding")
-                    Label.Title.UIPadding.PaddingLeft = UDim.new(0, 30)
-                end
-                
-                local Icon = Label.Icon
-                
-                -- Handle Lucide icons vs direct asset IDs
-                if typeof(NewImage) == 'string' and not tonumber(NewImage) then
-                    -- This is a Lucide icon name
-                    pcall(function()
-                        local asset = getIcon(NewImage)
-                        Icon.Image = 'rbxassetid://' .. asset.id
-                        Icon.ImageRectOffset = asset.imageRectOffset
-                        Icon.ImageRectSize = asset.imageRectSize
-                    end)
-                else
-                    -- This is a direct asset ID
-                    Icon.Image = "rbxassetid://" .. tostring(NewImage)
-                    Icon.ImageRectOffset = Vector2.new(0, 0)
-                    Icon.ImageRectSize = Vector2.new(0, 0)
-                end
-                
-                -- Make icon visible with animation
-                Icon.ImageTransparency = 1
-                TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-            end
-            
+        
             return LabelValue
         end
         
@@ -2115,13 +2026,15 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             Paragraph.Title.Text = ParagraphSettings.Title
             Paragraph.Content.Text = ParagraphSettings.Content
             Paragraph.Visible = true
-            
+
+            Paragraph.Content.RichText = true
+
             Tab.Elements[ParagraphSettings.Title] = {
                 type = 'paragraph',
                 section = SectionParent or ParagraphSettings.SectionParent,
                 element = Paragraph
             }
-            
+
             if SectionParent then
                 Paragraph.Parent = SectionParent.Holder
             elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
@@ -2129,86 +2042,30 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             else
                 Paragraph.Parent = TabPage
             end
-            
-            -- Handle icon if provided
-            if ParagraphSettings.Image then
-                -- Create an icon if it doesn't exist
-                if not Paragraph:FindFirstChild("Icon") then
-                    local Icon = Instance.new("ImageLabel")
-                    Icon.Name = "Icon"
-                    Icon.BackgroundTransparency = 1
-                    Icon.Size = UDim2.new(0, 20, 0, 20)
-                    Icon.Position = UDim2.new(0, 10, 0, 15) -- Positioned near the title
-                    Icon.AnchorPoint = Vector2.new(0, 0.5)
-                    Icon.Parent = Paragraph
-                    
-                    -- Add padding to the title text instead of moving it
-                    Paragraph.Title.UIPadding = Instance.new("UIPadding")
-                    Paragraph.Title.UIPadding.PaddingLeft = UDim.new(0, 30)
-                    
-                    -- Make sure content is visible and in the right position
-                    Paragraph.Content.Visible = true
-                end
-                
-                local Icon = Paragraph.Icon
-                
-                -- Handle Lucide icons vs direct asset IDs
-                if typeof(ParagraphSettings.Image) == 'string' and not tonumber(ParagraphSettings.Image) then
-                    -- This is a Lucide icon name
-                    pcall(function()
-                        local asset = getIcon(ParagraphSettings.Image)
-                        Icon.Image = 'rbxassetid://' .. asset.id
-                        Icon.ImageRectOffset = asset.imageRectOffset
-                        Icon.ImageRectSize = asset.imageRectSize
-                    end)
-                else
-                    -- This is a direct asset ID
-                    Icon.Image = "rbxassetid://" .. tostring(ParagraphSettings.Image)
-                    Icon.ImageRectOffset = Vector2.new(0, 0)
-                    Icon.ImageRectSize = Vector2.new(0, 0)
-                end
-                
-                -- Make icon visible with animation
-                Icon.ImageTransparency = 1
-                TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-            else
-                -- If no image, remove padding if it exists
-                if Paragraph.Title:FindFirstChild("UIPadding") then
-                    Paragraph.Title.UIPadding:Destroy()
-                end
-                
-                -- Remove icon if it exists
-                if Paragraph:FindFirstChild("Icon") then
-                    Paragraph.Icon:Destroy()
-                end
-                
-                -- Make sure content is visible
-                Paragraph.Content.Visible = true
-            end
-            
+
             Paragraph.Content.TextWrapped = true
-            
+
             if Paragraph.Parent == TabPage then
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                 Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
                 local charCount = string.len(ParagraphSettings.Content)
-                
+
                 local contentHeight = charCount * 0.37
-                
+
                 contentHeight = contentHeight + 2
-                
+
                 contentHeight = math.max(20, contentHeight)
-                
+
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
                 Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
             end
-            
+
             Paragraph.BackgroundTransparency = 1
             Paragraph.UIStroke.Transparency = 1
             Paragraph.Title.TextTransparency = 1
             Paragraph.Content.TextTransparency = 1
-            
+
             Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
             Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
             
@@ -2216,11 +2073,11 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
             TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            
+
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
-                
+
                 if Paragraph.Parent == TabPage then
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                     Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
@@ -2236,50 +2093,8 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 end
             end
             
-            function ParagraphValue:SetImage(NewImage)
-                if not Paragraph:FindFirstChild("Icon") then
-                    -- Create icon if it doesn't exist
-                    local Icon = Instance.new("ImageLabel")
-                    Icon.Name = "Icon"
-                    Icon.BackgroundTransparency = 1
-                    Icon.Size = UDim2.new(0, 20, 0, 20)
-                    Icon.Position = UDim2.new(0, 10, 0, 15)
-                    Icon.AnchorPoint = Vector2.new(0, 0.5)
-                    Icon.Parent = Paragraph
-                    
-                    -- Add padding to the title text
-                    Paragraph.Title.UIPadding = Instance.new("UIPadding")
-                    Paragraph.Title.UIPadding.PaddingLeft = UDim.new(0, 30)
-                    
-                    -- Make sure content is visible
-                    Paragraph.Content.Visible = true
-                end
-                
-                local Icon = Paragraph.Icon
-                
-                -- Handle Lucide icons vs direct asset IDs
-                if typeof(NewImage) == 'string' and not tonumber(NewImage) then
-                    -- This is a Lucide icon name
-                    pcall(function()
-                        local asset = getIcon(NewImage)
-                        Icon.Image = 'rbxassetid://' .. asset.id
-                        Icon.ImageRectOffset = asset.imageRectOffset
-                        Icon.ImageRectSize = asset.imageRectSize
-                    end)
-                else
-                    -- This is a direct asset ID
-                    Icon.Image = "rbxassetid://" .. tostring(NewImage)
-                    Icon.ImageRectOffset = Vector2.new(0, 0)
-                    Icon.ImageRectSize = Vector2.new(0, 0)
-                end
-                
-                -- Make icon visible with animation
-                Icon.ImageTransparency = 1
-                TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-            end
-            
             return ParagraphValue
-        end            
+        end        
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
