@@ -2010,7 +2010,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
                 contentHeight = contentHeight + 20
 
-                contentHeight = math.max(25, contentHeight)
+                contentHeight = math.max(20, contentHeight)
 
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
                 Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
