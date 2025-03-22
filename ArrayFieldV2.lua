@@ -20,7 +20,6 @@ Change Logs:
 - Fixed long Paragraphs getting cut off when parented to sections
 - Fixed Search not being able to search for elements parented to sections
 - Removed Themes Button (pointless)
-- Removed AddInfos from all Elements
 - Revamped Design
 
 ]]
@@ -766,21 +765,25 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
         Notification.Description.TextColor3 = SelectedTheme.TextColor
         Notification.Icon.ImageColor3 = SelectedTheme.TextColor
         
+        -- Handle icon with Lucide support
         if NotificationSettings.Image then
             pcall(function()
                 if type(NotificationSettings.Image) == "string" and not tonumber(NotificationSettings.Image) then
+                    -- This is a Lucide icon name
                     local asset = getIcon(NotificationSettings.Image)
                     Notification.Icon.Image = "rbxassetid://" .. asset.id
                     Notification.Icon.ImageRectOffset = asset.imageRectOffset
                     Notification.Icon.ImageRectSize = asset.imageRectSize
                 else
+                    -- This is a direct asset ID
                     Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
+                    -- Reset ImageRect properties when using direct IDs
                     Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
                     Notification.Icon.ImageRectSize = Vector2.new(0, 0)
                 end
             end)
         else
-            Notification.Icon.Image = "rbxassetid://3944680095"
+            Notification.Icon.Image = "rbxassetid://3944680095" -- Default icon
             Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
             Notification.Icon.ImageRectSize = Vector2.new(0, 0)
         end
@@ -1615,6 +1618,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
         
         if Image then
             if typeof(Image) == 'string' and not tonumber(Image) then
+                -- This is a Lucide icon name
                 local asset = getIcon(Image)
                 
                 TopTabButton.Image.Image = 'rbxassetid://' .. asset.id
@@ -1625,10 +1629,12 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 SideTabButton.Image.ImageRectOffset = asset.imageRectOffset
                 SideTabButton.Image.ImageRectSize = asset.imageRectSize
             else
+                -- This is a direct asset ID
                 TopTabButton.Image.Image = "rbxassetid://" .. Image
                 SideTabButton.Image.Image = "rbxassetid://" .. Image
             end
             
+            -- Apply styling for tabs with images
             TopTabButton.Title.AnchorPoint = Vector2.new(0, 0.5)
             TopTabButton.Title.Position = UDim2.new(0, 37, 0.5, 0)
             TopTabButton.Image.Visible = true
@@ -1637,6 +1643,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             
             SideTabButton.Image.Visible = true
         else
+            -- No image provided
             TopTabButton.Image.Visible = false
             SideTabButton.Image.Visible = false
         end
@@ -1762,7 +1769,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = ButtonSettings.SectionParent,
 				element = Button
 			}
-			--AddInfos(Button,ButtonSettings.Info,'button')
+			AddInfos(Button,ButtonSettings.Info,'button')
 
 			Button.Name = ButtonSettings.Name
 			Button.Title.Text = ButtonSettings.Name
@@ -2302,7 +2309,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			else
 				Input.Parent = TabPage
 			end
-			--AddInfos(Input,InputSettings.Info,'input')
+			AddInfos(Input,InputSettings.Info,'input')
 			Input.BackgroundTransparency = 1
 			Input.UIStroke.Transparency = 1
 			Input.Title.TextTransparency = 1
@@ -2400,7 +2407,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			DropdownSettings.Items = {
 				Selected = {Default = DropdownSettings.Selected or nil}
 			}
-			--AddInfos(Dropdown,DropdownSettings,'dropdown')
+			AddInfos(Dropdown,DropdownSettings,'dropdown')
 			DropdownSettings.Locked = false
 			local Multi = DropdownSettings.MultiSelection or false
 			if string.find(DropdownSettings.Name,"closed") then
@@ -2792,7 +2799,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			else
 				Keybind.Parent = TabPage
 			end
-			--AddInfos(Keybind,KeybindSettings,'keybind')
+			AddInfos(Keybind,KeybindSettings,'keybind')
 
 			Keybind.BackgroundTransparency = 1
 			Keybind.UIStroke.Transparency = 1
@@ -3110,7 +3117,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = ColorPickerSettings.SectionParent,
 				element = ColorPicker
 			}
-			--AddInfos(ColorPicker,ColorPickerSettings,'colorpicker')
+			AddInfos(ColorPicker,ColorPickerSettings,'colorpicker')
 			local Background = ColorPicker.CPBackground
 			local Display = Background.Display
 			local Main = Background.MainCP
@@ -3396,7 +3403,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = SliderSettings.SectionParent,
 				element = Slider
 			}
-			--AddInfos(Slider,SliderSettings,'slider')
+			AddInfos(Slider,SliderSettings,'slider')
 			if SliderSettings.SectionParent then
 				Slider.Parent = SliderSettings.SectionParent.Holder
 			else
