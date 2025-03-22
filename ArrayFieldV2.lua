@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.2
+local Release = "Release 2A" --0.3
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -1976,50 +1976,64 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 		end
 
 		-- Paragraph
-		function Tab:CreateParagraph(ParagraphSettings,SectionParent)
-			local ParagraphValue = {}
-
-			local Paragraph = Elements.Template.Paragraph:Clone()
-			Paragraph.Title.Text = ParagraphSettings.Title
-			Paragraph.Content.Text = ParagraphSettings.Content
-			Paragraph.Visible = true
-
-			Tab.Elements[ParagraphSettings.Title] = {
-				type = 'paragraph',
-				section = ParagraphSettings.SectionParent,
-				element = Paragraph
-			}
-
-			if SectionParent or ParagraphSettings.SectionParent.Holder then
-				Paragraph.Parent = SectionParent.Holder or ParagraphSettings.SectionParent.Holder
-			else
-				Paragraph.Parent = TabPage
-			end
-
-			Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-			--Paragraph.Content.Position = UDim2.new(0,465, 0,76)
-			Paragraph.Size = UDim2.new(0,465, 0, Paragraph.Content.TextBounds.Y + 40)
-
-			Paragraph.BackgroundTransparency = 1
-			Paragraph.UIStroke.Transparency = 1
-			Paragraph.Title.TextTransparency = 1
-			Paragraph.Content.TextTransparency = 1
-
-			Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-			Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-
-			TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-			TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-			TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
-			TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
-
-			function ParagraphValue:Set(NewParagraphSettings)
-				Paragraph.Title.Text = NewParagraphSettings.Title
-				Paragraph.Content.Text = NewParagraphSettings.Content
-			end
-
-			return ParagraphValue
-		end
+        function Tab:CreateParagraph(ParagraphSettings, SectionParent)
+            local ParagraphValue = {}
+            
+            local Paragraph = Elements.Template.Paragraph:Clone()
+            Paragraph.Title.Text = ParagraphSettings.Title
+            Paragraph.Content.Text = ParagraphSettings.Content
+            Paragraph.Visible = true
+            
+            -- Store element in Tab.Elements for future reference
+            Tab.Elements[ParagraphSettings.Title] = {
+                type = 'paragraph',
+                section = SectionParent or ParagraphSettings.SectionParent,
+                element = Paragraph
+            }
+            
+            -- Handle parent assignment with fallback logic
+            if SectionParent then
+                Paragraph.Parent = SectionParent.Holder
+            elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
+                Paragraph.Parent = ParagraphSettings.SectionParent.Holder
+            else
+                Paragraph.Parent = TabPage
+            end
+            
+            -- Adjust content size to accommodate text with line breaks
+            Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+            Paragraph.Content.Position = UDim2.new(1, -10, 0.575, 0)
+            Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
+            
+            -- Set initial transparency for animation
+            Paragraph.BackgroundTransparency = 1
+            Paragraph.UIStroke.Transparency = 1
+            Paragraph.Title.TextTransparency = 1
+            Paragraph.Content.TextTransparency = 1
+            
+            -- Apply theme colors
+            Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+            Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+            
+            -- Animate appearance
+            TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+            TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            
+            -- Update content and adjust size when text changes
+            function ParagraphValue:Set(NewParagraphSettings)
+                Paragraph.Title.Text = NewParagraphSettings.Title
+                Paragraph.Content.Text = NewParagraphSettings.Content
+                
+                -- Readjust size to fit new content
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
+            end
+            
+            return ParagraphValue
+        end
+        
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
