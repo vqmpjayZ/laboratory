@@ -23,7 +23,7 @@ Change Logs:
 - Revamped Design
 
 ]]
-
+--2
 local Release = "Release 2B"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
@@ -388,7 +388,7 @@ local function DeleteInfoPanel()
     
     task.spawn(function()
         while true do
-            task.wait(1)
+            task.wait(0.1)
             pcall(function()
                 local coreGui = game:GetService("CoreGui")
                 if coreGui:FindFirstChild("HUI") and coreGui.HUI:FindFirstChild("Arrayfield") and coreGui.HUI.Arrayfield:FindFirstChild("Info") then
