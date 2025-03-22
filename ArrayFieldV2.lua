@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A"
+local Release = "Release 2A" --0.1
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2000,67 +2000,31 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Parent = TabPage
             end
             
-            -- Create a new approach for text display
-            -- Replace the existing Content TextLabel with a ScrollingFrame
-            local originalContent = Paragraph.Content
-            local contentText = originalContent.Text
-            local contentPosition = originalContent.Position
-            local contentSize = originalContent.Size
-            
-            -- Create a ScrollingFrame
-            local ScrollingContent = Instance.new("ScrollingFrame")
-            ScrollingContent.Name = "Content"
-            ScrollingContent.Position = contentPosition
-            ScrollingContent.Size = contentSize
-            ScrollingContent.BackgroundTransparency = 1
-            ScrollingContent.BorderSizePixel = 0
-            ScrollingContent.ScrollBarThickness = 0
-            ScrollingContent.ScrollingEnabled = true
-            ScrollingContent.ClipsDescendants = true
-            ScrollingContent.Parent = Paragraph
-            
-            -- Create a TextLabel inside the ScrollingFrame
-            local TextContent = Instance.new("TextLabel")
-            TextContent.Name = "TextContent"
-            TextContent.Size = UDim2.new(1, 0, 0, 1000) -- Large initial size
-            TextContent.Position = UDim2.new(0, 0, 0, 0)
-            TextContent.BackgroundTransparency = 1
-            TextContent.BorderSizePixel = 0
-            TextContent.Text = contentText
-            TextContent.TextColor3 = originalContent.TextColor3
-            TextContent.TextSize = originalContent.TextSize
-            TextContent.Font = originalContent.Font
-            TextContent.TextXAlignment = originalContent.TextXAlignment
-            TextContent.TextYAlignment = originalContent.TextYAlignment
-            TextContent.TextWrapped = true
-            TextContent.RichText = true
-            TextContent.Parent = ScrollingContent
-            
-            -- Remove the original Content TextLabel
-            originalContent:Destroy()
+            -- Ensure text wrapping is enabled
+            Paragraph.Content.TextWrapped = true
             
             -- Set sizes based on parent
             if Paragraph.Parent == TabPage then
-                -- When directly in TabPage
-                Paragraph.Size = UDim2.new(0, 465, 0, 120) -- Fixed height
-                ScrollingContent.Size = UDim2.new(0, 438, 0, 80)
+                -- When directly in TabPage - use original logic
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
-                -- When in a section
-                Paragraph.Size = UDim2.new(1, -10, 0, 120) -- Fixed height
-                ScrollingContent.Size = UDim2.new(0, 438, 0, 80)
+                -- When in a section - use fixed height based on content length
+                local contentLength = string.len(ParagraphSettings.Content)
+                local lineBreaks = select(2, string.gsub(ParagraphSettings.Content, "\n", "")) + 1
+                
+                -- Calculate a height that will definitely fit the content
+                local height = math.max(100, contentLength / 3, lineBreaks * 25)
+                
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, height)
+                Paragraph.Size = UDim2.new(1, -10, 0, height + 40)
             end
-            
-            -- Update the TextContent size based on its content
-            TextContent.Size = UDim2.new(1, 0, 0, TextContent.TextBounds.Y + 10)
-            
-            -- Set the ScrollingFrame's CanvasSize to fit the TextContent
-            ScrollingContent.CanvasSize = UDim2.new(0, 0, 0, TextContent.TextBounds.Y + 10)
             
             -- Set initial transparency for animation
             Paragraph.BackgroundTransparency = 1
             Paragraph.UIStroke.Transparency = 1
             Paragraph.Title.TextTransparency = 1
-            TextContent.TextTransparency = 1
+            Paragraph.Content.TextTransparency = 1
             
             -- Apply theme colors
             Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
@@ -2070,20 +2034,30 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
             TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
             TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(TextContent, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             
             -- Update content when text changes
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
-                TextContent.Text = NewParagraphSettings.Content
+                Paragraph.Content.Text = NewParagraphSettings.Content
                 
-                -- Update the TextContent size and ScrollingFrame's CanvasSize
-                TextContent.Size = UDim2.new(1, 0, 0, TextContent.TextBounds.Y + 10)
-                ScrollingContent.CanvasSize = UDim2.new(0, 0, 0, TextContent.TextBounds.Y + 10)
+                -- Update sizes
+                if Paragraph.Parent == TabPage then
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+                else
+                    local contentLength = string.len(NewParagraphSettings.Content)
+                    local lineBreaks = select(2, string.gsub(NewParagraphSettings.Content, "\n", "")) + 1
+                    
+                    local height = math.max(100, contentLength / 3, lineBreaks * 25)
+                    
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, height)
+                    Paragraph.Size = UDim2.new(1, -10, 0, height + 40)
+                end
             end
             
             return ParagraphValue
-        end
+        end        
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
