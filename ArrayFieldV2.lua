@@ -364,6 +364,45 @@ function AddInfos(Object:Frame,Settings,type)
 	end)
 end]]
 
+local function DeleteInfoPanel()
+    task.wait(0.1)
+
+    local success, _ = pcall(function()
+        local coreGui = game:GetService("CoreGui")
+        if coreGui:FindFirstChild("HUI") then
+            local hui = coreGui.HUI
+            if hui:FindFirstChild("Arrayfield") and hui.Arrayfield:FindFirstChild("Info") then
+                hui.Arrayfield.Info:Destroy()
+            end
+        end
+    end)
+
+    if not success then
+        pcall(function()
+            local coreGui = game:GetService("CoreGui")
+            if coreGui:FindFirstChild("Arrayfield") and coreGui.Arrayfield:FindFirstChild("Info") then
+                coreGui.Arrayfield.Info:Destroy()
+            end
+        end)
+    end
+    
+    task.spawn(function()
+        while true do
+            task.wait(1)
+            pcall(function()
+                local coreGui = game:GetService("CoreGui")
+                if coreGui:FindFirstChild("HUI") and coreGui.HUI:FindFirstChild("Arrayfield") and coreGui.HUI.Arrayfield:FindFirstChild("Info") then
+                    coreGui.HUI.Arrayfield.Info:Destroy()
+                elseif coreGui:FindFirstChild("Arrayfield") and coreGui.Arrayfield:FindFirstChild("Info") then
+                    coreGui.Arrayfield.Info:Destroy()
+                end
+            end)
+        end
+    end)
+end
+
+DeleteInfoPanel()
+
 local function PackColor(Color)
 	return {R = Color.R * 255, G = Color.G * 255, B = Color.B * 255}
 end    
