@@ -2000,29 +2000,32 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Parent = TabPage
             end
             
-            -- Ensure text wrapping is enabled
+            -- CRITICAL: Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
-            -- Set up AutomaticSize for Content
-            Paragraph.Content.AutomaticSize = Enum.AutomaticSize.Y
-            
-            -- Set fixed width but let height adjust automatically
+            -- Different handling based on parent
             if Paragraph.Parent == TabPage then
-                -- When directly in TabPage
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, 0)
+                -- When directly in TabPage - use original logic
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
-                -- When in a section
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, 0)
-            end
-            
-            -- Wait for AutomaticSize to take effect
-            task.wait(0)
-            
-            -- Set paragraph size based on content size
-            if Paragraph.Parent == TabPage then
-                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.AbsoluteSize.Y + 40)
-            else
-                Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.AbsoluteSize.Y + 40)
+                -- When in a section - use a different approach
+                
+                -- First, set a large temporary height to ensure all text is visible
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000)
+                
+                -- Force UI update
+                task.wait(0.05)
+                
+                -- Now get the actual text height with wrapping applied
+                local textHeight = Paragraph.Content.TextBounds.Y
+                
+                -- Add extra space for safety (30%)
+                textHeight = textHeight * 1.3
+                
+                -- Set final sizes
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
+                Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
             end
             
             -- Set initial transparency for animation
@@ -2046,14 +2049,26 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
                 
-                -- Wait for AutomaticSize to take effect
-                task.wait(0)
-                
-                -- Update paragraph size based on content size
+                -- Update sizes
                 if Paragraph.Parent == TabPage then
-                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.AbsoluteSize.Y + 40)
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
                 else
-                    Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.AbsoluteSize.Y + 40)
+                    -- Set large temporary height
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000)
+                    
+                    -- Force UI update
+                    task.wait(0.05)
+                    
+                    -- Get actual text height with wrapping
+                    local textHeight = Paragraph.Content.TextBounds.Y
+                    
+                    -- Add extra space (30%)
+                    textHeight = textHeight * 1.3
+                    
+                    -- Set final sizes
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
+                    Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
                 end
             end
             
