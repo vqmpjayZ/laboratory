@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.16
+local Release = "Release 2A"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2006,18 +2006,19 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             -- Force a UI update to get accurate TextBounds
             task.wait(0)
             
-            -- Set sizes based on TextBounds, with different parameters based on parent
+            -- Get the base height from TextBounds
+            local baseHeight = Paragraph.Content.TextBounds.Y
+            
+            -- Set sizes based on parent
             if Paragraph.Parent == TabPage then
-                -- When directly in TabPage
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+                -- When directly in TabPage - use original logic
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, baseHeight)
+                Paragraph.Size = UDim2.new(0, 465, 0, baseHeight + 40)
             else
-                -- When in a section - use same logic but with section-specific sizing
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
-                
-                -- Add a small buffer to ensure no cutoff in sections
-                Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Size.Y.Offset + 20)
+                -- When in a section - multiply height by 1.8 to ensure no cutoff
+                local adjustedHeight = baseHeight * 1.8
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, adjustedHeight)
+                Paragraph.Size = UDim2.new(1, -10, 0, adjustedHeight + 40)
             end
             
             -- Set initial transparency for animation
@@ -2044,21 +2045,22 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 -- Force a UI update
                 task.wait(0)
                 
+                -- Get the base height
+                local baseHeight = Paragraph.Content.TextBounds.Y
+                
                 -- Update sizes
                 if Paragraph.Parent == TabPage then
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, baseHeight)
+                    Paragraph.Size = UDim2.new(0, 465, 0, baseHeight + 40)
                 else
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                    Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
-                    
-                    -- Add buffer
-                    Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Size.Y.Offset + 20)
+                    local adjustedHeight = baseHeight * 1.8
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, adjustedHeight)
+                    Paragraph.Size = UDim2.new(1, -10, 0, adjustedHeight + 40)
                 end
             end
             
             return ParagraphValue
-        end                                                                       
+        end                                                                            
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
