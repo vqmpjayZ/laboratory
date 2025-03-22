@@ -2011,22 +2011,15 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 -- Count explicit line breaks
                 local lineBreaks = select(2, string.gsub(text, "\n", "")) + 1
                 
-                -- Count words (better indicator of text volume)
-                local wordCount = 0
-                for _ in string.gmatch(text, "%S+") do
-                    wordCount = wordCount + 1
-                end
+                -- Estimate number of lines based on character count
+                -- Assuming ~60 characters per line with 438 pixel width
+                local estimatedLines = math.ceil(charCount / 60)
                 
-                -- Base height on multiple factors
-                local heightFromChars = charCount * 0.5
-                local heightFromLines = lineBreaks * 20
-                local heightFromWords = wordCount * 3
+                -- Use the maximum of explicit line breaks or estimated lines
+                local totalLines = math.max(lineBreaks, estimatedLines)
                 
-                -- Use the maximum of these calculations
-                local height = math.max(heightFromChars, heightFromLines, heightFromWords)
-                
-                -- Ensure minimum height
-                return math.max(30, height)
+                -- 18 pixels per line
+                return totalLines * 18
             end
             
             -- Different handling based on parent
@@ -2077,7 +2070,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end
             
             return ParagraphValue
-        end           
+        end        
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
