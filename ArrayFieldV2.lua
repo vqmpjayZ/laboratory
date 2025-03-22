@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.14
+local Release = "Release 2A" --0.15
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2003,27 +2003,45 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
+            -- Function to calculate appropriate height based on content
+            local function calculateAppropriateHeight(text)
+                -- Count explicit line breaks
+                local _, lineBreakCount = string.gmatch(text, "\n")
+                lineBreakCount = lineBreakCount or 0
+                
+                -- Count non-empty lines
+                local nonEmptyLines = 0
+                for line in string.gmatch(text.."\n", "(.-)\n") do
+                    if string.match(line, "%S") then -- If line contains non-whitespace
+                        nonEmptyLines = nonEmptyLines + 1
+                    end
+                end
+                
+                -- Use the maximum of explicit breaks or non-empty lines
+                local lineCount = math.max(lineBreakCount + 1, nonEmptyLines)
+                
+                -- Calculate height (20 pixels per line + small buffer)
+                return lineCount * 20 + 10
+            end
+            
             -- Different handling based on parent
             if Paragraph.Parent == TabPage then
                 -- When directly in TabPage - use original sizing logic
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                 Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
-                -- When in a section - use a fixed large size first to measure text
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000) -- Temporary large height
+                -- When in a section - calculate appropriate height
+                local contentHeight = calculateAppropriateHeight(ParagraphSettings.Content)
                 
-                -- Force UI update
-                task.wait(0.1)
+                -- Use TextBounds as a minimum to ensure no cutoff
+                contentHeight = math.max(contentHeight, Paragraph.Content.TextBounds.Y)
                 
-                -- Get text height and add significant padding
-                local textHeight = Paragraph.Content.TextBounds.Y * 1.5 -- 50% extra space
+                -- Set sizes
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
+                Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
                 
-                -- Ensure minimum height
-                textHeight = math.max(textHeight, 100) -- At least 100 pixels
-                
-                -- Set sizes with extra padding
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
-                Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
+                -- Position content properly
+                Paragraph.Content.Position = UDim2.new(0, 10, 0, 30)
             end
             
             -- Set initial transparency for animation
@@ -2054,22 +2072,16 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
                 else
                     -- When in a section
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, 1000) -- Temporary large height
+                    local contentHeight = calculateAppropriateHeight(NewParagraphSettings.Content)
+                    contentHeight = math.max(contentHeight, Paragraph.Content.TextBounds.Y)
                     
-                    -- Force UI update
-                    task.wait(0.1)
-                    
-                    -- Get text height and add significant padding
-                    local textHeight = Paragraph.Content.TextBounds.Y * 1.5
-                    textHeight = math.max(textHeight, 100)
-                    
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
-                    Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
+                    Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
+                    Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
                 end
             end
             
             return ParagraphValue
-        end                                                              
+        end                                                                 
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
