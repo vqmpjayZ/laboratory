@@ -2003,20 +2003,26 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
-            -- Force a UI update to get accurate TextBounds
-            task.wait(0)
+            -- Set up AutomaticSize for Content
+            Paragraph.Content.AutomaticSize = Enum.AutomaticSize.Y
             
-            -- Set sizes based on parent
+            -- Set fixed width but let height adjust automatically
             if Paragraph.Parent == TabPage then
                 -- When directly in TabPage
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, 0)
             else
-                -- When in a section - use TextBounds directly with minimal padding
-                local textHeight = Paragraph.Content.TextBounds.Y + 5
-                
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
-                Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
+                -- When in a section
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, 0)
+            end
+            
+            -- Wait for AutomaticSize to take effect
+            task.wait(0)
+            
+            -- Set paragraph size based on content size
+            if Paragraph.Parent == TabPage then
+                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.AbsoluteSize.Y + 40)
+            else
+                Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.AbsoluteSize.Y + 40)
             end
             
             -- Set initial transparency for animation
@@ -2040,23 +2046,19 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
                 
-                -- Force a UI update
+                -- Wait for AutomaticSize to take effect
                 task.wait(0)
                 
-                -- Update sizes
+                -- Update paragraph size based on content size
                 if Paragraph.Parent == TabPage then
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.AbsoluteSize.Y + 40)
                 else
-                    local textHeight = Paragraph.Content.TextBounds.Y + 5
-                    
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
-                    Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
+                    Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.AbsoluteSize.Y + 40)
                 end
             end
             
             return ParagraphValue
-        end
+        end        
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
