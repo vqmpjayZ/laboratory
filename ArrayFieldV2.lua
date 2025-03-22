@@ -1567,37 +1567,56 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 	local FirstTab = false
 	ArrayFieldQuality.Window = {Tabs = {}}
 	local Window = ArrayFieldQuality.Window
-	function Window:CreateTab(Name,Image)
-		Window.Tabs[Name]={Elements = {}}
-		local Tab = Window.Tabs[Name]
-		local SDone = false
-		local TopTabButton,SideTabButton = TopList.Template:Clone(), SideList.SideTemplate:Clone()
-
-		SideTabButton.Parent = SideList
-		TopTabButton.Parent = TopList
-
-		TopTabButton.Name=Name SideTabButton.Name=Name
-
-		TopTabButton.Title.Text = Name SideTabButton.Title.Text = Name
-		SideTabButton.Title.TextWrapped = false TopTabButton.Title.TextWrapped = false 
-
-		TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 30, 0, 30)
-
-		if Image then
-            local asset = getIcon(Image)
-
-			TopTabButton.Image.Image = "rbxassetid://"..Image
-			SideTabButton.Image.Image = "rbxassetid://"..Image
-
-			TopTabButton.Title.AnchorPoint = Vector2.new(0, 0.5)
-			TopTabButton.Title.Position = UDim2.new(0, 37, 0.5, 0)
-			TopTabButton.Image.Visible = true
-			TopTabButton.Title.TextXAlignment = Enum.TextXAlignment.Left
-			TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 46, 0, 30)
+    function Window:CreateTab(Name, Image)
+        Window.Tabs[Name] = {Elements = {}}
+        local Tab = Window.Tabs[Name]
+        local SDone = false
+        local TopTabButton, SideTabButton = TopList.Template:Clone(), SideList.SideTemplate:Clone()
+        
+        SideTabButton.Parent = SideList
+        TopTabButton.Parent = TopList
+        
+        TopTabButton.Name = Name 
+        SideTabButton.Name = Name
+        
+        TopTabButton.Title.Text = Name 
+        SideTabButton.Title.Text = Name
+        SideTabButton.Title.TextWrapped = false 
+        TopTabButton.Title.TextWrapped = false
+        
+        TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 30, 0, 30)
+        
+        if Image then
+            if typeof(Image) == 'string' and not tonumber(Image) then
+                -- This is a Lucide icon name
+                local asset = getIcon(Image)
+                
+                TopTabButton.Image.Image = 'rbxassetid://' .. asset.id
+                TopTabButton.Image.ImageRectOffset = asset.imageRectOffset
+                TopTabButton.Image.ImageRectSize = asset.imageRectSize
+                
+                SideTabButton.Image.Image = 'rbxassetid://' .. asset.id
+                SideTabButton.Image.ImageRectOffset = asset.imageRectOffset
+                SideTabButton.Image.ImageRectSize = asset.imageRectSize
+            else
+                -- This is a direct asset ID
+                TopTabButton.Image.Image = "rbxassetid://" .. Image
+                SideTabButton.Image.Image = "rbxassetid://" .. Image
+            end
+            
+            -- Apply styling for tabs with images
+            TopTabButton.Title.AnchorPoint = Vector2.new(0, 0.5)
+            TopTabButton.Title.Position = UDim2.new(0, 37, 0.5, 0)
+            TopTabButton.Image.Visible = true
+            TopTabButton.Title.TextXAlignment = Enum.TextXAlignment.Left
+            TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 46, 0, 30)
+            
+            SideTabButton.Image.Visible = true
         else
-            TopTabButton.Image.Image = "rbxassetid://"..Image
-            SideTabButton.Image.Image = "rbxassetid://"..Image
-		end
+            -- No image provided
+            TopTabButton.Image.Visible = false
+            SideTabButton.Image.Visible = false
+        end
 
 		TopTabButton.BackgroundTransparency = 1
 		TopTabButton.Title.TextTransparency = 1
@@ -1983,15 +2002,13 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             Paragraph.Title.Text = ParagraphSettings.Title
             Paragraph.Content.Text = ParagraphSettings.Content
             Paragraph.Visible = true
-            
-            -- Store element in Tab.Elements for future reference
+
             Tab.Elements[ParagraphSettings.Title] = {
                 type = 'paragraph',
                 section = SectionParent or ParagraphSettings.SectionParent,
                 element = Paragraph
             }
             
-            -- Handle parent assignment with fallback logic
             if SectionParent then
                 Paragraph.Parent = SectionParent.Holder
             elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
@@ -2000,54 +2017,42 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Parent = TabPage
             end
             
-            -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
-            -- Different handling based on parent
             if Paragraph.Parent == TabPage then
-                -- When directly in TabPage - use original logic
+
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                 Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
-                -- When in a section - use a simple character-based calculation
                 local charCount = string.len(ParagraphSettings.Content)
                 
-                -- Reduced multiplier: 0.37 pixels per character
                 local contentHeight = charCount * 0.37
                 
-                -- Minimal fixed padding
                 contentHeight = contentHeight + 2
-                
-                -- Minimum height of 20 pixels
+
                 contentHeight = math.max(20, contentHeight)
                 
-                -- Set sizes directly
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
                 Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
             end
             
-            -- Set initial transparency for animation
             Paragraph.BackgroundTransparency = 1
             Paragraph.UIStroke.Transparency = 1
             Paragraph.Title.TextTransparency = 1
             Paragraph.Content.TextTransparency = 1
             
-            -- Apply theme colors
             Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
             Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
             
-            -- Animate appearance
             TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
             TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
             TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             
-            -- Update content when text changes
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
                 
-                -- Update sizes
                 if Paragraph.Parent == TabPage then
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                     Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
