@@ -24,6 +24,8 @@ Change Logs:
 
 ]]
 
+--break test 2
+
 local Release = "Release 2B"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
@@ -349,7 +351,7 @@ local function FadeDescription(Infos,type,Out:boolean?)
 	}):Play()
 end
 
-function AddInfos(Object:Frame,Settings,type)
+--[[function AddInfos(Object:Frame,Settings,type)
 	--local Interact = Object:FindFirstChild('Interact') or Object:FindFirstChild('Main'):FindFirstChild('Interact')
 	Object.MouseEnter:Connect(function(input)
 		--if not (input.UserInputType == Enum.UserInputType.MouseButton2) then return end
@@ -361,7 +363,8 @@ function AddInfos(Object:Frame,Settings,type)
 	Object.MouseLeave:Connect(function()
 		FadeDescription(nil,nil,true)
 	end)
-end
+end]]
+
 local function PackColor(Color)
 	return {R = Color.R * 255, G = Color.G * 255, B = Color.B * 255}
 end    
@@ -1798,7 +1801,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = ButtonSettings.SectionParent,
 				element = Button
 			}
-			AddInfos(Button,ButtonSettings.Info,'button')
+			--AddInfos(Button,ButtonSettings.Info,'button')
 
 			Button.Name = ButtonSettings.Name
 			Button.Title.Text = ButtonSettings.Name
@@ -2153,7 +2156,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			else
 				Input.Parent = TabPage
 			end
-			AddInfos(Input,InputSettings.Info,'input')
+			--AddInfos(Input,InputSettings.Info,'input')
 			Input.BackgroundTransparency = 1
 			Input.UIStroke.Transparency = 1
 			Input.Title.TextTransparency = 1
@@ -2251,7 +2254,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			DropdownSettings.Items = {
 				Selected = {Default = DropdownSettings.Selected or nil}
 			}
-			AddInfos(Dropdown,DropdownSettings,'dropdown')
+			--AddInfos(Dropdown,DropdownSettings,'dropdown')
 			DropdownSettings.Locked = false
 			local Multi = DropdownSettings.MultiSelection or false
 			if string.find(DropdownSettings.Name,"closed") then
@@ -2643,7 +2646,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			else
 				Keybind.Parent = TabPage
 			end
-			AddInfos(Keybind,KeybindSettings,'keybind')
+			--AddInfos(Keybind,KeybindSettings,'keybind')
 
 			Keybind.BackgroundTransparency = 1
 			Keybind.UIStroke.Transparency = 1
@@ -2791,7 +2794,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = ToggleSettings.SectionParent,
 				element = Toggle
 			}
-			AddInfos(Toggle,ToggleSettings,'toggle')
+			--AddInfos(Toggle,ToggleSettings,'toggle')
 			if ToggleSettings.SectionParent then
 				Toggle.Parent = ToggleSettings.SectionParent.Holder
 			else
@@ -2961,7 +2964,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = ColorPickerSettings.SectionParent,
 				element = ColorPicker
 			}
-			AddInfos(ColorPicker,ColorPickerSettings,'colorpicker')
+			--AddInfos(ColorPicker,ColorPickerSettings,'colorpicker')
 			local Background = ColorPicker.CPBackground
 			local Display = Background.Display
 			local Main = Background.MainCP
@@ -3247,7 +3250,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = SliderSettings.SectionParent,
 				element = Slider
 			}
-			AddInfos(Slider,SliderSettings,'slider')
+			--AddInfos(Slider,SliderSettings,'slider')
 			if SliderSettings.SectionParent then
 				Slider.Parent = SliderSettings.SectionParent.Holder
 			else
