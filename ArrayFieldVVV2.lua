@@ -1983,13 +1983,15 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             Paragraph.Title.Text = ParagraphSettings.Title
             Paragraph.Content.Text = ParagraphSettings.Content
             Paragraph.Visible = true
-
+            
+            -- Store element in Tab.Elements for future reference
             Tab.Elements[ParagraphSettings.Title] = {
                 type = 'paragraph',
                 section = SectionParent or ParagraphSettings.SectionParent,
                 element = Paragraph
             }
-
+            
+            -- Handle parent assignment with fallback logic
             if SectionParent then
                 Paragraph.Parent = SectionParent.Holder
             elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
@@ -1997,50 +1999,60 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             else
                 Paragraph.Parent = TabPage
             end
-
+            
+            -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
-
+            
+            -- Different handling based on parent
             if Paragraph.Parent == TabPage then
+                -- When directly in TabPage - use original logic
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                 Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
             else
+                -- When in a section - use a very simple character-based calculation
                 local charCount = string.len(ParagraphSettings.Content)
-
-                local contentHeight = charCount * 0.4
-
-                contentHeight = contentHeight + 20
-
+                
+                -- Very conservative: 0.35 pixels per character
+                -- This is intentionally on the smaller side
+                local contentHeight = charCount * 0.35
+                
+                -- Minimum height of 20 pixels
                 contentHeight = math.max(20, contentHeight)
-
+                
+                -- Set sizes directly
                 Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
                 Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
             end
-
+            
+            -- Set initial transparency for animation
             Paragraph.BackgroundTransparency = 1
             Paragraph.UIStroke.Transparency = 1
             Paragraph.Title.TextTransparency = 1
             Paragraph.Content.TextTransparency = 1
-
+            
+            -- Apply theme colors
             Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
             Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-
+            
+            -- Animate appearance
             TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
             TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
             TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
+            
+            -- Update content when text changes
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
-
+                
+                -- Update sizes
                 if Paragraph.Parent == TabPage then
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
                     Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
                 else
                     local charCount = string.len(NewParagraphSettings.Content)
                     
-                    local contentHeight = charCount * 0.4
-                    contentHeight = contentHeight + 15
+                    local contentHeight = charCount * 0.35
                     contentHeight = math.max(20, contentHeight)
                     
                     Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
