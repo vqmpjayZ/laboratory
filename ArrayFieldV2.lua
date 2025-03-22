@@ -23,7 +23,7 @@ Change Logs:
 - Revamped Design
 
 ]]
---2
+
 local Release = "Release 2B"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
@@ -289,7 +289,6 @@ local function getIcon(name : string)
 	return asset
 end
 
---[[
 function BoolToText(Bool)
 	if Bool == true then
 		return 'ENABLED',Color3.fromRGB(44, 186, 44)
@@ -362,46 +361,7 @@ function AddInfos(Object:Frame,Settings,type)
 	Object.MouseLeave:Connect(function()
 		FadeDescription(nil,nil,true)
 	end)
-end]]
-
-local function DeleteInfoPanel()
-    task.wait(0.1)
-
-    local success, _ = pcall(function()
-        local coreGui = game:GetService("CoreGui")
-        if coreGui:FindFirstChild("HUI") then
-            local hui = coreGui.HUI
-            if hui:FindFirstChild("Arrayfield") and hui.Arrayfield:FindFirstChild("Info") then
-                hui.Arrayfield.Info:Destroy()
-            end
-        end
-    end)
-
-    if not success then
-        pcall(function()
-            local coreGui = game:GetService("CoreGui")
-            if coreGui:FindFirstChild("Arrayfield") and coreGui.Arrayfield:FindFirstChild("Info") then
-                coreGui.Arrayfield.Info:Destroy()
-            end
-        end)
-    end
-    
-    task.spawn(function()
-        while true do
-            task.wait(0.1)
-            pcall(function()
-                local coreGui = game:GetService("CoreGui")
-                if coreGui:FindFirstChild("HUI") and coreGui.HUI:FindFirstChild("Arrayfield") and coreGui.HUI.Arrayfield:FindFirstChild("Info") then
-                    coreGui.HUI.Arrayfield.Info:Destroy()
-                elseif coreGui:FindFirstChild("Arrayfield") and coreGui.Arrayfield:FindFirstChild("Info") then
-                    coreGui.Arrayfield.Info:Destroy()
-                end
-            end)
-        end
-    end)
 end
-
-DeleteInfoPanel()
 
 local function PackColor(Color)
 	return {R = Color.R * 255, G = Color.G * 255, B = Color.B * 255}
@@ -1839,7 +1799,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = ButtonSettings.SectionParent,
 				element = Button
 			}
-			--AddInfos(Button,ButtonSettings.Info,'button')
+			AddInfos(Button,ButtonSettings.Info,'button')
 
 			Button.Name = ButtonSettings.Name
 			Button.Title.Text = ButtonSettings.Name
@@ -2194,7 +2154,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			else
 				Input.Parent = TabPage
 			end
-			--AddInfos(Input,InputSettings.Info,'input')
+			AddInfos(Input,InputSettings.Info,'input')
 			Input.BackgroundTransparency = 1
 			Input.UIStroke.Transparency = 1
 			Input.Title.TextTransparency = 1
@@ -2292,7 +2252,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			DropdownSettings.Items = {
 				Selected = {Default = DropdownSettings.Selected or nil}
 			}
-			--AddInfos(Dropdown,DropdownSettings,'dropdown')
+			AddInfos(Dropdown,DropdownSettings,'dropdown')
 			DropdownSettings.Locked = false
 			local Multi = DropdownSettings.MultiSelection or false
 			if string.find(DropdownSettings.Name,"closed") then
@@ -2684,7 +2644,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			else
 				Keybind.Parent = TabPage
 			end
-			--AddInfos(Keybind,KeybindSettings,'keybind')
+			AddInfos(Keybind,KeybindSettings,'keybind')
 
 			Keybind.BackgroundTransparency = 1
 			Keybind.UIStroke.Transparency = 1
@@ -2832,7 +2792,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = ToggleSettings.SectionParent,
 				element = Toggle
 			}
-			--AddInfos(Toggle,ToggleSettings,'toggle')
+			AddInfos(Toggle,ToggleSettings,'toggle')
 			if ToggleSettings.SectionParent then
 				Toggle.Parent = ToggleSettings.SectionParent.Holder
 			else
@@ -3002,7 +2962,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = ColorPickerSettings.SectionParent,
 				element = ColorPicker
 			}
-			--AddInfos(ColorPicker,ColorPickerSettings,'colorpicker')
+			AddInfos(ColorPicker,ColorPickerSettings,'colorpicker')
 			local Background = ColorPicker.CPBackground
 			local Display = Background.Display
 			local Main = Background.MainCP
@@ -3288,7 +3248,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = SliderSettings.SectionParent,
 				element = Slider
 			}
-			--AddInfos(Slider,SliderSettings,'slider')
+			AddInfos(Slider,SliderSettings,'slider')
 			if SliderSettings.SectionParent then
 				Slider.Parent = SliderSettings.SectionParent.Holder
 			else
