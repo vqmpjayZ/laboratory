@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A"
+local Release = "Release 2A" --0.1
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -3466,20 +3466,20 @@ function ArrayFieldLibrary:LoadConfiguration()
 end
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
-Rayfield.Main.Topbar.Theme.Visible = false
-local Search = Rayfield.Main.Topbar:FindFirstChild("Search")
+Arrayfield.Main.Topbar.Theme.Visible = false
+local Search = Arrayfield.Main.Topbar:FindFirstChild("Search")
 
 if Search then
     Search.Parent = nil
     
-    Search.Parent = Rayfield.Main.Topbar 
+    Search.Parent = Arrayfield.Main.Topbar 
     
     Search.Position = UDim2.new(0.84, 0, 0.5, 0)
 else
     warn("Search button not found!")
 end
 
-local Sections = Rayfield.Main:GetChildren()
+local Sections = Arrayfield.Main:GetChildren()
 
 for _, section in pairs(Sections) do
     if section:IsA("Frame") then
@@ -3495,7 +3495,7 @@ for _, section in pairs(Sections) do
     end
 end
 
-local Sections = Rayfield.Main:GetChildren()
+local Sections = Arrayfield.Main:GetChildren()
 
 for _, section in pairs(Sections) do
     if section:IsA("Frame") then
@@ -3509,7 +3509,7 @@ for _, section in pairs(Sections) do
     end
 end
 
-local Elements = game:GetService("CoreGui").HUI.Rayfield.Main.Elements
+local Elements = game:GetService("CoreGui").HUI.Arrayfield.Main.Elements
 
 for _, Descendant in ipairs(Elements:GetDescendants()) do
     if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
