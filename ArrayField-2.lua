@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.10
+local Release = "Release 2A" --0.11
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2003,45 +2003,30 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
             
-            -- Calculate height based on text content
-            local function calculateTextHeight(text)
-                -- Count explicit line breaks
-                local _, lineBreakCount = string.gsub(text, "\n", "")
+            -- Set the AutomaticSize property to handle text sizing automatically
+            Paragraph.Content.AutomaticSize = Enum.AutomaticSize.Y
+            
+            -- Set fixed width but let height adjust automatically
+            Paragraph.Content.Size = UDim2.new(0, 438, 0, 0)
+            
+            -- Connect to the size change event to update the paragraph size
+            Paragraph.Content:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+                local contentHeight = Paragraph.Content.AbsoluteSize.Y
                 
-                -- Count words as a better estimate for wrapped text
-                local wordCount = 0
-                for _ in string.gmatch(text, "%S+") do
-                    wordCount = wordCount + 1
+                if Paragraph.Parent == TabPage then
+                    -- When directly in TabPage
+                    Paragraph.Size = UDim2.new(0, 465, 0, contentHeight + 40)
+                else
+                    -- When in a section
+                    Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
                 end
-                
-                -- Estimate lines (assuming ~10 words per line on average)
-                local estimatedLines = math.ceil(wordCount / 10)
-                
-                -- Add explicit line breaks
-                estimatedLines = estimatedLines + lineBreakCount
-                
-                -- Calculate height (16 pixels per line with minimal buffer)
-                return estimatedLines * 16 + 2
-            end
+            end)
             
-            -- Set sizes based on calculated height
-            local contentHeight = calculateTextHeight(ParagraphSettings.Content)
-            
-            -- Get TextBounds height as a minimum
-            local minHeight = Paragraph.Content.TextBounds.Y
-            
-            -- Use the larger of the two to ensure no cutoff
-            contentHeight = math.max(contentHeight, minHeight)
-            
-            Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
-            
-            -- Different sizing based on parent
+            -- Different sizing based on parent (initial size before content loads)
             if Paragraph.Parent == TabPage then
-                -- When directly in TabPage
-                Paragraph.Size = UDim2.new(0, 465, 0, contentHeight + 40)
+                Paragraph.Size = UDim2.new(0, 465, 0, 40)
             else
-                -- When in a section
-                Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
+                Paragraph.Size = UDim2.new(1, -10, 0, 40)
             end
             
             -- Set initial transparency for animation
@@ -2060,27 +2045,15 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             
-            -- Update content and adjust size when text changes
+            -- Update content when text changes
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
-                
-                -- Recalculate height based on new text
-                local contentHeight = calculateTextHeight(NewParagraphSettings.Content)
-                local minHeight = Paragraph.Content.TextBounds.Y
-                contentHeight = math.max(contentHeight, minHeight)
-                
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
-                
-                if Paragraph.Parent == TabPage then
-                    Paragraph.Size = UDim2.new(0, 465, 0, contentHeight + 40)
-                else
-                    Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
-                end
+                -- Size will update automatically through the property changed connection
             end
             
             return ParagraphValue
-        end                                               
+        end                                                     
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
