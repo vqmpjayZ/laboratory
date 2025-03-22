@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.3
+local Release = "Release 2A" --0.4
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2000,10 +2000,24 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Parent = TabPage
             end
             
-            -- Adjust content size to accommodate text with line breaks
-            Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-            Paragraph.Content.Position = UDim2.new(1, -10, 0.575, 0)
-            Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
+            -- Adjust content text properties to fix unwanted spacing
+            Paragraph.Content.TextXAlignment = Enum.TextXAlignment.Left
+            Paragraph.Content.TextYAlignment = Enum.TextYAlignment.Top
+            Paragraph.Content.TextWrapped = true
+            
+            -- Consistent sizing regardless of parent
+            if Paragraph.Parent == TabPage then
+                -- When directly in TabPage
+                Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
+                Paragraph.Content.Size = UDim2.new(1, -20, 0, Paragraph.Content.TextBounds.Y)
+            else
+                -- When in a section
+                Paragraph.Size = UDim2.new(1, 0, 0, Paragraph.Content.TextBounds.Y + 40)
+                Paragraph.Content.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y)
+            end
+            
+            -- Position content properly to avoid unwanted spacing
+            Paragraph.Content.Position = UDim2.new(0, 10, 0, 30)
             
             -- Set initial transparency for animation
             Paragraph.BackgroundTransparency = 1
@@ -2021,19 +2035,23 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             
-            -- Update content and adjust size when text changes
+            -- Update function that properly resizes based on content
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
                 
                 -- Readjust size to fit new content
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
+                if Paragraph.Parent == TabPage then
+                    Paragraph.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y + 40)
+                    Paragraph.Content.Size = UDim2.new(1, -20, 0, Paragraph.Content.TextBounds.Y)
+                else
+                    Paragraph.Size = UDim2.new(1, 0, 0, Paragraph.Content.TextBounds.Y + 40)
+                    Paragraph.Content.Size = UDim2.new(1, -10, 0, Paragraph.Content.TextBounds.Y)
+                end
             end
             
             return ParagraphValue
-        end
-        
+        end           
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
