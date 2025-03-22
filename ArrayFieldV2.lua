@@ -1997,6 +1997,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Label.Parent = TabPage
             end
             
+            -- Store the original position of the title
+            local originalTitlePosition = Label.Title.Position
+            
             -- Handle icon if provided
             if LabelImage then
                 -- Create an icon if it doesn't exist
@@ -2009,9 +2012,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Icon.AnchorPoint = Vector2.new(0, 0.5)
                     Icon.Parent = Label
                     
-                    -- Ensure the title stays visible by moving it RIGHT, not left
-                    -- The default position is likely UDim2.new(0, 10, 0.5, 0)
-                    Label.Title.Position = UDim2.new(0, 40, 0.5, 0)
+                    -- Add padding to the title text instead of moving it
+                    Label.Title.UIPadding = Instance.new("UIPadding")
+                    Label.Title.UIPadding.PaddingLeft = UDim.new(0, 30)
                 end
                 
                 local Icon = Label.Icon
@@ -2036,8 +2039,10 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Icon.ImageTransparency = 1
                 TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
             else
-                -- If no image, reset title to default position
-                Label.Title.Position = UDim2.new(0, 10, 0.5, 0)
+                -- If no image, remove padding if it exists
+                if Label.Title:FindFirstChild("UIPadding") then
+                    Label.Title.UIPadding:Destroy()
+                end
                 
                 -- Remove icon if it exists
                 if Label:FindFirstChild("Icon") then
@@ -2071,8 +2076,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Icon.AnchorPoint = Vector2.new(0, 0.5)
                     Icon.Parent = Label
                     
-                    -- Move title to the RIGHT to make room for icon
-                    Label.Title.Position = UDim2.new(0, 40, 0.5, 0)
+                    -- Add padding to the title text
+                    Label.Title.UIPadding = Instance.new("UIPadding")
+                    Label.Title.UIPadding.PaddingLeft = UDim.new(0, 30)
                 end
                 
                 local Icon = Label.Icon
@@ -2099,8 +2105,8 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end
             
             return LabelValue
-        end          
-
+        end
+        
 		-- Paragraph
         function Tab:CreateParagraph(ParagraphSettings, SectionParent)
             local ParagraphValue = {}
@@ -2132,17 +2138,16 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Icon.Name = "Icon"
                     Icon.BackgroundTransparency = 1
                     Icon.Size = UDim2.new(0, 20, 0, 20)
-                    -- Position icon to be vertically centered with the title
-                    Icon.Position = UDim2.new(0, 10, 0, 15) -- Adjusted to be centered with title
+                    Icon.Position = UDim2.new(0, 10, 0, 15) -- Positioned near the title
                     Icon.AnchorPoint = Vector2.new(0, 0.5)
                     Icon.Parent = Paragraph
                     
-                    -- Move title to the RIGHT to make room for icon
-                    Paragraph.Title.Position = UDim2.new(0, 40, 0, 0)
+                    -- Add padding to the title text instead of moving it
+                    Paragraph.Title.UIPadding = Instance.new("UIPadding")
+                    Paragraph.Title.UIPadding.PaddingLeft = UDim.new(0, 30)
                     
-                    -- Keep content at its original position but adjust its width
-                    -- This ensures it's visible and doesn't go off-screen
-                    Paragraph.Content.Position = UDim2.new(0, 10, 0, 30) -- Default position
+                    -- Make sure content is visible and in the right position
+                    Paragraph.Content.Visible = true
                 end
                 
                 local Icon = Paragraph.Icon
@@ -2167,14 +2172,18 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Icon.ImageTransparency = 1
                 TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
             else
-                -- If no image, reset positions to default
-                Paragraph.Title.Position = UDim2.new(0, 10, 0, 0)
-                Paragraph.Content.Position = UDim2.new(0, 10, 0, 30)
+                -- If no image, remove padding if it exists
+                if Paragraph.Title:FindFirstChild("UIPadding") then
+                    Paragraph.Title.UIPadding:Destroy()
+                end
                 
                 -- Remove icon if it exists
                 if Paragraph:FindFirstChild("Icon") then
                     Paragraph.Icon:Destroy()
                 end
+                
+                -- Make sure content is visible
+                Paragraph.Content.Visible = true
             end
             
             Paragraph.Content.TextWrapped = true
@@ -2234,15 +2243,16 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     Icon.Name = "Icon"
                     Icon.BackgroundTransparency = 1
                     Icon.Size = UDim2.new(0, 20, 0, 20)
-                    Icon.Position = UDim2.new(0, 10, 0, 15) -- Adjusted to be centered with title
+                    Icon.Position = UDim2.new(0, 10, 0, 15)
                     Icon.AnchorPoint = Vector2.new(0, 0.5)
                     Icon.Parent = Paragraph
                     
-                    -- Move title to the RIGHT to make room for icon
-                    Paragraph.Title.Position = UDim2.new(0, 40, 0, 0)
+                    -- Add padding to the title text
+                    Paragraph.Title.UIPadding = Instance.new("UIPadding")
+                    Paragraph.Title.UIPadding.PaddingLeft = UDim.new(0, 30)
                     
-                    -- Keep content at its original position
-                    Paragraph.Content.Position = UDim2.new(0, 10, 0, 30)
+                    -- Make sure content is visible
+                    Paragraph.Content.Visible = true
                 end
                 
                 local Icon = Paragraph.Icon
@@ -2269,7 +2279,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end
             
             return ParagraphValue
-        end        
+        end            
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
