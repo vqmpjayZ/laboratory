@@ -3472,7 +3472,7 @@ local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
 if Search then
     Search.Parent = nil
     
-    Search.Parent = Arrayfield.Main.Topbar 
+    Search.Parent = ArrayField.Main.Topbar 
     
     Search.Position = UDim2.new(0.84, 0, 0.5, 0)
 else
