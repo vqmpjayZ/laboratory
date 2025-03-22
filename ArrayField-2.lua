@@ -24,8 +24,6 @@ Change Logs:
 
 ]]
 
---break test 2
-
 local Release = "Release 2B"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
@@ -291,6 +289,7 @@ local function getIcon(name : string)
 	return asset
 end
 
+--[[
 function BoolToText(Bool)
 	if Bool == true then
 		return 'ENABLED',Color3.fromRGB(44, 186, 44)
@@ -351,7 +350,7 @@ local function FadeDescription(Infos,type,Out:boolean?)
 	}):Play()
 end
 
---[[function AddInfos(Object:Frame,Settings,type)
+function AddInfos(Object:Frame,Settings,type)
 	--local Interact = Object:FindFirstChild('Interact') or Object:FindFirstChild('Main'):FindFirstChild('Interact')
 	Object.MouseEnter:Connect(function(input)
 		--if not (input.UserInputType == Enum.UserInputType.MouseButton2) then return end
