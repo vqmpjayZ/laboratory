@@ -19,7 +19,8 @@ Change Logs:
 - Fixed Paragraphs not appearing when not parented to sections
 - Fixed long Paragraphs getting cut off when parented to sections
 - Fixed Search not being able to search for elements parented to sections
-- Removed Themes Button
+- Removed Themes Button (pointless)
+- Removed Info UI for toggles
 - Revamped Design
 
 ]]
@@ -2947,7 +2948,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				section = ToggleSettings.SectionParent,
 				element = Toggle
 			}
-			AddInfos(Toggle,ToggleSettings,'toggle')
+			--AddInfos(Toggle,ToggleSettings,'toggle')
 			if ToggleSettings.SectionParent then
 				Toggle.Parent = ToggleSettings.SectionParent.Holder
 			else
