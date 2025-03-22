@@ -19,8 +19,7 @@ Change Logs:
 - Fixed Paragraphs not appearing when not parented to sections
 - Fixed long Paragraphs getting cut off when parented to sections
 - Fixed Search not being able to search for elements parented to sections
-- Removed Themes Button (pointless)
-- Removed Info UI for toggles
+- Removed Themes Button
 - Revamped Design
 
 ]]
@@ -31,6 +30,8 @@ local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
 local ConfigurationExtension = ".rfld"
 local ArrayFieldQuality = {}
+
+local debug = "0.01"
 
 local ArrayFieldLibrary = {
 	Flags = {},
