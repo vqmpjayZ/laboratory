@@ -12,7 +12,7 @@ Arrays  | Designing + Programming + New Features
 
 
 
-local Release = "Release 2A" --0.8
+local Release = "Release 2A" --0.9
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -2000,34 +2000,35 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Parent = TabPage
             end
             
-            -- Ensure text wrapping is enabled and set other text properties
+            -- Ensure text wrapping is enabled
             Paragraph.Content.TextWrapped = true
-            Paragraph.Content.TextScaled = false
-            Paragraph.Content.RichText = true
             
-            -- Calculate approximate height based on text length and width
-            local textLength = string.len(ParagraphSettings.Content)
-            local approxCharsPerLine = 60  -- Approximate characters per line
-            local lineHeight = 18  -- Approximate height per line in pixels
-            local numLines = math.ceil(textLength / approxCharsPerLine)
+            -- Calculate a more accurate height based on text
+            local function calculateTextHeight(text, width)
+                -- Count lines from explicit line breaks
+                local _, lineBreakCount = string.gsub(text, "\n", "")
+                
+                -- Estimate lines from text wrapping (more conservative)
+                local textLength = string.len(text)
+                local charsPerLine = math.floor(width / 7) -- Approximate characters per line width
+                local wrappedLines = math.ceil(textLength / charsPerLine) * 0.7 -- Apply a reduction factor
+                
+                -- Use the larger of the two estimates with a small buffer
+                local totalLines = math.max(lineBreakCount + 1, wrappedLines)
+                return math.floor(totalLines * 18) + 5 -- 18 pixels per line + small buffer
+            end
             
-            -- Count actual line breaks
-            local _, lineBreakCount = string.gsub(ParagraphSettings.Content, "\n", "")
-            numLines = numLines + lineBreakCount
-            
-            -- Calculate height with some extra padding
-            local calculatedHeight = numLines * lineHeight + 20  -- Add padding
-            
-            -- Set sizes based on calculated height
-            Paragraph.Content.Size = UDim2.new(0, 438, 0, calculatedHeight)
+            -- Calculate height and set sizes
+            local contentHeight = calculateTextHeight(ParagraphSettings.Content, 438)
+            Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
             
             -- Different sizing based on parent
             if Paragraph.Parent == TabPage then
                 -- When directly in TabPage
-                Paragraph.Size = UDim2.new(0, 465, 0, calculatedHeight + 40)
+                Paragraph.Size = UDim2.new(0, 465, 0, contentHeight + 40)
             else
-                -- When in a section - ensure it doesn't get cut off
-                Paragraph.Size = UDim2.new(1, -10, 0, calculatedHeight + 40)
+                -- When in a section
+                Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
             end
             
             -- Set initial transparency for animation
@@ -2052,30 +2053,18 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 Paragraph.Content.Text = NewParagraphSettings.Content
                 
                 -- Recalculate height based on new text
-                local textLength = string.len(NewParagraphSettings.Content)
-                local approxCharsPerLine = 60
-                local lineHeight = 18
-                local numLines = math.ceil(textLength / approxCharsPerLine)
-                
-                -- Count actual line breaks
-                local _, lineBreakCount = string.gsub(NewParagraphSettings.Content, "\n", "")
-                numLines = numLines + lineBreakCount
-                
-                -- Calculate height with some extra padding
-                local calculatedHeight = numLines * lineHeight + 20
-                
-                -- Update sizes
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, calculatedHeight)
+                local contentHeight = calculateTextHeight(NewParagraphSettings.Content, 438)
+                Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
                 
                 if Paragraph.Parent == TabPage then
-                    Paragraph.Size = UDim2.new(0, 465, 0, calculatedHeight + 40)
+                    Paragraph.Size = UDim2.new(0, 465, 0, contentHeight + 40)
                 else
-                    Paragraph.Size = UDim2.new(1, -10, 0, calculatedHeight + 40)
+                    Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
                 end
             end
             
             return ParagraphValue
-        end                                    
+        end                                          
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
