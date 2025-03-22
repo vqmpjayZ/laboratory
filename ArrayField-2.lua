@@ -1848,55 +1848,185 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 		end
 
 		-- Section
-        function Tab:CreateSection(SectionName, SectionImage, Display)
-            local SectionValue = {
-                Holder = ArrayField.Holding,
-                Open = true
+		function Tab:CreateSection(SectionName,Display)
+
+			local SectionValue = {
+				Holder = ArrayField.Holding,
+				Open = true
+			}
+			local Debounce = false
+			local Section = Elements.Template.SectionTitle:Clone()
+			SectionValue.Holder = Section.Holder
+			Section.Title.Text = SectionName
+			Section.Visible = true
+			Section.Parent = TabPage
+
+			Tab.Elements[SectionName] = {
+				type = 'section',
+				display = Display,
+				sectionholder = Section.Holder,
+				element = Section
+			}
+
+			Section.Title.TextTransparency = 1
+			TweenService:Create(Section.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+			function SectionValue:Set(NewSection)
+				Section.Title.Text = NewSection
+			end
+			if Display then
+				Section._UIPadding_:Destroy()
+				Section.Holder.Visible = false
+				Section.BackgroundTransparency = 1
+				SectionValue.Holder.Parent = ArrayField.Holding
+				Section.Title.ImageButton.Visible = false
+			end
+			Section.Title.ImageButton.MouseButton1Down:Connect(function()
+				if Debounce then return end
+				if SectionValue.Open then
+					--Section.Holder.Visible = true
+					Debounce = true
+					TweenService:Create(Section._UIPadding_, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {PaddingBottom = UDim.new(0,0)}):Play()
+					for _, element in ipairs(Section.Holder:GetChildren()) do
+						if element.ClassName == "Frame" then
+							if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and element.Name ~= 'Topholder' then
+								if element.Name == "SectionTitle" then
+									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+								else
+									TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+									TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+								end
+								for _, child in ipairs(element:GetChildren()) do
+									if child.ClassName == "Frame" then --or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
+										child.Visible = false
+									end
+								end
+							end
+							element.Visible = false
+						end
+					end
+					TweenService:Create(Section.Title.ImageButton,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Rotation = 180}):Play()
+					SectionValue.Open = false
+					Debounce = false
+				else
+					Debounce = true
+					TweenService:Create(Section._UIPadding_, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {PaddingBottom = UDim.new(0,8)}):Play()
+					for _, element in ipairs(Section.Holder:GetChildren()) do
+						if element.ClassName == "Frame" then
+							if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and element.Name ~= 'Topholder' and not element:FindFirstChild('ColorPickerIs') then
+								if element.Name == "SectionTitle" then
+									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+								else
+									TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+									TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+								end
+								for _, child in ipairs(element:GetChildren()) do
+									if (child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel") then
+										child.Visible = true
+									end
+								end
+							elseif element:FindFirstChild('ColorPickerIs') then
+								TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+								TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+								TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+								if element.ColorPickerIs.Value then
+									element.ColorSlider.Visible = true
+									element.HexInput.Visible = true
+									element.RGB.Visible = true
+								end
+								element.CPBackground.Visible = true
+								element.Lock.Visible = true
+								element.Interact.Visible = true
+								element.Title.Visible = true
+
+							end
+							element.Visible = true
+						end
+					end
+					TweenService:Create(Section.Title.ImageButton,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Rotation = 0}):Play()
+					SectionValue.Open = true
+					wait(.3)
+					Debounce = false
+				end
+			end)
+			SDone = true
+			function SectionValue:Lock(Reason)
+
+			end
+			function SectionValue:Unlock(Reason)
+
+			end
+
+			return SectionValue
+		end
+
+		-- Spacing
+		function Tab:CreateSpacing(SectionParent,Size)
+			local Spacing = Elements.Template.SectionSpacing:Clone()
+			Spacing.Visible = true
+			Spacing.Parent = TabPage
+
+			Spacing.Size = UDim2.fromOffset(475,Size or 6)
+
+			if SectionParent then
+				Spacing.Parent = SectionParent.Holder
+			else
+				Spacing.Parent = TabPage
+			end
+		end
+
+		-- Label
+        function Tab:CreateLabel(LabelText, SectionParent, LabelImage)
+            local LabelValue = {}
+            
+            local Label = Elements.Template.Label:Clone()
+            Label.Title.Text = LabelText
+            Label.Visible = true
+            
+            Tab.Elements[LabelText] = {
+                type = 'label',
+                section = SectionParent,
+                element = Label
             }
-            local Debounce = false
-            local Section = Elements.Template.SectionTitle:Clone()
-            SectionValue.Holder = Section.Holder
-            Section.Title.Text = SectionName
-            Section.Visible = true
-            Section.Parent = TabPage
-        
-            Tab.Elements[SectionName] = {
-                type = 'section',
-                display = Display,
-                sectionholder = Section.Holder,
-                element = Section
-            }
-        
+            
+            if SectionParent then
+                Label.Parent = SectionParent.Holder
+            else
+                Label.Parent = TabPage
+            end
+            
             -- Handle icon if provided
-            if SectionImage then
+            if LabelImage then
                 -- Create an icon if it doesn't exist
-                if not Section.Title:FindFirstChild("Icon") then
+                if not Label:FindFirstChild("Icon") then
                     local Icon = Instance.new("ImageLabel")
                     Icon.Name = "Icon"
                     Icon.BackgroundTransparency = 1
                     Icon.Size = UDim2.new(0, 20, 0, 20)
-                    Icon.Position = UDim2.new(0, 5, 0.5, 0)
+                    Icon.Position = UDim2.new(0, 10, 0.5, 0)
                     Icon.AnchorPoint = Vector2.new(0, 0.5)
-                    Icon.Parent = Section.Title
+                    Icon.Parent = Label
                     
                     -- Adjust title position to make room for icon
-                    Section.Title.Text = "   " .. SectionName
+                    Label.Title.Position = UDim2.new(0, 40, 0, 0)
                 end
                 
-                local Icon = Section.Title.Icon
+                local Icon = Label.Icon
                 
                 -- Handle Lucide icons vs direct asset IDs
-                if typeof(SectionImage) == 'string' and not tonumber(SectionImage) then
+                if typeof(LabelImage) == 'string' and not tonumber(LabelImage) then
                     -- This is a Lucide icon name
                     pcall(function()
-                        local asset = getIcon(SectionImage)
+                        local asset = getIcon(LabelImage)
                         Icon.Image = 'rbxassetid://' .. asset.id
                         Icon.ImageRectOffset = asset.imageRectOffset
                         Icon.ImageRectSize = asset.imageRectSize
                     end)
                 else
                     -- This is a direct asset ID
-                    Icon.Image = "rbxassetid://" .. tostring(SectionImage)
+                    Icon.Image = "rbxassetid://" .. tostring(LabelImage)
                     Icon.ImageRectOffset = Vector2.new(0, 0)
                     Icon.ImageRectSize = Vector2.new(0, 0)
                 end
@@ -1906,37 +2036,45 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
             else
                 -- If no image, ensure title is at normal position
-                Section.Title.Text = SectionName
+                Label.Title.Position = UDim2.new(0, 10, 0, 0)
                 
                 -- Remove icon if it exists
-                if Section.Title:FindFirstChild("Icon") then
-                    Section.Title.Icon:Destroy()
+                if Label:FindFirstChild("Icon") then
+                    Label.Icon:Destroy()
                 end
             end
-        
-            Section.Title.TextTransparency = 1
-            TweenService:Create(Section.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-        
-            function SectionValue:Set(NewSection)
-                Section.Title.Text = NewSection
+            
+            Label.BackgroundTransparency = 1
+            Label.UIStroke.Transparency = 1
+            Label.Title.TextTransparency = 1
+            
+            Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+            Label.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+            
+            TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+            TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            
+            function LabelValue:Set(NewLabel)
+                Label.Title.Text = NewLabel
             end
             
-            function SectionValue:SetImage(NewImage)
-                if not Section.Title:FindFirstChild("Icon") then
+            function LabelValue:SetImage(NewImage)
+                if not Label:FindFirstChild("Icon") then
                     -- Create icon if it doesn't exist
                     local Icon = Instance.new("ImageLabel")
                     Icon.Name = "Icon"
                     Icon.BackgroundTransparency = 1
                     Icon.Size = UDim2.new(0, 20, 0, 20)
-                    Icon.Position = UDim2.new(0, 5, 0.5, 0)
+                    Icon.Position = UDim2.new(0, 10, 0.5, 0)
                     Icon.AnchorPoint = Vector2.new(0, 0.5)
-                    Icon.Parent = Section.Title
+                    Icon.Parent = Label
                     
                     -- Adjust title position
-                    Section.Title.Text = "   " .. SectionName
+                    Label.Title.Position = UDim2.new(0, 40, 0, 0)
                 end
                 
-                local Icon = Section.Title.Icon
+                local Icon = Label.Icon
                 
                 -- Handle Lucide icons vs direct asset IDs
                 if typeof(NewImage) == 'string' and not tonumber(NewImage) then
@@ -1959,224 +2097,167 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                 TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
             end
             
-            if Display then
-                Section._UIPadding_:Destroy()
-                Section.Holder.Visible = false
-                Section.BackgroundTransparency = 1
-                SectionValue.Holder.Parent = ArrayField.Holding
-                Section.Title.ImageButton.Visible = false
-            end
-            
-            Section.Title.ImageButton.MouseButton1Down:Connect(function()
-                if Debounce then return end
-                if SectionValue.Open then
-                    --Section.Holder.Visible = true
-                    Debounce = true
-                    TweenService:Create(Section._UIPadding_, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {PaddingBottom = UDim.new(0,0)}):Play()
-                    for _, element in ipairs(Section.Holder:GetChildren()) do
-                        if element.ClassName == "Frame" then
-                            if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and element.Name ~= 'Topholder' then
-                                if element.Name == "SectionTitle" then
-                                    TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                                else
-                                    TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                                    TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                                    TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                                end
-                                for _, child in ipairs(element:GetChildren()) do
-                                    if child.ClassName == "Frame" then --or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
-                                        child.Visible = false
-                                    end
-                                end
-                            end
-                            element.Visible = false
-                        end
-                    end
-                    TweenService:Create(Section.Title.ImageButton,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Rotation = 180}):Play()
-                    SectionValue.Open = false
-                    Debounce = false
-                else
-                    Debounce = true
-                    TweenService:Create(Section._UIPadding_, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {PaddingBottom = UDim.new(0,8)}):Play()
-                    for _, element in ipairs(Section.Holder:GetChildren()) do
-                        if element.ClassName == "Frame" then
-                            if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and element.Name ~= 'Topholder' and not element:FindFirstChild('ColorPickerIs') then
-                                if element.Name == "SectionTitle" then
-                                    TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                                else
-                                    TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                                    TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                                    TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                                end
-                                for _, child in ipairs(element:GetChildren()) do
-                                    if (child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel") then
-                                        child.Visible = true
-                                    end
-                                end
-                            elseif element:FindFirstChild('ColorPickerIs') then
-                                TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                                TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                                if element.ColorPickerIs.Value then
-                                    element.ColorSlider.Visible = true
-                                    element.HexInput.Visible = true
-                                    element.RGB.Visible = true
-                                end
-                                element.CPBackground.Visible = true
-                                element.Lock.Visible = true
-                                element.Interact.Visible = true
-                                element.Title.Visible = true
-                            end
-                            element.Visible = true
-                        end
-                    end
-                    TweenService:Create(Section.Title.ImageButton,TweenInfo.new(0.4,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Rotation = 0}):Play()
-                    SectionValue.Open = true
-                    wait(.3)
-                    Debounce = false
-                end
-            end)
-            
-            SDone = true
-            
-            function SectionValue:Lock(Reason)
-                -- Lock implementation
-            end
-            
-            function SectionValue:Unlock(Reason)
-                -- Unlock implementation
-            end
-        
-            return SectionValue
+            return LabelValue
         end
 
-		-- Spacing
-		function Tab:CreateSpacing(SectionParent,Size)
-			local Spacing = Elements.Template.SectionSpacing:Clone()
-			Spacing.Visible = true
-			Spacing.Parent = TabPage
-
-			Spacing.Size = UDim2.fromOffset(475,Size or 6)
-
-			if SectionParent then
-				Spacing.Parent = SectionParent.Holder
-			else
-				Spacing.Parent = TabPage
-			end
-		end
-
-		-- Label
-		function Tab:CreateLabel(LabelText,SectionParent)
-			local LabelValue = {}
-
-			local Label = Elements.Template.Label:Clone()
-			Label.Title.Text = LabelText
-			Label.Visible = true
-			Tab.Elements[LabelText] = {
-				type = 'label',
-				section = SectionParent,
-				element = Label
-			}
-			if SectionParent then
-				Label.Parent = SectionParent.Holder
-			else
-				Label.Parent = TabPage
-			end
-
-			Label.BackgroundTransparency = 1
-			Label.UIStroke.Transparency = 1
-			Label.Title.TextTransparency = 1
-
-			Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-			Label.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-
-			TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-			TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-			TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
-
-			function LabelValue:Set(NewLabel)
-				Label.Title.Text = NewLabel
-			end
-
-			return LabelValue
-		end
-
 		-- Paragraph
-        function Tab:CreateParagraph(ParagraphSettings, SectionParent)
-            local ParagraphValue = {}
+ function Tab:CreateParagraph(ParagraphSettings, SectionParent)
+    local ParagraphValue = {}
+    
+    local Paragraph = Elements.Template.Paragraph:Clone()
+    Paragraph.Title.Text = ParagraphSettings.Title
+    Paragraph.Content.Text = ParagraphSettings.Content
+    Paragraph.Visible = true
+    
+    Tab.Elements[ParagraphSettings.Title] = {
+        type = 'paragraph',
+        section = SectionParent or ParagraphSettings.SectionParent,
+        element = Paragraph
+    }
+    
+    if SectionParent then
+        Paragraph.Parent = SectionParent.Holder
+    elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
+        Paragraph.Parent = ParagraphSettings.SectionParent.Holder
+    else
+        Paragraph.Parent = TabPage
+    end
+    
+    -- Handle icon if provided
+    if ParagraphSettings.Image then
+        -- Create an icon if it doesn't exist
+        if not Paragraph:FindFirstChild("Icon") then
+            local Icon = Instance.new("ImageLabel")
+            Icon.Name = "Icon"
+            Icon.BackgroundTransparency = 1
+            Icon.Size = UDim2.new(0, 20, 0, 20)
+            Icon.Position = UDim2.new(0, 10, 0, 10) -- Position near the title
+            Icon.Parent = Paragraph
             
-            local Paragraph = Elements.Template.Paragraph:Clone()
-            Paragraph.Title.Text = ParagraphSettings.Title
-            Paragraph.Content.Text = ParagraphSettings.Content
-            Paragraph.Visible = true
-
-            Tab.Elements[ParagraphSettings.Title] = {
-                type = 'paragraph',
-                section = SectionParent or ParagraphSettings.SectionParent,
-                element = Paragraph
-            }
+            -- Adjust title position to make room for icon
+            Paragraph.Title.Position = UDim2.new(0, 40, 0, 0)
+        end
+        
+        local Icon = Paragraph.Icon
+        
+        -- Handle Lucide icons vs direct asset IDs
+        if typeof(ParagraphSettings.Image) == 'string' and not tonumber(ParagraphSettings.Image) then
+            -- This is a Lucide icon name
+            pcall(function()
+                local asset = getIcon(ParagraphSettings.Image)
+                Icon.Image = 'rbxassetid://' .. asset.id
+                Icon.ImageRectOffset = asset.imageRectOffset
+                Icon.ImageRectSize = asset.imageRectSize
+            end)
+        else
+            -- This is a direct asset ID
+            Icon.Image = "rbxassetid://" .. tostring(ParagraphSettings.Image)
+            Icon.ImageRectOffset = Vector2.new(0, 0)
+            Icon.ImageRectSize = Vector2.new(0, 0)
+        end
+        
+        -- Make icon visible with animation
+        Icon.ImageTransparency = 1
+        TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+    else
+        -- If no image, ensure title is at normal position
+        Paragraph.Title.Position = UDim2.new(0, 10, 0, 0)
+        
+        -- Remove icon if it exists
+        if Paragraph:FindFirstChild("Icon") then
+            Paragraph.Icon:Destroy()
+        end
+    end
+    
+    Paragraph.Content.TextWrapped = true
+    
+    if Paragraph.Parent == TabPage then
+        Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+        Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+    else
+        local charCount = string.len(ParagraphSettings.Content)
+        
+        local contentHeight = charCount * 0.37
+        
+        contentHeight = contentHeight + 2
+        
+        contentHeight = math.max(20, contentHeight)
+        
+        Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
+        Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
+    end
+    
+    Paragraph.BackgroundTransparency = 1
+    Paragraph.UIStroke.Transparency = 1
+    Paragraph.Title.TextTransparency = 1
+    Paragraph.Content.TextTransparency = 1
+    
+    Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+    Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+    
+    TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+    TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+    TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+    TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+    
+    function ParagraphValue:Set(NewParagraphSettings)
+        Paragraph.Title.Text = NewParagraphSettings.Title
+        Paragraph.Content.Text = NewParagraphSettings.Content
+        
+        if Paragraph.Parent == TabPage then
+            Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
+            Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
+        else
+            local charCount = string.len(NewParagraphSettings.Content)
             
-            if SectionParent then
-                Paragraph.Parent = SectionParent.Holder
-            elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
-                Paragraph.Parent = ParagraphSettings.SectionParent.Holder
-            else
-                Paragraph.Parent = TabPage
-            end
+            local contentHeight = charCount * 0.37
+            contentHeight = contentHeight + 2
+            contentHeight = math.max(20, contentHeight)
             
-            Paragraph.Content.TextWrapped = true
+            Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
+            Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
+        end
+    end
+    
+    function ParagraphValue:SetImage(NewImage)
+        if not Paragraph:FindFirstChild("Icon") then
+            -- Create icon if it doesn't exist
+            local Icon = Instance.new("ImageLabel")
+            Icon.Name = "Icon"
+            Icon.BackgroundTransparency = 1
+            Icon.Size = UDim2.new(0, 20, 0, 20)
+            Icon.Position = UDim2.new(0, 10, 0, 10)
+            Icon.Parent = Paragraph
             
-            if Paragraph.Parent == TabPage then
-
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
-            else
-                local charCount = string.len(ParagraphSettings.Content)
-                
-                local contentHeight = charCount * 0.37
-                
-                contentHeight = contentHeight + 2
-
-                contentHeight = math.max(20, contentHeight)
-                
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
-                Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
-            end
-            
-            Paragraph.BackgroundTransparency = 1
-            Paragraph.UIStroke.Transparency = 1
-            Paragraph.Title.TextTransparency = 1
-            Paragraph.Content.TextTransparency = 1
-            
-            Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-            Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-            
-            TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            
-            function ParagraphValue:Set(NewParagraphSettings)
-                Paragraph.Title.Text = NewParagraphSettings.Title
-                Paragraph.Content.Text = NewParagraphSettings.Content
-                
-                if Paragraph.Parent == TabPage then
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
-                else
-                    local charCount = string.len(NewParagraphSettings.Content)
-                    
-                    local contentHeight = charCount * 0.37
-                    contentHeight = contentHeight + 2
-                    contentHeight = math.max(20, contentHeight)
-                    
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
-                    Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
-                end
-            end
-            
-            return ParagraphValue
-        end        
+            -- Adjust title position
+            Paragraph.Title.Position = UDim2.new(0, 40, 0, 0)
+        end
+        
+        local Icon = Paragraph.Icon
+        
+        -- Handle Lucide icons vs direct asset IDs
+        if typeof(NewImage) == 'string' and not tonumber(NewImage) then
+            -- This is a Lucide icon name
+            pcall(function()
+                local asset = getIcon(NewImage)
+                Icon.Image = 'rbxassetid://' .. asset.id
+                Icon.ImageRectOffset = asset.imageRectOffset
+                Icon.ImageRectSize = asset.imageRectSize
+            end)
+        else
+            -- This is a direct asset ID
+            Icon.Image = "rbxassetid://" .. tostring(NewImage)
+            Icon.ImageRectOffset = Vector2.new(0, 0)
+            Icon.ImageRectSize = Vector2.new(0, 0)
+        end
+        
+        -- Make icon visible with animation
+        Icon.ImageTransparency = 1
+        TweenService:Create(Icon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+    end
+    
+    return ParagraphValue
+end
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
