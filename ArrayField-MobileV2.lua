@@ -129,14 +129,14 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = game:GetService('Players').LocalPlayer
 
 -- Interface Management
-local ArrayField = game:GetObjects("rbxassetid://117100060147179")[1] -- 'Mobile': 117100060147179 PC: 13853811008
+local ArrayField = game:GetObjects("rbxassetid://86796810193207")[1] -- 'Mobile': 86796810193207 PC: 13853811008
 ArrayField.Enabled = false
 local spawn = task.spawn
 local delay = task.delay
 
 --Studio
 if game["Run Service"]:IsStudio() then
-	function gethui() return game:GetService("CoreGui") end local http_request = nil local syn = {protect_gui = false,request = false,}local http = nil function writefile(tt,t,ttt)end function isfolder(t)end function makefolder(t)end function isfile(r)end function readfile(t)end
+	function gethui() return ArrayField end local http_request = nil local syn = {protect_gui = false,request = false,}local http = nil function writefile(tt,t,ttt)end function isfolder(t)end function makefolder(t)end function isfile(r)end function readfile(t)end
 end
 
 pcall(function()
