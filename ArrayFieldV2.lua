@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming + New Features
+vqmpjay | Designing + Programming
 
 ]]
 
@@ -20,8 +20,7 @@ Change Logs:
 - Fixed long Paragraphs getting cut off when parented to sections
 - Fixed Search not being able to search for elements parented to sections
 - Removed Themes Button (pointless)
-- Revamped Unhide Button Design and added dragging functionality
-- Revamped UI Design
+- Revamped Design
 
 ]]
 
@@ -129,7 +128,7 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = game:GetService('Players').LocalPlayer
 
 -- Interface Management
-local ArrayField = game:GetObjects("rbxassetid://77565037268902")[1] -- 'Mobile': 77565037268902 PC: 13853811008
+local ArrayField = game:GetObjects("rbxassetid://13853811008")[1]
 ArrayField.Enabled = false
 local spawn = task.spawn
 local delay = task.delay
@@ -179,12 +178,11 @@ local NotePrompt = Main.NotePrompt
 local InfoPrompt = ArrayField.Info
 
 ArrayField.DisplayOrder = 100
-Elements.UIPageLayout.TouchInputEnabled = false
 LoadingFrame.Version.Text = Release
 
 
 --Variables
-local request = request or (syn and syn.request) or (http and http.request) or http_request
+local request = (syn and syn.request) or (http and http.request) or http_request
 local CFileName = nil
 local CEnabled = false
 local Minimised = false
@@ -234,19 +232,9 @@ function ChangeTheme(ThemeName)
 end
 local function AddDraggingFunctionality(DragPoint, Main)
 	pcall(function()
-		local Dragging, DragInput, MousePos, FramePos, Conduct = false,false,false,false,false
-		UserInputService.InputBegan:Connect(function(Input)
-			if (Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch) then
-				Conduct = true
-				Input.Changed:Connect(function()
-					if Input.UserInputState == Enum.UserInputState.End then
-						Conduct = false
-					end
-				end)
-			end
-		end)
+		local Dragging, DragInput, MousePos, FramePos = false,false,false,false
 		DragPoint.InputBegan:Connect(function(Input)
-			if (Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch) and not Conduct then
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
 				Dragging = true
 				MousePos = Input.Position
 				FramePos = Main.Position
@@ -259,7 +247,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 		DragPoint.InputChanged:Connect(function(Input)
-			if (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch) then
+			if Input.UserInputType == Enum.UserInputType.MouseMovement then
 				DragInput = Input
 			end
 		end)
@@ -309,7 +297,7 @@ function BoolToText(Bool)
 	end
 end
 
-local function FadeDescription(Infos,type,Out)
+local function FadeDescription(Infos,type,Out:boolean?)
 	local Size = UDim2.fromOffset(230,275)
 	local Transparency = 0
 	local WaitTime = .05
@@ -327,23 +315,22 @@ local function FadeDescription(Infos,type,Out)
 		elseif type == 'toggle' then
 			InfoPrompt.Status.Text,InfoPrompt.Status.TextColor3 = BoolToText(Infos.CurrentValue)
 		elseif type == 'dropdown' then
+			--=| Do this |=--
 		elseif type == 'colorpicker' then
 			InfoPrompt.Status.Text = Infos.Color.R..Infos.Color.G..Infos.Color.B
 		end
 
-		if Infos and Infos["Info"] and not Infos.Info["Image"] then
+		if not Infos.Info.Image then
 			InfoPrompt.ImageLabel.Visible = false
 			InfoPrompt.Description.Position = InfoPrompt.ImageLabel.Position
-		elseif Infos and Infos["Info"] and Infos.Info["Image"] then
+		else
 			InfoPrompt.ImageLabel.Visible = true
-			InfoPrompt.ImageLabel.Image = 'rbxassetid://'..Infos.Info["Image"]
+			InfoPrompt.ImageLabel.Image = 'rbxassetid://'..Infos.Info.Image
 			InfoPrompt.Description.Position = UDim2.new(.5,0,0,160)
 		end
 
-		if Infos and Infos["Info"] then
-			InfoPrompt.Title.Text = Infos.Info.Title
-			InfoPrompt.Description.Text = Infos.Info.Description
-		end
+		InfoPrompt.Title.Text = Infos.Info.Title
+		InfoPrompt.Description.Text = Infos.Info.Description
 	end
 	TweenService:Create(InfoPrompt,TweenInfo.new(.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
 		Size = Size,BackgroundTransparency = Transparency
@@ -362,7 +349,7 @@ local function FadeDescription(Infos,type,Out)
 	}):Play()
 end
 
-function AddInfos(Object,Settings,type)
+function AddInfos(Object:Frame,Settings,type)
 	--local Interact = Object:FindFirstChild('Interact') or Object:FindFirstChild('Main'):FindFirstChild('Interact')
 	Object.MouseEnter:Connect(function(input)
 		--if not (input.UserInputType == Enum.UserInputType.MouseButton2) then return end
@@ -375,6 +362,7 @@ function AddInfos(Object,Settings,type)
 		FadeDescription(nil,nil,true)
 	end)
 end
+
 local function PackColor(Color)
 	return {R = Color.R * 255, G = Color.G * 255, B = Color.B * 255}
 end    
@@ -779,21 +767,25 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
         Notification.Description.TextColor3 = SelectedTheme.TextColor
         Notification.Icon.ImageColor3 = SelectedTheme.TextColor
         
+        -- Handle icon with Lucide support
         if NotificationSettings.Image then
             pcall(function()
                 if type(NotificationSettings.Image) == "string" and not tonumber(NotificationSettings.Image) then
+                    -- This is a Lucide icon name
                     local asset = getIcon(NotificationSettings.Image)
                     Notification.Icon.Image = "rbxassetid://" .. asset.id
                     Notification.Icon.ImageRectOffset = asset.imageRectOffset
                     Notification.Icon.ImageRectSize = asset.imageRectSize
                 else
+                    -- This is a direct asset ID
                     Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
+                    -- Reset ImageRect properties when using direct IDs
                     Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
                     Notification.Icon.ImageRectSize = Vector2.new(0, 0)
                 end
             end)
         else
-            Notification.Icon.Image = "rbxassetid://3944680095"
+            Notification.Icon.Image = "rbxassetid://3944680095" -- Default icon
             Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
             Notification.Icon.ImageRectSize = Vector2.new(0, 0)
         end
@@ -899,20 +891,15 @@ function CloseSideBar()
 	wait(0.2)
 	Debounce = false
 end
-local hasHidden = false
 function Hide()
 	if not SideBarClosed then
 		spawn(CloseSideBar)
 	end
 	spawn(function()
-		FadeDescription(nil,true,true)
+		FadeDescription(nil,true)
 	end)
 	Debounce = true
-	if not hasHidden then
-		hasHidden = true
-		ArrayFieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping RightShift", Duration = 10})
-		--delay(60, function() hasHidden = false end)
-	end
+	ArrayFieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping RightShift", Duration = 7})
 	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 400)}):Play()
 	TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 45)}):Play()
 	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
@@ -941,6 +928,7 @@ function Hide()
 			for _, element in ipairs(tab:GetChildren()) do
 				if element.ClassName == "Frame" then
 					if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
+						print(element)
 						if element:FindFirstChild('Holder') then
 							TweenService:Create(element, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
 							TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
@@ -1231,7 +1219,7 @@ function Minimise()
 		spawn(CloseSideBar)
 	end
 	spawn(function()
-		FadeDescription(nil,true,true)
+		FadeDescription(nil,true)
 	end)
 	for _, tabbtn in ipairs(TopList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
@@ -1285,7 +1273,6 @@ function Minimise()
 	Debounce = false
 end
 
-local KeyMainUI
 function ArrayFieldLibrary:CreateWindow(Settings)
 	ArrayField.Enabled = false
 	local Passthrough = false
@@ -1330,7 +1317,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
 	AddDraggingFunctionality(Topbar,Main)
 
-	if Settings.KeySystem and typeof(Settings.KeySettings.Key) == "string" then Settings.KeySettings.Key = {Settings.KeySettings.Key} end
+	if typeof(Settings.KeySettings.Key) == "string" then Settings.KeySettings.Key = {Settings.KeySettings.Key} end
 
 	for _, TabButton in ipairs(TabsList:GetChildren()) do
 		if TabButton.ClassName == "Frame" and TabButton.Name ~= "Placeholder" then
@@ -1347,7 +1334,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			makefolder(ArrayFieldFolder.."/Discord Invites")
 		end
 		if not isfile(ArrayFieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension) then
-			if request and not (identifyexecutor and identifyexecutor():lower():match("arceus x")) then
+			if request then
 				request({
 					Url = 'http://127.0.0.1:6463/rpc?v=1',
 					Method = 'POST',
@@ -1362,7 +1349,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 					})
 				})
 			end
-			
+
 			if Settings.Discord.RememberJoins then -- We do logic this way so if the developer changes this setting, the user still won't be prompted, only new users
 				writefile(ArrayFieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension,"ArrayField RememberJoins is true for this invite, this invite will not ask you to join again")
 			end
@@ -1370,7 +1357,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
 		end
 	end
-	
+
 	if Settings.KeySystem then
 		if not Settings.KeySettings then
 			Passthrough = true
@@ -1419,8 +1406,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			KeyMain.Title.Text = Settings.KeySettings.Title or Settings.Name
 			KeyMain.Subtitle.Text = Settings.KeySettings.Subtitle or "Key System"
 			KeyMain.NoteMessage.Text = Settings.KeySettings.Note or "No instructions"
-			
-			KeyMainUI = KeyMain
 
 			KeyMain.Size = UDim2.new(0, 467, 0, 175)
 			KeyMain.BackgroundTransparency = 1
@@ -2073,7 +2058,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
         
             return LabelValue
         end
-
+        
 		-- Paragraph
         function Tab:CreateParagraph(ParagraphSettings, SectionParent)
             local ParagraphValue = {}
@@ -2150,8 +2135,8 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end
             
             return ParagraphValue
-        end      
-
+        end        
+        
 		-- Input
 		function Tab:CreateInput(InputSettings)
 			local Input = Elements.Template.Input:Clone()
@@ -2183,19 +2168,17 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
 			Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
 			Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
-			
-			Input.InputFrame.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
-				local TextBox = Input.InputFrame.InputBox
-				local TextSize = game:GetService("TextService"):GetTextSize(TextBox.Text,TextBox.TextSize,TextBox.Font,TextBox.AbsoluteSize)
-				TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, TextSize.X + 24, 0, 30)}):Play()
-				if Input.InputFrame.InputBox.Text == '' then return end
-				if InputSettings.CharacterLimit and InputSettings.CharacterLimit < Input.InputFrame.InputBox.Text:len() then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1,InputSettings.CharacterLimit) end
-				if InputSettings.NumbersOnly then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub('%D+', '') end
-			end)
+
+			if InputSettings.NumbersOnly or InputSettings.CharacterLimit then
+				Input.InputFrame.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
+					if Input.InputFrame.InputBox.Text == '' then return end 
+					if InputSettings.CharacterLimit then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1,InputSettings.CharacterLimit) end
+					if InputSettings.NumbersOnly then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub('%D+', '') end
+				end)
+			end
 
 			Input.InputFrame.InputBox.FocusLost:Connect(function(enter)
-				TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
-				if InputSettings.OnEnter and not enter then if InputSettings.RemoveTextAfterFocusLost then Input.InputFrame.InputBox.Text = ""; Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30) end return end
+				if InputSettings.OnEnter and not enter then if InputSettings.RemoveTextAfterFocusLost then Input.InputFrame.InputBox.Text = "" end return end
 				local Success, Response = pcall(function()
 					InputSettings.Callback(Input.InputFrame.InputBox.Text)
 				end)
@@ -2222,8 +2205,11 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
 			end)
 
-			Input.InputFrame.InputBox.Focused:Connect(function()
+			Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
 				TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
+			end)
+
+			Input.InputFrame.InputBox.Focused:Connect(function()
 				if InputSettings.Locked then
 					Input.InputFrame.InputBox:ReleaseFocus() return
 				end
@@ -2307,30 +2293,15 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
 			Dropdown.Toggle.Rotation = 180
 
-			local function GetOptionInstance(Name)
-				for i, v in pairs(Dropdown.List:GetChildren()) do
-					if typeof(Name) == "Instance" and v.Name == Name.Name or v.Name == Name or v == Name then
-						TweenService:Create(v, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-						return v
-					end
-				end
-			end
-
-			local function RefreshSelected(boolean)
-				if #DropdownSettings.Items.Selected > 0 then
+			local function RefreshSelected()
+				if #DropdownSettings.Items.Selected > 1 then
 					local NT = {}
 					for _,kj in ipairs(DropdownSettings.Items.Selected) do
-						if boolean and typeof(kj.Option) == "Instance" then
-							for _, v in pairs(Dropdown.List:GetChildren()) do
-								if v.ClassName == "Frame" and v.Name ~= 'PlaceHolder' and v.Name ~= "-SearchBar" then
-									TweenService:Create(v, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-								end
-							end
-							TweenService:Create(kj.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
-						end
-						NT[#NT+1] = kj.Name
+						NT[#NT+1] = kj.Option.Name
 					end
 					Dropdown.Selected.Text = table.concat(NT, ", ")
+				elseif DropdownSettings.Items.Selected[1] then
+					Dropdown.Selected.Text = DropdownSettings.Items.Selected[1].Option.Name
 				else
 					Dropdown.Selected.Text = "Select an option"
 				end
@@ -2422,7 +2393,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				end)
 				DropdownSettings.Items[Option] = {
 					Option = DropdownOption,
-					Name = Option.Name or Option,
 					Selected = false
 				}
 				local OptionInTable = DropdownSettings.Items[Option]
@@ -2431,10 +2401,10 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				DropdownOption.Parent = Dropdown.List
 				DropdownOption.Visible = true
 				local IsSelected = OptionInTable.Selected
-				if typeof(Selecteds) == 'string' then
-					Selecteds = {Selecteds}
-				end
 				if Selecteds and #Selecteds > 0 then
+					if typeof(Selecteds) == 'string' then
+						Selecteds = {Selecteds}
+					end
 					for index,Selected in pairs(Selecteds) do
 						if Selected == Option then
 							IsSelected = true
@@ -2463,17 +2433,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				DropdownOption.Interact.ZIndex = 50
 				DropdownOption.Interact.MouseButton1Click:Connect(function()
 					if DropdownSettings.Locked then return end
-					if DropdownOption.BackgroundColor3 == Color3.fromRGB(30, 30, 30) then OptionInTable.Selected = false else OptionInTable.Selected = true end
 					if OptionInTable.Selected then
 						OptionInTable.Selected = false
 						table.remove(DropdownSettings.Items.Selected,table.find(DropdownSettings.Items.Selected,OptionInTable))
-						local Success, Response = pcall(function()
-							DropdownSettings.Callback(Option, DropdownSettings.Items.Selected)
-						end)
-						if not Success then
-							Error('Callback Error')
-							print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
-						end
 						RefreshSelected()
 						TweenService:Create(DropdownOption, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
 						SaveConfiguration()
@@ -2481,9 +2443,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 					end
 					if not Multi and DropdownSettings.Items.Selected[1] then
 						DropdownSettings.Items.Selected[1].Selected = false
-						if typeof(DropdownSettings.Items.Selected[1]["Option"]) == "Instance" then
-							TweenService:Create(DropdownSettings.Items.Selected[1].Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-						end
+						TweenService:Create(DropdownSettings.Items.Selected[1].Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
 					end
 					if not (Multi) then
 						DropdownSettings.Items.Selected = {OptionInTable}
@@ -2494,7 +2454,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 					end
 
 					local Success, Response = pcall(function()
-						DropdownSettings.Callback(Option, DropdownSettings.Items.Selected)
+						DropdownSettings.Callback(Option)
 					end)
 					if not Success then
 						Error('Callback Error')
@@ -2505,9 +2465,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
 					if not (Multi) then
 						for _,op in ipairs(DropdownSettings.Items.Selected) do
-							if typeof(op) == "Instance" then
-								TweenService:Create(op.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-							end
+							TweenService:Create(op.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
 						end
 					end
 					TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
@@ -2529,6 +2487,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 						TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
 						wait(0.35)
 						Dropdown.List.Visible = false
+
 					end
 					Debounce = false
 					SaveConfiguration()
@@ -2556,23 +2515,17 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
 			--fix
 			function DropdownSettings:Set(NewOption)
-				local OldNewOption = NewOption
-				if NewOption then
-					DropdownSettings.Items.Selected = {}
-				end
-				if typeof(NewOption) == 'table' then
-				else
-					NewOption = {NewOption}
-				end
+
 				for _,o in pairs(NewOption) do
-					local Items = {
-						Option = GetOptionInstance(o) or o,
-						Name = o.Name or o,
-						Selected = true
-					}
-					table.insert(DropdownSettings.Items.Selected,Items)
+
+					if typeof(NewOption) == 'table' then
+
+						DropdownSettings.Items.Selected = NewOption
+					else
+						DropdownSettings.Items.Selected = {NewOption}
+					end
 					local Success, Response = pcall(function()
-						DropdownSettings.Callback(OldNewOption, DropdownSettings.Items.Selected)
+						DropdownSettings.Callback(NewOption)
 					end)
 					if not Success then
 						TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
@@ -2600,7 +2553,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
 					end
 				end
-				RefreshSelected(true)
 				--Dropdown.Selected.Text = NewText
 			end
 			function DropdownSettings:Error(text)
@@ -2609,13 +2561,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			function DropdownSettings:Refresh(NewOptions,Selecteds)
 				DropdownSettings.Items = {}
 				DropdownSettings.Items.Selected = {}
-				local Success, Response = pcall(function()
-					DropdownSettings.Callback(NewOptions, DropdownSettings.Items.Selected)
-				end)
-				if not Success then
-					Error('Callback Error')
-					print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
-				end
 				for _, option in ipairs(Dropdown.List:GetChildren()) do
 					if option.ClassName == "Frame" and option ~= SearchBar and option.Name ~= "Placeholder" then
 						option:Destroy()
@@ -2739,6 +2684,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			end)
 
 			UserInputService.InputBegan:Connect(function(input, processed)
+
 				if CheckingForKey then
 					if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.RightShift then
 						local SplitMessage = string.split(tostring(input.KeyCode), ".")
@@ -3050,7 +2996,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			Main.Image = "http://www.roblox.com/asset/?id=11415645739"
 			local mainDragging = false 
 			local sliderDragging = false 
-			ColorPicker.Interact.MouseButton1Click:Connect(function()
+			ColorPicker.Interact.MouseButton1Down:Connect(function()
 				if ColorPickerSettings.Locked then return end
 				if not opened then
 					ColorPicker.ColorPickerIs.Value = true
@@ -3087,31 +3033,26 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				end
 			end)
 
-			game:GetService("UserInputService").InputEnded:Connect(function(input, gameProcessed) if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
-					TabPage.ScrollingEnabled = true
+			game:GetService("UserInputService").InputEnded:Connect(function(input, gameProcessed) if input.UserInputType == Enum.UserInputType.MouseButton1 then 
 					mainDragging = false
 					sliderDragging = false
 				end end)
 			Main.MouseButton1Down:Connect(function()
 				if opened and not ColorPickerSettings.Locked then
-					TabPage.ScrollingEnabled = false
 					mainDragging = true 
 				end
 			end)
 			Main.MainPoint.MouseButton1Down:Connect(function()
 				if opened and not ColorPickerSettings.Locked then
-					TabPage.ScrollingEnabled = false
 					mainDragging = true 
 				end
 			end)
 			Slider.MouseButton1Down:Connect(function()
 				if ColorPickerSettings.Locked then return end
-				TabPage.ScrollingEnabled = false
 				sliderDragging = true 
 			end)
 			Slider.SliderPoint.MouseButton1Down:Connect(function()
 				if ColorPickerSettings.Locked then return end
-				TabPage.ScrollingEnabled = false
 				sliderDragging = true 
 			end)
 
@@ -3343,7 +3284,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
 			end)
 			Slider.Main.Interact.MouseLeave:Connect(function()
-				--Dragging = false
+				Dragging = false
 			end)
 			Slider.MouseLeave:Connect(function()
 				TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -3353,10 +3294,8 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				local Start = Current
 				local Location = X
 
-				--Location = UserInputService:GetMouseLocation().X
+				Location = UserInputService:GetMouseLocation().X
 				Current = Current + 0.025 * (Location - Start)
-
-				TabPage.ScrollingEnabled = false
 
 				if Location < Slider.Main.AbsolutePosition.X then
 					Location = Slider.Main.AbsolutePosition.X
@@ -3404,34 +3343,19 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 					SaveConfiguration()
 				end
 			end
-			local InputBegan, Conduct
-			UserInputService.InputBegan:Connect(function(Input)
-				if (Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch) then
-					Conduct = true
-					Input.Changed:Connect(function()
-						if Input.UserInputState == Enum.UserInputState.End then
-							Conduct = false
-						end
-					end)
-				end
-			end)
-			Slider.Main.Interact.InputBegan:Connect(function(Input)
-				if not SliderSettings.Locked and not Conduct then
-					InputBegan = Input
-					UpdateSlider(InputBegan.Position.X)
-					Dragging = true
+			Slider.Main.Interact.MouseButton1Down:Connect(function(X)
+				if not SliderSettings.Locked then 
+					UpdateSlider(X)
+					Dragging = true 
 				end 
 			end)
-			UserInputService.InputEnded:Connect(function(Input)
-				if (Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch) and Dragging then
-					TabPage.ScrollingEnabled = true
-					Dragging = false
-				end
+			Slider.Main.Interact.MouseButton1Up:Connect(function(X) 
+				Dragging = false 
 			end)
-			UserInputService.InputChanged:Connect(function(Input)
+			Slider.Main.Interact.MouseMoved:Connect(function(X)
 				if SliderSettings.Locked then return end
-				if (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch) and Dragging then
-					UpdateSlider(InputBegan.Position.X)
+				if Dragging then
+					UpdateSlider(X)
 				end
 			end)
 
@@ -3547,6 +3471,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 
 		if PromptSettings.Actions then
 			for name,info in pairs(PromptSettings.Actions) do
+				print(info)
 				local Button = PromptUI.Buttons.Template:Clone()
 				Button.TextLabel.Text = info.Name
 				Button.Interact.MouseButton1Up:Connect(function()
@@ -3593,6 +3518,11 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 	return Window
 end
 
+
+function ArrayFieldLibrary:Destroy()
+	ArrayField:Destroy()
+end
+
 Topbar.ChangeSize.MouseButton1Click:Connect(function()
 	if Debounce then return end
 	if Minimised then
@@ -3636,231 +3566,6 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 		Hide()
 	end
 end)
-
---[[
-local ContextActionService = game:GetService("ContextActionService")
-
-ContextActionService:BindAction("Field",function(name,inputState,inputObject)
-	if Debounce then return end
-	if Hidden then
-		Hidden = false
-		Unhide()
-	else
-		if not SearchHided then spawn(CloseSearch) end
-		Hidden = true
-		Hide()
-	end
-end,true)
---]]
-
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local FieldScreen = Instance.new("ScreenGui")
-FieldScreen.DisplayOrder = 100
-FieldScreen.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
-FieldScreen.Name = "Uni" .. tostring(math.random(1000,9999))
-FieldScreen.Parent = gethui and gethui() or game:GetService("CoreGui")
-
-local UniButton = Instance.new("Frame")
-UniButton.Name = "UniButton"
-UniButton.Active = true
-UniButton.ZIndex = 10
-UniButton.Position = UDim2.new(1, -45, 0, 10)
-UniButton.BorderSizePixel = 0
-UniButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-UniButton.Size = UDim2.new(0, 36, 0, 36)
-UniButton.SizeConstraint = Enum.SizeConstraint.RelativeXY
-UniButton.Parent = FieldScreen
-
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0.3, 0)
-UICorner.Parent = UniButton
-
-local UIGradient = Instance.new("UIGradient")
-UIGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 120, 120)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
-})
-UIGradient.Rotation = 45
-UIGradient.Parent = UniButton
-
-local UIStroke = Instance.new("UIStroke")
-UIStroke.Color = Color3.fromRGB(255, 255, 255)
-UIStroke.Thickness = 1.5
-UIStroke.Transparency = 0.2
-UIStroke.Parent = UniButton
-
-local Glow = Instance.new("ImageLabel")
-Glow.Name = "Glow"
-Glow.BackgroundTransparency = 1
-Glow.Position = UDim2.new(0.5, 0, 0.5, 0)
-Glow.AnchorPoint = Vector2.new(0.5, 0.5)
-Glow.Size = UDim2.new(1.5, 0, 1.5, 0)
-Glow.ZIndex = 9
-Glow.Image = "rbxassetid://4996891970" 
-Glow.ImageColor3 = Color3.fromRGB(255, 255, 255)
-Glow.ImageTransparency = 0.9
-Glow.Parent = UniButton
-
-local Shadow = Instance.new("ImageLabel")
-Shadow.Name = "Shadow"
-Shadow.BackgroundTransparency = 1
-Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-Shadow.Size = UDim2.new(1.2, 0, 1.2, 0)
-Shadow.ZIndex = 8
-Shadow.Image = "rbxassetid://7912134082"
-Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-Shadow.ImageTransparency = 0.6
-Shadow.Parent = UniButton
-
-local EyeIcon = Instance.new("ImageLabel")
-EyeIcon.Name = "EyeIcon"
-EyeIcon.BackgroundTransparency = 1
-EyeIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
-EyeIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-EyeIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-EyeIcon.ZIndex = 12
-EyeIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-EyeIcon.Parent = UniButton
-
-local eyeAsset = getIcon("eye")
-EyeIcon.Image = "rbxassetid://" .. eyeAsset.id
-EyeIcon.ImageRectSize = eyeAsset.imageRectSize
-EyeIcon.ImageRectOffset = eyeAsset.imageRectOffset
-
-local UniBoxButton = Instance.new("TextButton")
-UniBoxButton.Name = "UniBoxButton"
-UniBoxButton.ZIndex = 11
-UniBoxButton.AnchorPoint = Vector2.new(0.5, 0.5)
-UniBoxButton.Position = UDim2.new(0.5, 0, 0.5, 0)
-UniBoxButton.Size = UDim2.new(1, 0, 1, 0)
-UniBoxButton.BorderSizePixel = 0
-UniBoxButton.BackgroundTransparency = 1
-UniBoxButton.Text = ""
-UniBoxButton.Parent = UniButton
-
-local dragging = false
-local dragStart
-local startPos
-
-local function updateDrag(input)
-    local delta = input.Position - dragStart
-    UniButton.Position = UDim2.new(
-        startPos.X.Scale, 
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale, 
-        startPos.Y.Offset + delta.Y
-    )
-end
-
-UniBoxButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = UniButton.Position
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-        updateDrag(input)
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = false
-    end
-end)
-
-UniBoxButton.MouseEnter:Connect(function()
-    TweenService:Create(UniButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-        BackgroundColor3 = Color3.fromRGB(110, 110, 110)
-    }):Play()
-    
-    TweenService:Create(Glow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-        ImageTransparency = 0.7
-    }):Play()
-    
-    TweenService:Create(UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-        Transparency = 0
-    }):Play()
-end)
-
-UniBoxButton.MouseLeave:Connect(function()
-    TweenService:Create(UniButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-        BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    }):Play()
-    
-    TweenService:Create(Glow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-        ImageTransparency = 0.9
-    }):Play()
-    
-    TweenService:Create(UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-        Transparency = 0.2
-    }):Play()
-end)
-
-UniBoxButton.MouseButton1Click:Connect(function()
-    if Debounce then return end
-    
-    TweenService:Create(UniButton, TweenInfo.new(0.05, Enum.EasingStyle.Quint), {
-        Size = UDim2.new(0, 32, 0, 32)
-    }):Play()
-    
-    TweenService:Create(Glow, TweenInfo.new(0.05, Enum.EasingStyle.Quint), {
-        ImageTransparency = 0.5,
-        Size = UDim2.new(1.7, 0, 1.7, 0)
-    }):Play()
-    
-    task.delay(0.05, function()
-        TweenService:Create(UniButton, TweenInfo.new(0.05, Enum.EasingStyle.Quint), {
-            Size = UDim2.new(0, 36, 0, 36)
-        }):Play()
-        
-        TweenService:Create(Glow, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {
-            ImageTransparency = 0.9,
-            Size = UDim2.new(1.5, 0, 1.5, 0)
-        }):Play()
-    end)
-    
-    if Hidden then
-        Hidden = false
-        local eyeAsset = getIcon("eye")
-        EyeIcon.Image = "rbxassetid://" .. eyeAsset.id
-        EyeIcon.ImageRectSize = eyeAsset.imageRectSize
-        EyeIcon.ImageRectOffset = eyeAsset.imageRectOffset
-        Unhide()
-    else
-        if not SearchHided then spawn(CloseSearch) end
-        Hidden = true
-        local eyeOffAsset = getIcon("eye-off")
-        EyeIcon.Image = "rbxassetid://" .. eyeOffAsset.id
-        EyeIcon.ImageRectSize = eyeOffAsset.imageRectSize
-        EyeIcon.ImageRectOffset = eyeOffAsset.imageRectOffset
-        Hide()
-    end
-end)
-
-ArrayFieldLibrary.UniButton = UniButton
-
-function ArrayFieldLibrary:Destroy()
-    ArrayField:Destroy()
-    FieldScreen:Destroy()
-    if KeyMainUI then KeyMainUI:Destroy() end
-    if KeyUI then KeyUI:Destroy() end
-end
-
---[[
-local Field = ContextActionService:GetButton("Field")
-Field.Active = true
-Field.Parent.Parent = FieldScreen
-Field.ActionTitle.Text = "ArrayField"
-Field.AnchorPoint = Vector2.new(1,1)
-Field.ZIndex = 10
-Field.Position = UDim2.new(0.95,0,0.95,0)
---]]
 
 UserInputService.InputBegan:Connect(function(input, processed)
 	if (input.KeyCode == Enum.KeyCode.RightShift and not processed) then
@@ -3955,7 +3660,7 @@ for _, section in pairs(Sections) do
     end
 end
 
-local Elements = ArrayField.Main.Elements
+local Elements = game:GetService("CoreGui").HUI.ArrayField.Main.Elements
 
 for _, Descendant in ipairs(Elements:GetDescendants()) do
     if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
