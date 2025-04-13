@@ -128,7 +128,7 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = game:GetService('Players').LocalPlayer
 
 -- Interface Management
-local ArrayField = game:GetObjects("rbxassetid://111798849384782")[1]
+local ArrayField = game:GetObjects("rbxassetid://106686195874999")[1]
 ArrayField.Enabled = false
 local spawn = task.spawn
 local delay = task.delay
