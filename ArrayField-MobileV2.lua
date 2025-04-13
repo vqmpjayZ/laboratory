@@ -129,7 +129,7 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = game:GetService('Players').LocalPlayer
 
 -- Interface Management
-local ArrayField = game:GetObjects("rbxassetid://91593006845261")[1] -- 'Mobile': 104953833536798 PC: 13853811008
+local ArrayField = game:GetObjects("rbxassetid://133855487402781")[1] -- 'Mobile': 104953833536798 PC: 13853811008
 ArrayField.Enabled = false
 local spawn = task.spawn
 local delay = task.delay
@@ -176,7 +176,7 @@ local SearchBar = Main.Searchbar
 local Filler = SearchBar.CanvasGroup.Filler
 local Prompt = Main.Prompt
 local NotePrompt = Main.NotePrompt
-local InfoPrompt = ArrayField.Info
+--local InfoPrompt = ArrayField.Info
 
 ArrayField.DisplayOrder = 100
 Elements.UIPageLayout.TouchInputEnabled = false
@@ -3911,7 +3911,7 @@ function ArrayFieldLibrary:LoadConfiguration()
 	end
 end
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
-
+--[[
 ArrayField.Main.Topbar.Theme.Visible = false
 local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
 
@@ -3962,5 +3962,5 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
         Descendant.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     end
 end
-
+]]
 return ArrayFieldLibrary
