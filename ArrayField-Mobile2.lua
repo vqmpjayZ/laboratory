@@ -1055,7 +1055,7 @@ function OpenSearch()
 	Debounce = true
 	SearchBar.Visible = true
 	SearchBar.Input.Visible = true
-	TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0, 500,0, 40)}):Play()
+	TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0, 500,0, 40), Position = UDim2.new(0.5, 80, 0.150000006, 0)}):Play()
 	TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
 	TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
 	TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0.05}):Play()
@@ -3687,7 +3687,5 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
         Descendant.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     end
 end
-
-SearchBar.Position = UDim(0.5, 80, 0.150000006, 0)
 
 return ArrayFieldLibrary
