@@ -1028,6 +1028,23 @@ function Hide()
 end
 function Unhide()
 
+    local LoadingTabs = Instance.new("TextLabel")
+    LoadingTabs.Name = "LoadingTabs"
+    LoadingTabs.TextTransparency = 1 
+    LoadingTabs.Parent = Main
+
+    TweenService:Create(LoadingTabs, TweenInfo.new(4.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+    LoadingTabs.Text = "Loading Tabs.."
+    LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
+    LoadingTabs.Size = UDim2.new(0, 100, 0, 30)
+    LoadingTabs.Position = UDim2.new(0, 50, 0.5, 0)
+    LoadingTabs.Font = Enum.Font.GothamMedium
+    LoadingTabs.TextSize = 14
+    LoadingTabs.BackgroundTransparency = 1
+    LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
+    LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
+
     Main.Topbar.Size = UDim2.new(0, 700, 0, 45)
     if SideBarClosed then
 		spawn(OpenSideBar)
@@ -3799,23 +3816,6 @@ function ArrayFieldLibrary:LoadConfiguration()
 		end)
 	end
 end
-
-local LoadingTabs = Instance.new("TextLabel")
-LoadingTabs.Name = "LoadingTabs"
-LoadingTabs.TextTransparency = 1 
-LoadingTabs.Parent = Main
-
-TweenService:Create(LoadingTabs, TweenInfo.new(4.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
-LoadingTabs.Text = "Loading Tabs.."
-LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
-LoadingTabs.Size = UDim2.new(0, 200, 0, 30)
-LoadingTabs.Position = UDim2.new(0, 50, 0.5, 0)
-LoadingTabs.Font = Enum.Font.GothamMedium
-LoadingTabs.TextSize = 14
-LoadingTabs.BackgroundTransparency = 1
-LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
-LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
 
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
