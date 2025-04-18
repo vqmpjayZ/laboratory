@@ -3668,4 +3668,9 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
     end
 end
 
+local parent = gethui()
+local ray = parent:FindFirstChild("Rayfield")
+local window = ray:FindFirstChild("Main")
+window.Size = UDim2.new(0,350,0,300)
+
 return ArrayFieldLibrary
