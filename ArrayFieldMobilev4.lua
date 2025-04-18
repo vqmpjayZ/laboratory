@@ -1358,7 +1358,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 	LoadingFrame.Subtitle.TextTransparency = 1
 	Main.Shadow.Image.ImageTransparency = 1
 	LoadingFrame.Version.TextTransparency = 1
-    LoadingFrame.Version.Position = UDim2.new(0, 100, 0, 100)
+    LoadingFrame.Version.Position = UDim2.new(0, 100, 0, 160)
 	LoadingFrame.Title.Text = Settings.LoadingTitle or "Arrayfield Interface Suite"
 	LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta"
 	if Settings.LoadingTitle ~= "Arrayfield Interface Suite" then
