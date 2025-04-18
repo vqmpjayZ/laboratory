@@ -14,7 +14,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- h
+- 
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -3705,6 +3705,8 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
 end
 
     Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    wait(.4)
+    spawn(CloseSideBar)
     wait(.4)
     spawn(OpenSideBar)
 
