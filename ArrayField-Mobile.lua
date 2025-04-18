@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming
+vqmpjay | Designing + Programming ' New Features
 
 ]]
 
@@ -1134,6 +1134,11 @@ SearchBar.Clear.MouseButton1Down:Connect(function()
 end)
 
 function Maximise()
+
+    if SideBarClosed then
+		spawn(OpenSideBar)
+	end
+
 	Debounce = true
 	Topbar.ChangeSize.Image = "rbxassetid://"..10137941941
 
@@ -3703,7 +3708,7 @@ end
 
 wait(0.2)
 local SideTabList = Main.SideTabList
-SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SideTabList.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 if not Minimised and SideTabList.Visible == false then
     Main.SideTabList.Visible = true
 end
