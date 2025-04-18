@@ -14,7 +14,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- 
+- hm: cracking femboys
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -3664,6 +3664,7 @@ function ArrayFieldLibrary:LoadConfiguration()
 		end)
 	end
 end
+task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
 local Sections = ArrayField.Main:GetChildren()
 
@@ -3709,6 +3710,4 @@ end
     spawn(CloseSideBar)
     wait(.4)
     spawn(OpenSideBar)
-
-task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 return ArrayFieldLibrary
