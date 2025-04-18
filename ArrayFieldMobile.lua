@@ -21,7 +21,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- FULL Mobile Support
+- Mobile Support
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -2401,53 +2401,54 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             return InputSettings
         end            
 
-		-- Dropdown
-		function Tab:CreateDropdown(DropdownSettings)
-			local Dropdown = Elements.Template.Dropdown:Clone()
-			local SearchBar = Dropdown.List["-SearchBar"]
-			local Required = 1
-			--local Debounce = false
-            SearchBar.InputDetection = Instance.new("TextButton")
-            SearchBar.InputDetection.Name = "InputDetection"
-            SearchBar.InputDetection.BackgroundTransparency = 1
-            SearchBar.InputDetection.Size = UDim2.new(1, 0, 1, 0)
-            SearchBar.InputDetection.ZIndex = 10
-            SearchBar.InputDetection.Parent = Main.Elements
-            SearchBar.InputDetection.Text = ""
+        function Tab:CreateDropdown(DropdownSettings)
+            local Dropdown = Elements.Template.Dropdown:Clone()
+            local SearchBar = Dropdown.List["-SearchBar"]
+            local Required = 1
+            --local Debounce = false
+            local InputButton = Instance.new("TextButton")
+            InputButton.Name = "InputButton"
+            InputButton.BackgroundTransparency = 1
+            InputButton.Size = UDim2.new(1, 0, 1, 0)
+            InputButton.Text = ""
+            InputButton.ZIndex = 10
+            InputButton.Parent = SearchBar
 
-            SearchBar.InputDetection.MouseButton1Click:Connect(function()
-                if DropdownSettings.Locked then return end
-                SearchBar.Input:CaptureFocus()
+            InputButton.MouseButton1Click:Connect(function()
+                if not DropdownSettings.Locked then
+                    SearchBar.Input:CaptureFocus()
+                end
             end)
             
-            SearchBar.InputDetection.TouchTap:Connect(function()
-                if DropdownSettings.Locked then return end
-                SearchBar.Input:CaptureFocus()
+            InputButton.TouchTap:Connect(function()
+                if not DropdownSettings.Locked then
+                    SearchBar.Input:CaptureFocus()
+                end
             end)
-
-			DropdownSettings.Items = {
-				Selected = {Default = DropdownSettings.Selected or nil}
-			}
-			AddInfos(Dropdown,DropdownSettings,'dropdown')
-			DropdownSettings.Locked = false
-			local Multi = DropdownSettings.MultiSelection or false
-			if string.find(DropdownSettings.Name,"closed") then
-				Dropdown.Name = "Dropdown"
-			else
-				Dropdown.Name = DropdownSettings.Name
-			end
-			Dropdown.Title.Text = DropdownSettings.Name
-			Dropdown.Visible = true
-			Tab.Elements[DropdownSettings.Name] = {
-				type = 'dropdown',
-				section = DropdownSettings.SectionParent,
-				element = Dropdown
-			}
-			if DropdownSettings.SectionParent then
-				Dropdown.Parent = DropdownSettings.SectionParent.Holder
-			else
-				Dropdown.Parent = TabPage
-			end
+            
+            DropdownSettings.Items = {
+                Selected = {Default = DropdownSettings.Selected or nil}
+            }
+            AddInfos(Dropdown,DropdownSettings,'dropdown')
+            DropdownSettings.Locked = false
+            local Multi = DropdownSettings.MultiSelection or false
+            if string.find(DropdownSettings.Name,"closed") then
+                Dropdown.Name = "Dropdown"
+            else
+                Dropdown.Name = DropdownSettings.Name
+            end
+            Dropdown.Title.Text = DropdownSettings.Name
+            Dropdown.Visible = true
+            Tab.Elements[DropdownSettings.Name] = {
+                type = 'dropdown',
+                section = DropdownSettings.SectionParent,
+                element = Dropdown
+            }
+            if DropdownSettings.SectionParent then
+                Dropdown.Parent = DropdownSettings.SectionParent.Holder
+            else
+                Dropdown.Parent = TabPage
+            end
 
 			Dropdown.List.Visible = false
 			Dropdown.BackgroundTransparency = 1
