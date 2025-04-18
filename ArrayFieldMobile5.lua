@@ -3838,12 +3838,11 @@ end
 
     Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 
-    if not SideTabList then
-        wait(3.5)
     local LoadingTabs = Instance.new("TextLabel")
     LoadingTabs.Name = "LoadingTabs"
     LoadingTabs.Text = "Loading Tabs.."
-    LoadingTabs.TextColor3 = Color3.fromRGB(25, 25, 25)
+    LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
+    LoadingTabs.TextTransparency = 1
     LoadingTabs.Size = UDim2.new(0, 100, 0, 30)
     LoadingTabs.Position = UDim2.new(0, 50, 0.5, 0)
     LoadingTabs.Font = Enum.Font.GothamMedium
@@ -3855,5 +3854,4 @@ end
     LoadingTabs.Parent = Main
 
     TweenService:Create(LoadingTabs, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    end
 return ArrayFieldLibrary
