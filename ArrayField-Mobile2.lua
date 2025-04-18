@@ -880,11 +880,16 @@ function CloseSideBar()
         Content = "Current Arrayfield version was created by vqmpjay (Vadrifts)!",
         Duration = 7,
         Actions = {
-            Ignore = {
+            Copy = {
                 Name = "Copy Discord",
                 Callback = function()
                     local AllClipboards = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
                     AllClipboards("https://discord.gg/WDbJ5wE2cR")
+                end
+            },
+            Ignore = {
+                Name = "Okay",
+                Callback = function()
                 end
             }
         }
@@ -3688,4 +3693,9 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
     end
 end
 
+wait(0.2)
+local SideTabList = Main.SideTabList
+if SideTabList.Visible == false then
+    Main.SideTabList.Visible = true
+end
 return ArrayFieldLibrary
