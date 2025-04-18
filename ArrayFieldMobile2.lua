@@ -3853,6 +3853,6 @@ end
     LoadingTabs.TextTransparency = 1
     LoadingTabs.Parent = Main
 
-    TweenService:Create(LoadingTabs, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}, {TextSize = UDim2(50, 50, 50)}):Play()
+    TweenService:Create(LoadingTabs, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}, {TextColoe3 = UDim2(50, 50, 50)}):Play()
     end
 return ArrayFieldLibrary
