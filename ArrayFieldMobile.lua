@@ -21,19 +21,19 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- FULL Mobile Support
+- Added better dragging and input connecting for Mobile
+- Made the UI suit Mobile
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
 - Fixed long Paragraphs getting cut off when parented to sections
 - Fixed Search not being able to search for elements parented to sections
-- Fixed weird prompt buttons
 - Removed Themes Button (pointless)
 - Revamped Design
 
 ]]
 
-local Release = "Release 2C"
+local Release = "Release 2B"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -953,7 +953,26 @@ function Hide()
 		FadeDescription(nil,true)
 	end)
 	Debounce = true
-	ArrayFieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping RightShift", Duration = 7})
+    ArrayFieldLibrary:Notify({
+        Title = "Interface Hidden", 
+        Content = "The interface has been hidden, you can unhide the interface by tapping RightShift",
+        Duration = 7,
+        Actions = {
+            Unhide = {
+                Name = "Unhide",
+                Callback = function()
+                    local virtualInputManager = game:GetService("VirtualInputManager")
+                    virtualInputManager:SendKeyEvent(true, Enum.KeyCode.RightShift, false, game)
+                end
+            },
+            Ignore = {
+                Name = "Don'ht Unhide",
+                Callback = function()
+                end
+            }
+        }
+    })
+    
 	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 400)}):Play()
 	TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 45)}):Play()
 	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
@@ -1106,65 +1125,71 @@ function OpenSearch()
 	wait(0.5)
 	Debounce = false
 end
+
 SearchBar.Input:GetPropertyChangedSignal('Text'):Connect(function()
-	local InputText=string.upper(SearchBar.Input.Text)
-    SearchBar.Input:GetPropertyChangedSignal('Text'):Connect(function()
-        local InputText = string.upper(SearchBar.Input.Text)
-        
-        local function searchInContainer(container)
-            for _, Element in pairs(container:GetChildren()) do
-                if Element:IsA("Frame") and Element.Name ~= 'Placeholder' and Element.Name ~= 'SectionSpacing' and Element.Name ~= 'Template' then
-                    if Element:FindFirstChild("Holder") then
-                        searchInContainer(Element.Holder)
-
-                        local anyChildVisible = false
-                        for _, child in pairs(Element.Holder:GetChildren()) do
-                            if child:IsA("Frame") and child.Visible then
-                                anyChildVisible = true
-                                break
-                            end
+    local InputText = string.upper(SearchBar.Input.Text)
+    
+    local function searchInContainer(container)
+        for _, Element in pairs(container:GetChildren()) do
+            if Element:IsA("Frame") and Element.Name ~= 'Placeholder' and Element.Name ~= 'SectionSpacing' and Element.Name ~= 'Template' then
+                if Element:FindFirstChild("Holder") then
+                    searchInContainer(Element.Holder)
+                    local anyChildVisible = false
+                    for _, child in pairs(Element.Holder:GetChildren()) do
+                        if child:IsA("Frame") and child.Visible then
+                            anyChildVisible = true
+                            break
                         end
-
-                        if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil or anyChildVisible then
-                            Element.Visible = true
-                        else
-                            Element.Visible = false
+                    end
+                    if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil or anyChildVisible then
+                        Element.Visible = true
+                    else
+                        Element.Visible = false
+                    end
+                else
+                    if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil then
+                        Element.Visible = true
+                        
+                        local parent = Element.Parent
+                        while parent and parent ~= Elements do
+                            parent.Visible = true
+                            parent = parent.Parent
                         end
                     else
-                        if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil then
-                            Element.Visible = true
-                            
-                            local parent = Element.Parent
-                            while parent and parent ~= Elements do
-                                parent.Visible = true
-                                parent = parent.Parent
-                            end
-                        else
-                            Element.Visible = false
-                        end
+                        Element.Visible = false
                     end
                 end
             end
         end
-
-        for _, page in ipairs(Elements:GetChildren()) do
-            if page.Name ~= 'Template' then
-                searchInContainer(page)
-            end
+    end
+    
+    for _, page in ipairs(Elements:GetChildren()) do
+        if page.Name ~= 'Template' then
+            searchInContainer(page)
         end
-    end)    
+    end
 end)
+
 SearchBar.Clear.MouseButton1Down:Connect(function()
-	Filler.Position = UDim2.new(0.957,0,.5,0)
-	Filler.Size = UDim2.new(0,1,0,1)
-	Filler.BackgroundTransparency = .9
+    Filler.Position = UDim2.new(0.957, 0, .5, 0)
+    Filler.Size = UDim2.new(0, 1, 0, 1)
+    Filler.BackgroundTransparency = .9
+    local goal = {}
+    goal.Size = UDim2.new(0, 1000, 0, 500)
+    goal.BackgroundTransparency = 1
+    TweenService:Create(Filler, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), goal):Play()
+    SearchBar.Input.Text = ''
+end)
 
-	local goal = {}
-	goal.Size = UDim2.new(0,1000,0,500)
-	goal.BackgroundTransparency = 1
-
-	TweenService:Create(Filler, TweenInfo.new(1,Enum.EasingStyle.Sine,Enum.EasingDirection.Out), goal):Play()
-	SearchBar.Input.Text = ''
+SearchBar.Clear.TouchTap:Connect(function()
+    Filler.Position = UDim2.new(0.957, 0, .5, 0)
+    Filler.Size = UDim2.new(0, 1, 0, 1)
+    Filler.BackgroundTransparency = .9
+    local goal = {}
+    goal.Size = UDim2.new(0, 1000, 0, 500)
+    goal.BackgroundTransparency = 1
+    TweenService:Create(Filler, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), goal):Play()
+    SearchBar.Input.Text = ''
 end)
 
 function Maximise()
@@ -2214,110 +2239,142 @@ function ArrayFieldLibrary:CreateWindow(Settings)
         end        
         
 		-- Input
-		function Tab:CreateInput(InputSettings)
-			local Input = Elements.Template.Input:Clone()
-			Input.Name = InputSettings.Name
-			Input.Title.Text = InputSettings.Name
-			Input.Visible = true
-			InputSettings.Locked = false
-			Tab.Elements[InputSettings.Name] = {
-				type = 'input',
-				section = InputSettings.SectionParent,
-				element = Input
-			}
-			if InputSettings.SectionParent then
-				Input.Parent = InputSettings.SectionParent.Holder
-			else
-				Input.Parent = TabPage
-			end
-			AddInfos(Input,InputSettings.Info,'input')
-			Input.BackgroundTransparency = 1
-			Input.UIStroke.Transparency = 1
-			Input.Title.TextTransparency = 1
+        function Tab:CreateInput(InputSettings)
+            local Input = Elements.Template.Input:Clone()
+            Input.Name = InputSettings.Name
+            Input.Title.Text = InputSettings.Name
+            Input.Visible = true
+            InputSettings.Locked = false
+            
+            Tab.Elements[InputSettings.Name] = {
+                type = 'input',
+                section = InputSettings.SectionParent,
+                element = Input
+            }
+            
+            if InputSettings.SectionParent then
+                Input.Parent = InputSettings.SectionParent.Holder
+            else
+                Input.Parent = TabPage
+            end
+            
+            AddInfos(Input, InputSettings.Info, 'input')
+            
+            Input.BackgroundTransparency = 1
+            Input.UIStroke.Transparency = 1
+            Input.Title.TextTransparency = 1
+            Input.InputFrame.BackgroundColor3 = SelectedTheme.InputBackground
+            Input.InputFrame.UIStroke.Color = SelectedTheme.InputStroke
+            
+            TweenService:Create(Input, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+            TweenService:Create(Input.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(Input.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            
+            Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
+            Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
+            
+            if InputSettings.NumbersOnly or InputSettings.CharacterLimit then
+                Input.InputFrame.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
+                    if Input.InputFrame.InputBox.Text == '' then return end
+                    if InputSettings.CharacterLimit then 
+                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1, InputSettings.CharacterLimit) 
+                    end
+                    if InputSettings.NumbersOnly then 
+                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub('%D+', '') 
+                    end
+                end)
+            end
 
-			Input.InputFrame.BackgroundColor3 = SelectedTheme.InputBackground
-			Input.InputFrame.UIStroke.Color = SelectedTheme.InputStroke
+            Input.InputFrame.InputDetection.MouseButton1Click:Connect(function()
+                if InputSettings.Locked then return end
+                Input.InputFrame.InputBox:CaptureFocus()
+            end)
 
-			TweenService:Create(Input, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-			TweenService:Create(Input.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-			TweenService:Create(Input.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            Input.InputFrame.InputDetection.TouchTap:Connect(function()
+                if InputSettings.Locked then return end
+                Input.InputFrame.InputBox:CaptureFocus()
+            end)
+            
+            Input.InputFrame.InputBox.FocusLost:Connect(function(enter)
+                if InputSettings.OnEnter and not enter then 
+                    if InputSettings.RemoveTextAfterFocusLost then 
+                        Input.InputFrame.InputBox.Text = "" 
+                    end 
+                    return 
+                end
+                
+                local Success, Response = pcall(function()
+                    InputSettings.Callback(Input.InputFrame.InputBox.Text)
+                end)
+                
+                if not Success then
+                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    Input.Title.Text = "Callback Error"
+                    print("ArrayField | "..InputSettings.Name.." Callback Error " ..tostring(Response))
+                    wait(0.5)
+                    Input.Title.Text = InputSettings.Name
+                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                end
+                
+                if InputSettings.RemoveTextAfterFocusLost then 
+                    Input.InputFrame.InputBox.Text = "" 
+                end
+                
+                SaveConfiguration()
+            end)
 
-			Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
-			Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
+            Input.MouseEnter:Connect(function()
+                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+            end)
+            
+            Input.MouseLeave:Connect(function()
+                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+            end)
 
-			if InputSettings.NumbersOnly or InputSettings.CharacterLimit then
-				Input.InputFrame.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
-					if Input.InputFrame.InputBox.Text == '' then return end 
-					if InputSettings.CharacterLimit then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1,InputSettings.CharacterLimit) end
-					if InputSettings.NumbersOnly then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub('%D+', '') end
-				end)
-			end
-
-			Input.InputFrame.InputBox.FocusLost:Connect(function(enter)
-				if InputSettings.OnEnter and not enter then if InputSettings.RemoveTextAfterFocusLost then Input.InputFrame.InputBox.Text = "" end return end
-				local Success, Response = pcall(function()
-					InputSettings.Callback(Input.InputFrame.InputBox.Text)
-				end)
-				if not Success then
-					TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-					TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-					Input.Title.Text = "Callback Error"
-					print("ArrayField | "..InputSettings.Name.." Callback Error " ..tostring(Response))
-					wait(0.5)
-					Input.Title.Text = InputSettings.Name
-					TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-					TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-				end
-
-				if InputSettings.RemoveTextAfterFocusLost then Input.InputFrame.InputBox.Text = "" end
-				SaveConfiguration()
-			end)
-
-			Input.MouseEnter:Connect(function()
-				TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-			end)
-
-			Input.MouseLeave:Connect(function()
-				TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-			end)
-
-			Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
-				TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
-			end)
-
-			Input.InputFrame.InputBox.Focused:Connect(function()
-				if InputSettings.Locked then
-					Input.InputFrame.InputBox:ReleaseFocus() return
-				end
-			end)
-
-			function InputSettings:Destroy()
-				Input:Destroy()
-			end
-			function InputSettings:Lock(Reason)
-				if InputSettings.Locked then return end
-				InputSettings.Locked = true
-				Input.Lock.Reason.Text = Reason or 'Locked'
-				TweenService:Create(Input.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-				TweenService:Create(Input.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-				wait(0.2)
-				if not InputSettings.Locked then return end --no icon bug
-				TweenService:Create(Input.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
-			end
-			function InputSettings:Unlock()
-				if not InputSettings.Locked then return end
-				InputSettings.Locked = false
-				wait(0.2)
-				TweenService:Create(Input.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
-				if InputSettings.Locked then return end --no icon bug
-				TweenService:Create(Input.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-				TweenService:Create(Input.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
-			end
-			function InputSettings:Visible(bool)
-				Input.Visible = bool
-			end
-			return InputSettings
-		end
+            Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
+                TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
+            end)
+            
+            Input.InputFrame.InputBox.Focused:Connect(function()
+                if InputSettings.Locked then
+                    Input.InputFrame.InputBox:ReleaseFocus() 
+                    return
+                end
+            end)
+            
+            function InputSettings:Destroy()
+                Input:Destroy()
+            end
+            
+            function InputSettings:Lock(Reason)
+                if InputSettings.Locked then return end
+                InputSettings.Locked = true
+                Input.Lock.Reason.Text = Reason or 'Locked'
+                TweenService:Create(Input.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+                TweenService:Create(Input.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
+                wait(0.2)
+                if not InputSettings.Locked then return end --no icon bug
+                TweenService:Create(Input.Lock.Reason.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
+            end
+            
+            function InputSettings:Unlock()
+                if not InputSettings.Locked then return end
+                InputSettings.Locked = false
+                wait(0.2)
+                TweenService:Create(Input.Lock.Reason.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 1}):Play()
+                if InputSettings.Locked then return end --no icon bug
+                TweenService:Create(Input.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+                TweenService:Create(Input.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
+            end
+            
+            function InputSettings:Visible(bool)
+                Input.Visible = bool
+            end
+            
+            return InputSettings
+        end        
 
 		-- Dropdown
 		function Tab:CreateDropdown(DropdownSettings)
@@ -2325,6 +2382,24 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			local SearchBar = Dropdown.List["-SearchBar"]
 			local Required = 1
 			--local Debounce = false
+            SearchBar.InputDetection = Instance.new("TextButton")
+            SearchBar.InputDetection.Name = "InputDetection"
+            SearchBar.InputDetection.BackgroundTransparency = 1
+            SearchBar.InputDetection.Size = UDim2.new(1, 0, 1, 0)
+            SearchBar.InputDetection.ZIndex = 10
+            SearchBar.InputDetection.Parent = SearchBar
+            SearchBar.InputDetection.Text = ""
+
+            SearchBar.InputDetection.MouseButton1Click:Connect(function()
+                if DropdownSettings.Locked then return end
+                SearchBar.Input:CaptureFocus()
+            end)
+            
+            SearchBar.InputDetection.TouchTap:Connect(function()
+                if DropdownSettings.Locked then return end
+                SearchBar.Input:CaptureFocus()
+            end)
+
 			DropdownSettings.Items = {
 				Selected = {Default = DropdownSettings.Selected or nil}
 			}
@@ -2383,43 +2458,49 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				end
 			end
 
-			Dropdown.Interact.MouseButton1Click:Connect(function()
-				if DropdownSettings.Locked then return end
-				TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-				TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-				wait(0.1)
-				TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-				TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-				if Debounce then return end
-				if Dropdown.List.Visible then
-					Debounce = true
-					TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 44)}):Play()
-					for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
-						if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt~= SearchBar then
-							TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-							TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-							TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-						end
-					end
-					TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
-					TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
-					wait(0.35)
-					Dropdown.List.Visible = false
-					Debounce = false
-				else
-					TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 178)}):Play()
-					Dropdown.List.Visible = true
-					TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
-					TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()	
-					for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
-						if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt ~= SearchBar then
-							TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-							TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-							TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-						end
-					end
-				end
-			end)
+Dropdown.Interact.MouseButton1Click:Connect(function()
+    if DropdownSettings.Locked then return end
+    TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+    wait(0.1)
+    TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+    if Debounce then return end
+    if Dropdown.List.Visible then
+        Debounce = true
+        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 44)}):Play()
+        for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
+            if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt~= SearchBar then
+                TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            end
+        end
+        TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
+        TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()    
+        wait(0.35)
+        Dropdown.List.Visible = false
+        Debounce = false
+    else
+        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 178)}):Play()
+        Dropdown.List.Visible = true
+        TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
+        TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()    
+
+        SearchBar.Input.Text = ""
+        TweenService:Create(SearchBar, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+        TweenService:Create(SearchBar.Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+        for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
+            if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt ~= SearchBar then
+                TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+                TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            end
+        end
+    end
+end)
 
 			Dropdown.List['-SearchBar'].Input:GetPropertyChangedSignal('Text'):Connect(function()
 				local InputText=string.upper(Dropdown.List['-SearchBar'].Input.Text)
