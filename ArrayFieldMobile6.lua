@@ -901,25 +901,6 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
 end
 
 function CloseSideBar()
-    ArrayFieldLibrary:Notify({
-        Title = "Arrayfield Library Credits",
-        Content = "Current Arrayfield version was created by vqmpjay (Vadrifts)!",
-        Duration = 7,
-        Actions = {
-            Copy = {
-                Name = "Copy Discord",
-                Callback = function()
-                    local AllClipboards = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
-                    AllClipboards("https://discord.gg/WDbJ5wE2cR")
-                end
-            },
-            Ignore = {
-                Name = "Okay",
-                Callback = function()
-                end
-            }
-        }
-    })
 
 Debounce = true
 	SideBarClosed = true
@@ -1027,23 +1008,6 @@ function Hide()
 	Debounce = false
 end
 function Unhide()
-
-    local LoadingTabs = Instance.new("TextLabel")
-    LoadingTabs.Name = "LoadingTabs"
-    LoadingTabs.TextTransparency = 1 
-    LoadingTabs.Parent = Main
-
-    TweenService:Create(LoadingTabs, TweenInfo.new(4.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
-    LoadingTabs.Text = "Loading Tabs.."
-    LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
-    LoadingTabs.Size = UDim2.new(0, 100, 0, 30)
-    LoadingTabs.Position = UDim2.new(0, 50, 0.5, 0)
-    LoadingTabs.Font = Enum.Font.GothamMedium
-    LoadingTabs.TextSize = 14
-    LoadingTabs.BackgroundTransparency = 1
-    LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
-    LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
 
     Main.Topbar.Size = UDim2.new(0, 700, 0, 45)
     if SideBarClosed then
@@ -3873,4 +3837,22 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
 end
 
     Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+
+    local LoadingTabs = Instance.new("TextLabel")
+    LoadingTabs.Name = "LoadingTabs"
+    LoadingTabs.TextTransparency = 1 
+    LoadingTabs.Parent = Main
+
+    TweenService:Create(LoadingTabs, TweenInfo.new(4.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+    LoadingTabs.Text = "Loading Tabs.."
+    LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
+    LoadingTabs.Size = UDim2.new(0, 100, 0, 30)
+    LoadingTabs.Position = UDim2.new(0, 50, 0.5, 0)
+    LoadingTabs.Font = Enum.Font.GothamMedium
+    LoadingTabs.TextSize = 14
+    LoadingTabs.BackgroundTransparency = 1
+    LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
+    LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
+    
 return ArrayFieldLibrary
