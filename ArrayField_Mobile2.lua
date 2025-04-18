@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming + New Features
+vqmpjay | Designing + Programming
 
 ]]
 
@@ -3724,5 +3724,6 @@ TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingSty
 TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
 wait(.4)
 Main.SideTabList.Visible = true
+Main.SideTabList.BackgroundColor3 = Color3.new(50, 50, 50)
 
 return ArrayFieldLibrary
