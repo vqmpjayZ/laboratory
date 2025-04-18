@@ -21,7 +21,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- Semi Mobile Support
+- Mobile Support
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -2294,7 +2294,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             InputDetection.Size = UDim2.new(1, 0, 1, 0)
             InputDetection.ZIndex = 10
             InputDetection.Text = ""
-            InputDetection.Parent = Elements
             
             Input.InputFrame.InputDetection.MouseButton1Click:Connect(function()
                 if InputSettings.Locked then return end
