@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming HJII
+vqmpjay | Designing + Programming
 
 ]]
 
@@ -190,7 +190,7 @@ local Hidden = false
 local Debounce = false
 local clicked = false
 local SearchHided = true
-local SideBarClosed = true
+local SideBarClosed = false
 local InfoPromptOpen = false
 local BarType = 'Side'
 local HoverTime = 0.3
