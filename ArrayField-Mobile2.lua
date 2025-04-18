@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming
+vqmpjay | Designing + Programming + New Features
 
 ]]
 
@@ -21,7 +21,7 @@ Change Logs:
 - Fixed Search not being able to search for elements parented to sections
 - Removed Themes Button (pointless)
 - Revamped Design
-
+- Mobile Support
 ]]
 
 local Release = "Release 2B"
@@ -875,7 +875,7 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
 end
 
 function CloseSideBar()
-    ArrayFieldLibrary:Notify({
+--[[    ArrayFieldLibrary:Notify({
         Title = "Arrayfield Library Credits",
         Content = "Current Arrayfield version was created by vqmpjay (Vadrifts)!",
         Duration = 7,
@@ -893,8 +893,9 @@ function CloseSideBar()
                 end
             }
         }
-    })
-        Debounce = true
+]]
+
+Debounce = true
 	SideBarClosed = true
 	for _,tabbtn in pairs(SideList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
@@ -903,8 +904,8 @@ function CloseSideBar()
 		end
 	end
 	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,10,0.5,22)}):Play()
-	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
-	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
+	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
+	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
 	wait(.4)
 	Main.SideTabList.Visible = false
 	wait(0.2)
@@ -3697,6 +3698,7 @@ end
 
 wait(0.2)
 local SideTabList = Main.SideTabList
+SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 if not Minimised and SideTabList.Visible == false then
     Main.SideTabList.Visible = true
 end
