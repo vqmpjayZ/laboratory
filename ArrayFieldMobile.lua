@@ -3674,6 +3674,19 @@ function ArrayFieldLibrary:LoadConfiguration()
 end
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
+ArrayField.Main.Topbar.Theme.Visible = false
+local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
+
+if Search then
+    Search.Parent = nil
+    
+    Search.Parent = ArrayField.Main.Topbar 
+    
+    Search.Position = UDim2.new(0.84, 0, 0.5, 0)
+else
+    warn("Search button not found!")
+end
+
 local Sections = ArrayField.Main:GetChildren()
 
 for _, section in pairs(Sections) do
