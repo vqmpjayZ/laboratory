@@ -3660,7 +3660,7 @@ for _, section in pairs(Sections) do
     end
 end
 
-local Elements = game:GetService("CoreGui").HUI.ArrayField.Main.Elements
+local Elements = ArrayField.Main.Elements
 
 for _, Descendant in ipairs(Elements:GetDescendants()) do
     if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
