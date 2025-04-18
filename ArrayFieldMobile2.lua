@@ -3803,7 +3803,7 @@ local LoadingTabs = Instance.new("TextLabel")
 LoadingTabs.Name = "LoadingTabs"
 LoadingTabs.Text = "Loading Tabs.."
 LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
-LoadingTabs.Size = UDim2.new(0, 200, 0, 30)
+LoadingTabs.Size = UDim2.new(0, 100, 0, 30)
 LoadingTabs.Position = UDim2.new(0, 50, 0.5, 0)
 LoadingTabs.Font = Enum.Font.GothamMedium
 LoadingTabs.TextSize = 14
@@ -3811,22 +3811,17 @@ LoadingTabs.BackgroundTransparency = 1
 LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
 LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
 LoadingTabs.Parent = Main
-
 LoadingTabs.TextTransparency = 1
-local fadeTween = TweenService:Create(
-    LoadingTabs, 
-    TweenInfo.new(
-        4.5,
-        Enum.EasingStyle.Sine,
-        Enum.EasingDirection.Out,
-        0,
-        false,
-        0
-    ), 
-    {TextTransparency = 0}
-)
 
-fadeTween:Play()
+local fullText = "Loading Tabs.."
+local typingSpeed = 0.1
+
+task.spawn(function()
+    for i = 1, #fullText do
+        LoadingTabs.Text = string.sub(fullText, 1, i)
+        wait(typingSpeed)
+    end
+end)
 
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
