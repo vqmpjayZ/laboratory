@@ -3838,6 +3838,7 @@ end
 
     Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 
+    if LoadingFrame.Size == UDim2.new(1, 0, 1, 0) then
     local LoadingTabs = Instance.new("TextLabel")
     LoadingTabs.Name = "LoadingTabs"
     LoadingTabs.Text = "Loading Tabs.."
@@ -3850,6 +3851,7 @@ end
     LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
     LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
     LoadingTabs.TextTransparency = 0
-    LoadingTabs.Parent = Main.Elements
+    LoadingTabs.Parent = Main
+    end
 
 return ArrayFieldLibrary
