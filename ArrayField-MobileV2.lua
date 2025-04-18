@@ -21,7 +21,6 @@ Change Logs:
 - Fixed Search not being able to search for elements parented to sections
 - Removed Themes Button (pointless)
 - Revamped Design
-- Full Mobile support 
 
 ]]
 
@@ -3698,7 +3697,7 @@ end
 
 wait(0.2)
 local SideTabList = Main.SideTabList
-if not Hidden and SideTabList.Visible == false then
+if not Minimised and SideTabList.Visible == false then
     Main.SideTabList.Visible = true
 end
 return ArrayFieldLibrary
