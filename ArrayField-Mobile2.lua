@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming + New Features
+vqmpjay | Designing + Programming
 
 ]]
 
@@ -21,7 +21,7 @@ Change Logs:
 - Fixed Search not being able to search for elements parented to sections
 - Removed Themes Button (pointless)
 - Revamped Design
-- Mobile Support
+
 ]]
 
 local Release = "Release 2B"
@@ -1232,6 +1232,11 @@ function OpenSideBar()
 		wait(0.12)
 	end
 	SideBarClosed = false
+    TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,10,0.5,22)}):Play()
+	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
+	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
+	wait(.4)
+	Main.SideTabList.Visible = true
 	wait(0.2)
 	Debounce = false
 end
