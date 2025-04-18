@@ -3840,11 +3840,6 @@ end
 
     local LoadingTabs = Instance.new("TextLabel")
     LoadingTabs.Name = "LoadingTabs"
-    LoadingTabs.TextTransparency = 1 
-    LoadingTabs.Parent = Main
-
-    TweenService:Create(LoadingTabs, TweenInfo.new(4.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
     LoadingTabs.Text = "Loading Tabs.."
     LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
     LoadingTabs.Size = UDim2.new(0, 100, 0, 30)
@@ -3854,5 +3849,9 @@ end
     LoadingTabs.BackgroundTransparency = 1
     LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
     LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
+    LoadingTabs.TextTransparency = 1
+    LoadingTabs.Parent = Main
+
+    TweenService:Create(LoadingTabs, TweenInfo.new(4.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
     
 return ArrayFieldLibrary
