@@ -21,6 +21,7 @@ Change Logs:
 - Fixed Search not being able to search for elements parented to sections
 - Removed Themes Button (pointless)
 - Revamped Design
+- Full Mobile support 
 
 ]]
 
@@ -906,14 +907,15 @@ function CloseSideBar()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
 	wait(.4)
-	Main.SideTabList.Visible = true
+	Main.SideTabList.Visible = false
 	wait(0.2)
 	Debounce = false
 end
 function Hide()
-	if not SideBarClosed then
+    if not SideBarClosed then
 		spawn(CloseSideBar)
 	end
+
 	spawn(function()
 		FadeDescription(nil,true)
 	end)
@@ -3687,7 +3689,7 @@ end
 
 local Elements = ArrayField.Main.Elements
 Elements.Position = UDim2.new(0.5, 80, 0.55, 0)
-Elements.Size = UDim2.new(1, -160, 0, 295)
+Elements.Size = UDim2.new(1, -180, 0, 295)
 for _, Descendant in ipairs(Elements:GetDescendants()) do
     if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
         Descendant.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
