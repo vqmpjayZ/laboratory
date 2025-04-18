@@ -3667,40 +3667,11 @@ end
 
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
-local function SimulateClick()
-    local targetElement = game:GetService("CoreGui").HUI.ArrayField.Main.Topbar.Type
-    
-    local position = targetElement.AbsolutePosition + (targetElement.AbsoluteSize / 2)
-    
-    local virtualInputObject = {
-        Position = position,
-        KeyCode = Enum.KeyCode.Unknown,
-        UserInputType = Enum.UserInputType.MouseButton1,
-        UserInputState = Enum.UserInputState.Begin
-    }
-    
-    targetElement.InputBegan:Fire(virtualInputObject)
-    
-    wait(0.05)
-    
-    virtualInputObject.UserInputState = Enum.UserInputState.End
-    
-    targetElement.InputEnded:Fire(virtualInputObject)
-end
-
-ArrayField.Main.Topbar.Theme.Visible = false
-
-local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
-
-if Search then
-    Search.Parent = nil
-    
-    Search.Parent = ArrayField.Main.Topbar 
-    
-    Search.Position = UDim2.new(0.84, 0, 0.5, 0)
-else
-    warn("Search button not found!")
-end
+local VirtualUser = game:GetService("VirtualUser")
+local targetElement = ArrayField.Main.Topbar.Type
+local position = targetElement.AbsolutePosition + (targetElement.AbsoluteSize / 2)
+VirtualUser:CaptureController()
+VirtualUser:ClickButton1(Vector2.new(position.X, position.Y))
 
 local Sections = ArrayField.Main:GetChildren()
 
@@ -3743,7 +3714,6 @@ end
 
     Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     wait(.4)
-    spawn(OpenSideBar)    
-    SimulateClick()
+    spawn(OpenSideBar)
 
 return ArrayFieldLibrary
