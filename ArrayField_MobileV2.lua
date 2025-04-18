@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming + New Features
+vqmpjay | Designing + Programming
 
 ]]
 
@@ -918,7 +918,7 @@ function Hide()
         TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
         TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
         TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-        --wait(.4)
+        wait(.1)
         Main.SideTabList.Visible = false
 	end
 
@@ -1263,7 +1263,7 @@ function Minimise()
         TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
         TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
         TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-        --wait(.4)
+        wait(.1)
         Main.SideTabList.Visible = false
 	end
 	spawn(function()
