@@ -3615,6 +3615,7 @@ function ArrayFieldLibrary:LoadConfiguration()
 		end)
 	end
 end
+
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
 ArrayField.Main.Topbar.Theme.Visible = false
@@ -3661,11 +3662,13 @@ for _, section in pairs(Sections) do
 end
 
 local Elements = ArrayField.Main.Elements
-
+Elements.Position = UDim2.new(0.5, 80, 0.7, 0)
 for _, Descendant in ipairs(Elements:GetDescendants()) do
     if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
         Descendant.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     end
 end
+
+ArrayField.Main.SideTabList.Visible = true
 
 return ArrayFieldLibrary
