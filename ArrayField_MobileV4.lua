@@ -3666,6 +3666,35 @@ end
 
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
+local function SimulateClick()
+    local targetElement = game:GetService("CoreGui").HUI.ArrayField.Main.Topbar.Type
+    
+    local position = targetElement.AbsolutePosition + (targetElement.AbsoluteSize / 2)
+    
+    local virtualInputObject = {
+        Position = position,
+        KeyCode = Enum.KeyCode.Unknown,
+        UserInputType = Enum.UserInputType.MouseButton1,
+        UserInputState = Enum.UserInputState.Begin
+    }
+    
+    if targetElement.MouseButton1Down then
+        targetElement.MouseButton1Down:Fire(position.X, position.Y, virtualInputObject)
+    end
+    
+    wait(0.05)
+    
+    virtualInputObject.UserInputState = Enum.UserInputState.End
+    
+    if targetElement.MouseButton1Up then
+        targetElement.MouseButton1Up:Fire(position.X, position.Y, virtualInputObject)
+    end
+    
+    if targetElement.MouseButton1Click then
+        targetElement.MouseButton1Click:Fire()
+    end
+end
+
 ArrayField.Main.Topbar.Theme.Visible = false
 local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
 
@@ -3720,6 +3749,7 @@ end
 
     Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     wait(.4)
-    spawn(OpenSideBar)
+    spawn(OpenSideBar)    
+    SimulateClick()
 
 return ArrayFieldLibrary
