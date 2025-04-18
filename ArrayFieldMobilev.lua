@@ -27,6 +27,7 @@ Change Logs:
 - Fixed Paragraphs not appearing when not parented to sections
 - Fixed long Paragraphs getting cut off when parented to sections
 - Fixed Search not being able to search for elements parented to sections
+- Fixed weird prompt buttons
 - Removed Themes Button (pointless)
 - Revamped Design
 
@@ -3706,7 +3707,6 @@ else
 end
 
 local Sections = ArrayField.Main:GetChildren()
-
 for _, section in pairs(Sections) do
     if section:IsA("Frame") then
         if section:FindFirstChild("Minimize") then
@@ -3721,8 +3721,6 @@ for _, section in pairs(Sections) do
     end
 end
 
-local Sections = ArrayField.Main:GetChildren()
-
 for _, section in pairs(Sections) do
     if section:IsA("Frame") then
         if section:FindFirstChild("Minimize") then
@@ -3734,10 +3732,14 @@ for _, section in pairs(Sections) do
         section.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     end
 end
+
+local PromptButtons = ArrayField.Main.Prompt.Prompt.Buttons
+PromptButtons.Size = UDim2.new(0, 335, 0, 40)
 
 local Elements = ArrayField.Main.Elements
 Elements.Position = UDim2.new(0.5, 80, 0.55, 0)
 Elements.Size = UDim2.new(1, -180, 0, 295)
+
 for _, Descendant in ipairs(Elements:GetDescendants()) do
     if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
         Descendant.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
