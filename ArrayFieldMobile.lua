@@ -1,4 +1,12 @@
 --[[
+ADD THIS AT THE END OF YOUR CODE FOR BETTER SIDETAB:
+    wait(.4)
+    spawn(CloseSideBar)
+    wait(.4)
+    spawn(OpenSideBar)
+]]
+
+--[[
 
 ArrayField Interface Suite
 by Meta
