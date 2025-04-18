@@ -3813,7 +3813,7 @@ LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
 LoadingTabs.Parent = Main
 
 LoadingTabs.TextTransparency = 1
-TweenService:Create(LoadingTabs, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+TweenService:Create(LoadingTabs, TweenInfo.new(4.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
