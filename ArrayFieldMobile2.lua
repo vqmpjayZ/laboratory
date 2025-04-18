@@ -32,7 +32,7 @@ Change Logs:
 
 ]]
 
-local Release = "Release 2C"
+local Release = "Release 2B"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -1032,6 +1032,22 @@ function Unhide()
 		spawn(OpenSideBar)
 	end
 
+    local LoadingTabs = Instance.new("TextLabel")
+    LoadingTabs.Name = "LoadingTabs"
+    LoadingTabs.Text = "Loading Tabs.."
+    LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
+    LoadingTabs.Size = UDim2.new(0, 200, 0, 30)
+    LoadingTabs.Position = UDim2.new(0, 200, 0.5, 0)
+    LoadingTabs.Font = Enum.Font.GothamMedium
+    LoadingTabs.TextSize = 14
+    LoadingTabs.BackgroundTransparency = 1
+    LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
+    LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
+    LoadingTabs.Parent = Main
+
+    LoadingTabs.TextTransparency = 1
+    TweenService:Create(LoadingTabs, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
 	Debounce = true
 	Main.Position = UDim2.new(0.5, 0, 0.5, 0)
 	Main.Visible = true
@@ -1226,22 +1242,6 @@ function Maximise()
 	wait(0.2)
 
 	Elements.Visible = true
-
-    local LoadingTabs = Instance.new("TextLabel")
-    LoadingTabs.Name = "LoadingTabs"
-    LoadingTabs.Text = "Loading Tabs.."
-    LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
-    LoadingTabs.Size = UDim2.new(0, 200, 0, 30)
-    LoadingTabs.Position = UDim2.new(0, 170, 0.5, 0)
-    LoadingTabs.Font = Enum.Font.GothamMedium
-    LoadingTabs.TextSize = 14
-    LoadingTabs.BackgroundTransparency = 1
-    LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
-    LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
-    LoadingTabs.Parent = Main
-
-    LoadingTabs.TextTransparency = 1
-    TweenService:Create(LoadingTabs, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
 	for _, tab in ipairs(Elements:GetChildren()) do
 		if tab.Name ~= "Template" and tab.ClassName == "ScrollingFrame" and tab.Name ~= "Placeholder" then
