@@ -3669,7 +3669,7 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
 end
 
 local parent = gethui()
-local ray = parent:FindFirstChild("Rayfield")
+local ray = parent:FindFirstChild("ArrayField")
 local window = ray:FindFirstChild("Main")
 window.Size = UDim2.new(0,350,0,300)
 
