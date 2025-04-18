@@ -902,7 +902,7 @@ function CloseSideBar()
 			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
 		end
 	end
-	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,285),Position = UDim2.new(0,10,0.5,22)}):Play()
+	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,10,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
 	wait(.4)
@@ -1605,7 +1605,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
 		end
 	end
-	TweenService:Create(Main.SideTabList, TweenInfo.new(0, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,285),Position = UDim2.new(0,10,0.5,22)}):Play()
+	TweenService:Create(Main.SideTabList, TweenInfo.new(0, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,10,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
 	--delay(4,function()
@@ -3686,7 +3686,8 @@ for _, section in pairs(Sections) do
 end
 
 local Elements = ArrayField.Main.Elements
-Elements.Position = UDim2.new(0.5, 80, 0.7, 0)
+Elements.Position = UDim2.new(0.5, 80, 0.55, 0)
+Elements.Size = UDim2.new(1, -160, 0, 295)
 for _, Descendant in ipairs(Elements:GetDescendants()) do
     if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
         Descendant.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
@@ -3695,7 +3696,7 @@ end
 
 wait(0.2)
 local SideTabList = Main.SideTabList
-if SideTabList.Visible == false then
+if not Hidden and SideTabList.Visible == false then
     Main.SideTabList.Visible = true
 end
 return ArrayFieldLibrary
