@@ -3669,6 +3669,10 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
     end
 end
 
+ArrayField.Main.SideTabList.Size = UDim2(0, 160, 0, 285)
+pcall(function()
+ArrayField.Main.SideTabList.Enabled = true
 ArrayField.Main.SideTabList.Visible = true
+end)
 
 return ArrayFieldLibrary
