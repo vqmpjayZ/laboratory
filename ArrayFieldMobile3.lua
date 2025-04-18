@@ -2253,6 +2253,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             return ParagraphValue
         end        
         
+        -- Input
         function Tab:CreateInput(InputSettings)
             local Input = Elements.Template.Input:Clone()
             Input.Name = InputSettings.Name
@@ -2287,38 +2288,23 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
             Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
 
-            Input.InputFrame.Active = true
-            Input.InputFrame.Selectable = true
+            local InputButton = Instance.new("TextButton")
+            InputButton.Name = "InputButton"
+            InputButton.BackgroundTransparency = 1
+            InputButton.Size = UDim2.new(1, 0, 1, 0)
+            InputButton.Text = ""
+            InputButton.ZIndex = 10
+            InputButton.Parent = Main.Elements
 
-            Input.InputFrame.MouseButton1Click:Connect(function()
+            InputButton.MouseButton1Click:Connect(function()
                 if not InputSettings.Locked then
                     Input.InputFrame.InputBox:CaptureFocus()
                 end
             end)
-
-            local UserInputService = game:GetService("UserInputService")
-            local function handleInputBegan(input, gameProcessed)
-                if gameProcessed then return end
-                
-                if input.UserInputType == Enum.UserInputType.Touch then
-                    local position = input.Position
-                    local framePosition = Input.InputFrame.AbsolutePosition
-                    local frameSize = Input.InputFrame.AbsoluteSize
-                    
-                    if position.X >= framePosition.X and position.X <= framePosition.X + frameSize.X and
-                       position.Y >= framePosition.Y and position.Y <= framePosition.Y + frameSize.Y then
-                        if not InputSettings.Locked then
-                            Input.InputFrame.InputBox:CaptureFocus()
-                        end
-                    end
-                end
-            end
             
-            local inputConnection = UserInputService.InputBegan:Connect(handleInputBegan)
-            
-            Input.AncestryChanged:Connect(function(_, parent)
-                if parent == nil then
-                    inputConnection:Disconnect()
+            InputButton.TouchTap:Connect(function()
+                if not InputSettings.Locked then
+                    Input.InputFrame.InputBox:CaptureFocus()
                 end
             end)
             
@@ -2384,7 +2370,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end)
             
             function InputSettings:Destroy()
-                inputConnection:Disconnect()
                 Input:Destroy()
             end
             
@@ -2414,7 +2399,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             end
             
             return InputSettings
-        end        
+        end            
 
 		-- Dropdown
 		function Tab:CreateDropdown(DropdownSettings)
