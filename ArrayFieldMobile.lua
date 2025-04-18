@@ -21,7 +21,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- Mobile Support
+- FULL Mobile Support
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -3798,6 +3798,23 @@ function ArrayFieldLibrary:LoadConfiguration()
 		end)
 	end
 end
+
+local LoadingTabs = Instance.new("TextLabel")
+LoadingTabs.Name = "LoadingTabs"
+LoadingTabs.Text = "Loading Tabs.."
+LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
+LoadingTabs.Size = UDim2.new(0, 200, 0, 30)
+LoadingTabs.Position = UDim2.new(0, 70, 0.5, 0)
+LoadingTabs.Font = Enum.Font.GothamMedium
+LoadingTabs.TextSize = 14
+LoadingTabs.BackgroundTransparency = 1
+LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
+LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
+LoadingTabs.Parent = Main
+
+LoadingTabs.TextTransparency = 1
+TweenService:Create(LoadingTabs, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
 ArrayField.Main.Topbar.Theme.Visible = false
