@@ -2412,7 +2412,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             SearchBar.InputDetection.BackgroundTransparency = 1
             SearchBar.InputDetection.Size = UDim2.new(1, 0, 1, 0)
             SearchBar.InputDetection.ZIndex = 10
-            SearchBar.InputDetection.Parent = SearchBar
+            SearchBar.InputDetection.Parent = Main.Elements
             SearchBar.InputDetection.Text = ""
 
             SearchBar.InputDetection.MouseButton1Click:Connect(function()
