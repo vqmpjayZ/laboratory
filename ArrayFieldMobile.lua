@@ -2,7 +2,6 @@
 ADD THIS AT THE END OF YOUR CODE FOR BETTER SIDETAB:
     wait(.4)
     spawn(CloseSideBar)
-    wait(.4)
     spawn(OpenSideBar)
 ]]
 
@@ -1359,6 +1358,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 	LoadingFrame.Subtitle.TextTransparency = 1
 	Main.Shadow.Image.ImageTransparency = 1
 	LoadingFrame.Version.TextTransparency = 1
+    LoadingFrame.Version.Position = UDim2(0, -10, 0, 0)
 	LoadingFrame.Title.Text = Settings.LoadingTitle or "Arrayfield Interface Suite"
 	LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta"
 	if Settings.LoadingTitle ~= "Arrayfield Interface Suite" then
