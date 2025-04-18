@@ -33,7 +33,7 @@ Change Logs:
 
 ]]
 
-local Release = "Release 2B"
+local Release = "Release 2C"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
