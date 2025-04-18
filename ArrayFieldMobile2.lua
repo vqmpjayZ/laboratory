@@ -21,7 +21,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- Mobile Support
+- FULL Mobile Support
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -2253,7 +2253,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             return ParagraphValue
         end        
         
-		-- Input
         function Tab:CreateInput(InputSettings)
             local Input = Elements.Template.Input:Clone()
             Input.Name = InputSettings.Name
@@ -2287,42 +2286,60 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             
             Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
             Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
-            
-            local InputDetection = Instance.new("TextButton")
-            InputDetection.Name = "InputDetection"
-            InputDetection.BackgroundTransparency = 1
-            InputDetection.Size = UDim2.new(1, 0, 1, 0)
-            InputDetection.ZIndex = 10
-            InputDetection.Text = ""
-            
-            Input.InputFrame.InputDetection.MouseButton1Click:Connect(function()
-                if InputSettings.Locked then return end
-                Input.InputFrame.InputBox:CaptureFocus()
+
+            Input.InputFrame.Active = true
+            Input.InputFrame.Selectable = true
+
+            Input.InputFrame.MouseButton1Click:Connect(function()
+                if not InputSettings.Locked then
+                    Input.InputFrame.InputBox:CaptureFocus()
+                end
             end)
 
-            Input.InputFrame.InputDetection.TouchTap:Connect(function()
-                if InputSettings.Locked then return end
-                Input.InputFrame.InputBox:CaptureFocus()
+            local UserInputService = game:GetService("UserInputService")
+            local function handleInputBegan(input, gameProcessed)
+                if gameProcessed then return end
+                
+                if input.UserInputType == Enum.UserInputType.Touch then
+                    local position = input.Position
+                    local framePosition = Input.InputFrame.AbsolutePosition
+                    local frameSize = Input.InputFrame.AbsoluteSize
+                    
+                    if position.X >= framePosition.X and position.X <= framePosition.X + frameSize.X and
+                       position.Y >= framePosition.Y and position.Y <= framePosition.Y + frameSize.Y then
+                        if not InputSettings.Locked then
+                            Input.InputFrame.InputBox:CaptureFocus()
+                        end
+                    end
+                end
+            end
+            
+            local inputConnection = UserInputService.InputBegan:Connect(handleInputBegan)
+            
+            Input.AncestryChanged:Connect(function(_, parent)
+                if parent == nil then
+                    inputConnection:Disconnect()
+                end
             end)
-
+            
             if InputSettings.NumbersOnly or InputSettings.CharacterLimit then
                 Input.InputFrame.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
                     if Input.InputFrame.InputBox.Text == '' then return end
-                    if InputSettings.CharacterLimit then 
-                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1, InputSettings.CharacterLimit) 
+                    if InputSettings.CharacterLimit then
+                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1, InputSettings.CharacterLimit)
                     end
-                    if InputSettings.NumbersOnly then 
-                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub('%D+', '') 
+                    if InputSettings.NumbersOnly then
+                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub('%D+', '')
                     end
                 end)
             end
             
             Input.InputFrame.InputBox.FocusLost:Connect(function(enter)
-                if InputSettings.OnEnter and not enter then 
-                    if InputSettings.RemoveTextAfterFocusLost then 
-                        Input.InputFrame.InputBox.Text = "" 
-                    end 
-                    return 
+                if InputSettings.OnEnter and not enter then
+                    if InputSettings.RemoveTextAfterFocusLost then
+                        Input.InputFrame.InputBox.Text = ""
+                    end
+                    return
                 end
                 
                 local Success, Response = pcall(function()
@@ -2340,13 +2357,13 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
                 end
                 
-                if InputSettings.RemoveTextAfterFocusLost then 
-                    Input.InputFrame.InputBox.Text = "" 
+                if InputSettings.RemoveTextAfterFocusLost then
+                    Input.InputFrame.InputBox.Text = ""
                 end
                 
                 SaveConfiguration()
             end)
-
+            
             Input.MouseEnter:Connect(function()
                 TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
             end)
@@ -2354,19 +2371,20 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             Input.MouseLeave:Connect(function()
                 TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             end)
-
+            
             Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
                 TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
             end)
             
             Input.InputFrame.InputBox.Focused:Connect(function()
                 if InputSettings.Locked then
-                    Input.InputFrame.InputBox:ReleaseFocus() 
+                    Input.InputFrame.InputBox:ReleaseFocus()
                     return
                 end
             end)
             
             function InputSettings:Destroy()
+                inputConnection:Disconnect()
                 Input:Destroy()
             end
             
