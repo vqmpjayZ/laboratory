@@ -1028,7 +1028,7 @@ function Hide()
 end
 function Unhide()
 
-    Main.Topbar.Size = UDim2.new(1, 0, 0, 45)
+    Main.Topbar.Size = UDim2.new(0, 700, 0, 45)
     if SideBarClosed then
 		spawn(OpenSideBar)
 	end
@@ -3805,7 +3805,7 @@ LoadingTabs.Name = "LoadingTabs"
 LoadingTabs.TextTransparency = 1 
 LoadingTabs.Parent = Main
 
-TweenService:Create(LoadingTabs, TweenInfo.new(4.5, Enum.EasingStyle.Quint), {TextTransparency = 0})
+TweenService:Create(LoadingTabs, TweenInfo.new(4.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
 LoadingTabs.Text = "Loading Tabs.."
 LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
