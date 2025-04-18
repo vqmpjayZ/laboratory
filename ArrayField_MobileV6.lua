@@ -14,7 +14,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- 
+- h
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -3665,14 +3665,6 @@ function ArrayFieldLibrary:LoadConfiguration()
 	end
 end
 
-task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
-
-local VirtualUser = game:GetService("VirtualUser")
-local targetElement = ArrayField.Main.Topbar.Type
-local position = targetElement.AbsolutePosition + (targetElement.AbsoluteSize / 2)
-VirtualUser:CaptureController()
-VirtualUser:ClickButton1(Vector2.new(position.X, position.Y))
-
 local Sections = ArrayField.Main:GetChildren()
 
 for _, section in pairs(Sections) do
@@ -3716,4 +3708,5 @@ end
     wait(.4)
     spawn(OpenSideBar)
 
+task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 return ArrayFieldLibrary
