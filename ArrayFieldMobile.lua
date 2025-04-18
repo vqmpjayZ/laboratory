@@ -21,8 +21,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- Added better dragging and input connecting for Mobile
-- Made the UI suit Mobile
+- semi Mobile Support
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -966,7 +965,7 @@ function Hide()
                 end
             },
             Ignore = {
-                Name = "Don'ht Unhide",
+                Name = "Don't Unhide",
                 Callback = function()
                 end
             }
@@ -1125,6 +1124,22 @@ function OpenSearch()
 	wait(0.5)
 	Debounce = false
 end
+
+local InputDetection = Instance.new("TextButton")
+InputDetection.Name = "InputDetection"
+InputDetection.BackgroundTransparency = 1
+InputDetection.Size = UDim2.new(1, 0, 1, 0)
+InputDetection.ZIndex = 10
+InputDetection.Text = ""
+InputDetection.Parent = SearchBar
+
+InputDetection.MouseButton1Click:Connect(function()
+    SearchBar.Input:CaptureFocus()
+end)
+
+InputDetection.TouchTap:Connect(function()
+    SearchBar.Input:CaptureFocus()
+end)
 
 SearchBar.Input:GetPropertyChangedSignal('Text'):Connect(function()
     local InputText = string.upper(SearchBar.Input.Text)
@@ -2273,6 +2288,24 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
             Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
             
+            local InputDetection = Instance.new("TextButton")
+            InputDetection.Name = "InputDetection"
+            InputDetection.BackgroundTransparency = 1
+            InputDetection.Size = UDim2.new(1, 0, 1, 0)
+            InputDetection.ZIndex = 10
+            InputDetection.Text = ""
+            InputDetection.Parent = SearchBar
+            
+            Input.InputFrame.InputDetection.MouseButton1Click:Connect(function()
+                if InputSettings.Locked then return end
+                Input.InputFrame.InputBox:CaptureFocus()
+            end)
+
+            Input.InputFrame.InputDetection.TouchTap:Connect(function()
+                if InputSettings.Locked then return end
+                Input.InputFrame.InputBox:CaptureFocus()
+            end)
+
             if InputSettings.NumbersOnly or InputSettings.CharacterLimit then
                 Input.InputFrame.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
                     if Input.InputFrame.InputBox.Text == '' then return end
@@ -2284,16 +2317,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
                     end
                 end)
             end
-
-            Input.InputFrame.InputDetection.MouseButton1Click:Connect(function()
-                if InputSettings.Locked then return end
-                Input.InputFrame.InputBox:CaptureFocus()
-            end)
-
-            Input.InputFrame.InputDetection.TouchTap:Connect(function()
-                if InputSettings.Locked then return end
-                Input.InputFrame.InputBox:CaptureFocus()
-            end)
             
             Input.InputFrame.InputBox.FocusLost:Connect(function(enter)
                 if InputSettings.OnEnter and not enter then 
