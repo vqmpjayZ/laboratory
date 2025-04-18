@@ -3668,4 +3668,7 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
     end
 end
 
+local PromptButtons = ArrayField.Main.Prompt.Prompt.Buttons
+PromptButtons.Size = UDim2.new(0, 335, 0, 40)
+
 return ArrayFieldLibrary
