@@ -7,13 +7,14 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming
+vqmpjay | Designing + Programming + New Features
 
 ]]
 
 --[[
 
 Change Logs:
+- 
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -3678,24 +3679,17 @@ local function SimulateClick()
         UserInputState = Enum.UserInputState.Begin
     }
     
-    if targetElement.MouseButton1Down then
-        targetElement.MouseButton1Down:Fire(position.X, position.Y, virtualInputObject)
-    end
+    targetElement.InputBegan:Fire(virtualInputObject)
     
     wait(0.05)
     
     virtualInputObject.UserInputState = Enum.UserInputState.End
     
-    if targetElement.MouseButton1Up then
-        targetElement.MouseButton1Up:Fire(position.X, position.Y, virtualInputObject)
-    end
-    
-    if targetElement.MouseButton1Click then
-        targetElement.MouseButton1Click:Fire()
-    end
+    targetElement.InputEnded:Fire(virtualInputObject)
 end
 
 ArrayField.Main.Topbar.Theme.Visible = false
+
 local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
 
 if Search then
