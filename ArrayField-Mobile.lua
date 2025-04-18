@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming ' New Features
+vqmpjay | Designing + Programming
 
 ]]
 
@@ -1237,7 +1237,7 @@ function OpenSideBar()
 		wait(0.12)
 	end
 	SideBarClosed = false
-    TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,10,0.5,22)}):Play()
+    TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,10,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
 	wait(.4)
@@ -3708,7 +3708,7 @@ end
 
 wait(0.2)
 local SideTabList = Main.SideTabList
-SideTabList.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 if not Minimised and SideTabList.Visible == false then
     Main.SideTabList.Visible = true
 end
