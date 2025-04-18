@@ -26,7 +26,7 @@ Change Logs:
 ]]
 
 --SOURCE AT: https://raw.githubusercontent.com/vqmpjayZ/laboratory/refs/heads/main/Mobile_source.lua
-loadstring("https://raw.githubusercontent.com/vqmpjayZ/laboratory/refs/heads/main/Mobile_source.lua", true))()
+loadstring(game(HttpGet("https://raw.githubusercontent.com/vqmpjayZ/laboratory/refs/heads/main/Mobile_source.lua", true))() --im stupid ik
  -- //extremely important for sidebar look//
     wait(.4)
     spawn(CloseSideBar)
