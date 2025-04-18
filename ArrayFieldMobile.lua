@@ -21,7 +21,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- FULL Mobile Support
+- Added Mobile Support (Dragging Functionality + Input Accessibility)
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
@@ -3804,7 +3804,7 @@ LoadingTabs.Name = "LoadingTabs"
 LoadingTabs.Text = "Loading Tabs.."
 LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
 LoadingTabs.Size = UDim2.new(0, 200, 0, 30)
-LoadingTabs.Position = UDim2.new(0, 70, 0.5, 0)
+LoadingTabs.Position = UDim2.new(0, 90, 0.5, 0)
 LoadingTabs.Font = Enum.Font.GothamMedium
 LoadingTabs.TextSize = 14
 LoadingTabs.BackgroundTransparency = 1
