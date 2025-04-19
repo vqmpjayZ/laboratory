@@ -32,7 +32,7 @@ Change Logs:
 
 ]]
 
-local Release = "Release 2B"
+local Release = "Release 2D"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
 local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
@@ -136,7 +136,7 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = game:GetService('Players').LocalPlayer
 
 -- Interface Management
-local ArrayField = game:GetObjects("rbxassetid://13853811008")[1]
+local ArrayField = game:GetObjects("rbxassetid://13853811008")[1] --Backup: 13853811008
 ArrayField.Enabled = false
 local spawn = task.spawn
 local delay = task.delay
@@ -792,20 +792,16 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
         Notification.Description.TextTransparency = 1
         Notification.Description.TextColor3 = SelectedTheme.TextColor
         Notification.Icon.ImageColor3 = SelectedTheme.TextColor
-        
-        -- Handle icon with Lucide support
+
         if NotificationSettings.Image then
             pcall(function()
                 if type(NotificationSettings.Image) == "string" and not tonumber(NotificationSettings.Image) then
-                    -- This is a Lucide icon name
                     local asset = getIcon(NotificationSettings.Image)
                     Notification.Icon.Image = "rbxassetid://" .. asset.id
                     Notification.Icon.ImageRectOffset = asset.imageRectOffset
                     Notification.Icon.ImageRectSize = asset.imageRectSize
                 else
-                    -- This is a direct asset ID
                     Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
-                    -- Reset ImageRect properties when using direct IDs
                     Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
                     Notification.Icon.ImageRectSize = Vector2.new(0, 0)
                 end
@@ -1391,6 +1387,18 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 	Elements.Visible = false
 	LoadingFrame.Visible = true
 
+	local LoadingTabs = Instance.new("TextLabel")
+	LoadingTabs.Name = "LoadingTabs"
+	LoadingTabs.Text = "Loading Tabs.."
+	LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
+	LoadingTabs.Size = UDim2.new(0, 100, 0, 30)
+	LoadingTabs.Position = UDim2.new(0, 50, 0.5, 0)
+	LoadingTabs.Font = Enum.Font.GothamMedium
+	LoadingTabs.TextSize = 14
+	LoadingTabs.BackgroundTransparency = 1
+	LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
+	LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
+	LoadingTabs.TextTransparency = 1
 
 	pcall(function()
 		if not Settings.ConfigurationSaving.FileName then
@@ -3590,6 +3598,22 @@ end)
 	TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 700, 0, 355)}):Play()
 	TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
 
+	TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {
+		Size = UDim2.new(0, 700, 0, 355)
+	}):Play()
+
+	task.delay(0.75, function()
+		LoadingTabs.Parent = Main
+		TweenService:Create(LoadingTabs, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
+			TextTransparency = 0
+		}):Play()
+	end)
+
+	task.delay(0.75, function()
+		spawn(CloseSideBar)
+		spawn(OpenSideBar)
+	end)
+
 	Topbar.BackgroundTransparency = 1
 	Topbar.Divider.Size = UDim2.new(0, 0, 0, 1)
 	Topbar.CornerRepair.BackgroundTransparency = 1
@@ -3837,21 +3861,4 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
 end
 
     Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-
-    if LoadingFrame.Size == UDim2.new(1, 0, 1, 0) then
-    local LoadingTabs = Instance.new("TextLabel")
-    LoadingTabs.Name = "LoadingTabs"
-    LoadingTabs.Text = "Loading Tabs.."
-    LoadingTabs.TextColor3 = Color3.fromRGB(50, 50, 50)
-    LoadingTabs.Size = UDim2.new(0, 100, 0, 30)
-    LoadingTabs.Position = UDim2.new(0, 50, 0.5, 0)
-    LoadingTabs.Font = Enum.Font.GothamMedium
-    LoadingTabs.TextSize = 14
-    LoadingTabs.BackgroundTransparency = 1
-    LoadingTabs.TextXAlignment = Enum.TextXAlignment.Center
-    LoadingTabs.TextYAlignment = Enum.TextYAlignment.Center
-    LoadingTabs.TextTransparency = 0
-    LoadingTabs.Parent = Main
-    end
-
 return ArrayFieldLibrary
