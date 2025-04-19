@@ -1,11 +1,4 @@
 --[[
-ADD THIS AT THE END OF YOUR CODE FOR BETTER SIDETAB:
-    wait(.4)
-    spawn(CloseSideBar)
-    spawn(OpenSideBar)
-]]
-
---[[
 
 ArrayField Interface Suite
 by Meta
@@ -27,6 +20,7 @@ Change Logs:
 - Fixed Paragraphs not appearing when not parented to sections
 - Fixed long Paragraphs getting cut off when parented to sections
 - Fixed Search not being able to search for elements parented to sections
+- Fixed Sidetab not loading (Added pcall)
 - Removed Themes Button (pointless)
 - Revamped Design
 
@@ -1005,7 +999,7 @@ function Hide()
 end
 function Unhide()
 
-    Main.Topbar.Size = UDim2.new(0, 700, 0, 45)
+    Main.Size = UDim2.new(0, 250, 0, 260)
     if SideBarClosed then
 		spawn(OpenSideBar)
 	end
@@ -3860,5 +3854,5 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
     end
 end
 
-    Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 return ArrayFieldLibrary
