@@ -17,7 +17,7 @@ Change Logs:
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
-- Fixed long Paragraphs getting cut off when parented to sections
+- Fixed long Paragraphs getting cut off when parented to sections [+] Improved
 - Fixed Search not being able to search for elements parented to sections
 - Removed Themes Button (pointless)
 - Revamped Design
@@ -2059,83 +2059,73 @@ function ArrayFieldLibrary:CreateWindow(Settings)
             return LabelValue
         end
         
-		-- Paragraph
-        function Tab:CreateParagraph(ParagraphSettings, SectionParent)
-            local ParagraphValue = {}
-            
-            local Paragraph = Elements.Template.Paragraph:Clone()
-            Paragraph.Title.Text = ParagraphSettings.Title
-            Paragraph.Content.Text = ParagraphSettings.Content
-            Paragraph.Visible = true
+-- Paragraph
+function Tab:CreateParagraph(ParagraphSettings, SectionParent)
+    local ParagraphValue = {}
+    
+    local Paragraph = Elements.Template.Paragraph:Clone()
+    Paragraph.Title.Text = ParagraphSettings.Title
+    Paragraph.Content.Text = ParagraphSettings.Content
+    Paragraph.Visible = true
+    Paragraph.Content.RichText = true
 
-            Paragraph.Content.RichText = true
+    Tab.Elements[ParagraphSettings.Title] = {
+        type = 'paragraph',
+        section = SectionParent or ParagraphSettings.SectionParent,
+        element = Paragraph
+    }
 
-            Tab.Elements[ParagraphSettings.Title] = {
-                type = 'paragraph',
-                section = SectionParent or ParagraphSettings.SectionParent,
-                element = Paragraph
-            }
+    if SectionParent then
+        Paragraph.Parent = SectionParent.Holder
+    elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
+        Paragraph.Parent = ParagraphSettings.SectionParent.Holder
+    else
+        Paragraph.Parent = TabPage
+    end
 
-            if SectionParent then
-                Paragraph.Parent = SectionParent.Holder
-            elseif ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder then
-                Paragraph.Parent = ParagraphSettings.SectionParent.Holder
-            else
-                Paragraph.Parent = TabPage
-            end
+    Paragraph.Content.TextWrapped = true
 
-            Paragraph.Content.TextWrapped = true
+    local function UpdateParagraphSize()
+        local currentText = Paragraph.Content.Text
+        Paragraph.Content.Text = currentText
 
-            if Paragraph.Parent == TabPage then
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
-            else
-                local charCount = string.len(ParagraphSettings.Content)
+        local textHeight = Paragraph.Content.TextBounds.Y
 
-                local contentHeight = charCount * 0.37
+        textHeight = textHeight + 5
+        
+        if Paragraph.Parent == TabPage then
+            Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
+            Paragraph.Size = UDim2.new(0, 465, 0, textHeight + 40)
+        else
+            Paragraph.Content.Size = UDim2.new(0, 438, 0, textHeight)
+            Paragraph.Size = UDim2.new(1, -10, 0, textHeight + 40)
+        end
+    end
 
-                contentHeight = contentHeight + 2
+    UpdateParagraphSize()
 
-                contentHeight = math.max(20, contentHeight)
+    Paragraph.BackgroundTransparency = 1
+    Paragraph.UIStroke.Transparency = 1
+    Paragraph.Title.TextTransparency = 1
+    Paragraph.Content.TextTransparency = 1
 
-                Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
-                Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
-            end
+    Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+    Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+    
+    TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+    TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+    TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+    TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
-            Paragraph.BackgroundTransparency = 1
-            Paragraph.UIStroke.Transparency = 1
-            Paragraph.Title.TextTransparency = 1
-            Paragraph.Content.TextTransparency = 1
+    function ParagraphValue:Set(NewParagraphSettings)
+        Paragraph.Title.Text = NewParagraphSettings.Title
+        Paragraph.Content.Text = NewParagraphSettings.Content
 
-            Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-            Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-            
-            TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
-            function ParagraphValue:Set(NewParagraphSettings)
-                Paragraph.Title.Text = NewParagraphSettings.Title
-                Paragraph.Content.Text = NewParagraphSettings.Content
-
-                if Paragraph.Parent == TabPage then
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-                    Paragraph.Size = UDim2.new(0, 465, 0, Paragraph.Content.TextBounds.Y + 40)
-                else
-                    local charCount = string.len(NewParagraphSettings.Content)
-                    
-                    local contentHeight = charCount * 0.37
-                    contentHeight = contentHeight + 2
-                    contentHeight = math.max(20, contentHeight)
-                    
-                    Paragraph.Content.Size = UDim2.new(0, 438, 0, contentHeight)
-                    Paragraph.Size = UDim2.new(1, -10, 0, contentHeight + 40)
-                end
-            end
-            
-            return ParagraphValue
-        end        
+        UpdateParagraphSize()
+    end
+    
+    return ParagraphValue
+end  
         
 		-- Input
 		function Tab:CreateInput(InputSettings)
