@@ -4,7 +4,7 @@
 ]]
 
 local UILibrary = {}
---local Version = 1
+
 -- Services
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -2404,6 +2404,7 @@ function UILibrary:CreateWindow(options)
         return Notification
     end
     
+    -- Initialize the library
     function Library:Init()
         -- Create UI
         self:CreateUI()
@@ -2419,16 +2420,15 @@ function UILibrary:CreateWindow(options)
         return self
     end
     
+    -- Add CreateWindow method to the Library
+    function Library:CreateWindow(options)
+        self:CreateUI(options)
+        return self
+    end
+    
+    -- Initialize and return the library
     return Library
 end
 
--- Create the interface
-local Interface = {}
-
-function Interface:CreateWindow(options)
-    local LibraryInstance = RayfieldInspired()
-    LibraryInstance:CreateUI(options)
-    return LibraryInstance
-end
-
-return Interface
+-- Return the function that creates the library
+return RayfieldInspired
