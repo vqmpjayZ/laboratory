@@ -277,15 +277,15 @@ function MinimalistUI.new(config)
     self.MinSize = config.MinSize or Vector2.new(400, 300)
     self.MaxSize = config.MaxSize or Vector2.new(800, 600)
     
-    -- Theme initialization
-    local themeName = config.Theme or "Dark"
-    if themeName == "Adaptive" then
-        -- Determine theme based on system theme
-        local isDark = (settings().Studio.Theme == Enum.UITheme.Dark)
-        self.Theme = isDark and Themes.Dark or Themes.Light
+    -- self.Theme initialization
+    local ThemeName = config.Theme or "Dark"
+    if self.ThemeName == "Adaptive" then
+        -- Determine self.Theme based on system self.Theme
+        local isDark = (settings().Studio.self.Theme == Enum.UIself.Theme.Dark)
+        self.Theme = isDark and self.Themes.Dark or self.Themes.Light
     else
-        -- Use specified theme or default to Dark if invalid
-        self.Theme = Themes[themeName] or Themes.Dark
+        -- Use specified self.Theme or default to Dark if invalid
+        self.Theme = self.Themes[self.ThemeName] or self.Themes.Dark
     end
     
     -- Initialize other properties
@@ -310,7 +310,7 @@ function MinimalistUI.new(config)
     self.MainFrame.Name = "MainFrame"
     self.MainFrame.Size = self.Size
     self.MainFrame.Position = self.Position  -- Changed from position to self.Position
-    self.MainFrame.BackgroundColor3 = self.Theme.Background  -- Changed from theme.Background to self.Theme.Background
+    self.MainFrame.BackgroundColor3 = self.Theme.Background  -- Changed from self.Theme.Background to self.Theme.Background
     self.MainFrame.BorderSizePixel = 0
     self.MainFrame.Parent = self.ScreenGui
     self.MainFrame.Visible = false -- Hidden until loading is complete
@@ -337,7 +337,7 @@ function MinimalistUI.new(config)
     
 -- UI Stroke
 local UIStroke = Instance.new("UIStroke")
-UIStroke.Color = self.Theme.Accent  -- Changed from theme.Accent to self.Theme.Accent
+UIStroke.Color = self.Theme.Accent  -- Changed from self.Theme.Accent to self.Theme.Accent
 UIStroke.Thickness = 1.5
 UIStroke.Parent = self.MainFrame
     
@@ -345,7 +345,7 @@ UIStroke.Parent = self.MainFrame
 self.TitleBar = Instance.new("Frame")
 self.TitleBar.Name = "TitleBar"
 self.TitleBar.Size = UDim2.new(1, 0, 0, 40)
-self.TitleBar.BackgroundColor3 = self.Theme.DarkAccent  -- Changed from theme.DarkAccent
+self.TitleBar.BackgroundColor3 = self.Theme.DarkAccent  -- Changed from self.Theme.DarkAccent
 self.TitleBar.BorderSizePixel = 0
 self.TitleBar.Parent = self.MainFrame
     
@@ -358,7 +358,7 @@ self.TitleBar.Parent = self.MainFrame
     bottomFix.Name = "BottomFix"
     bottomFix.Size = UDim2.new(1, 0, 0, 10)
     bottomFix.Position = UDim2.new(0, 0, 1, -10)
-    bottomFix.BackgroundColor3 = theme.DarkAccent
+    bottomFix.BackgroundColor3 = self.Theme.DarkAccent
     bottomFix.BorderSizePixel = 0
     bottomFix.ZIndex = 0
     bottomFix.Parent = self.TitleBar
@@ -370,7 +370,7 @@ self.TitleBar.Parent = self.MainFrame
     titleText.Position = UDim2.new(0, 15, 0, 5)
     titleText.BackgroundTransparency = 1
     titleText.Text = title
-    titleText.TextColor3 = theme.TextColor
+    titleText.TextColor3 = self.Theme.TextColor
     titleText.Font = Enum.Font.GothamBold
     titleText.TextSize = 16
     titleText.TextXAlignment = Enum.TextXAlignment.Left
@@ -383,7 +383,7 @@ self.TitleBar.Parent = self.MainFrame
     subtitleText.Position = UDim2.new(0, 15, 0, 22)
     subtitleText.BackgroundTransparency = 1
     subtitleText.Text = subtitle
-    subtitleText.TextColor3 = theme.SubTextColor
+    subtitleText.TextColor3 = self.Theme.SubTextColor
     subtitleText.Font = Enum.Font.Gotham
     subtitleText.TextSize = 12
     subtitleText.TextXAlignment = Enum.TextXAlignment.Left
@@ -398,7 +398,7 @@ self.TitleBar.Parent = self.MainFrame
     self.SearchButton.Image = "rbxassetid://3926305904"
     self.SearchButton.ImageRectSize = Vector2.new(36, 36)
     self.SearchButton.ImageRectOffset = Vector2.new(964, 324)
-    self.SearchButton.ImageColor3 = theme.TextColor
+    self.SearchButton.ImageColor3 = self.Theme.TextColor
     self.SearchButton.Parent = self.TitleBar
     
     -- Search box (hidden by default)
@@ -406,7 +406,7 @@ self.TitleBar.Parent = self.MainFrame
     self.SearchBox.Name = "SearchBox"
     self.SearchBox.Size = UDim2.new(1, -40, 0, 40)
     self.SearchBox.Position = UDim2.new(0, 20, 0, 40)
-    self.SearchBox.BackgroundColor3 = theme.Accent
+    self.SearchBox.BackgroundColor3 = self.Theme.Accent
     self.SearchBox.BorderSizePixel = 0
     self.SearchBox.Visible = false
     self.SearchBox.ZIndex = 10
@@ -424,7 +424,7 @@ self.TitleBar.Parent = self.MainFrame
     searchIcon.Image = "rbxassetid://3926305904"
     searchIcon.ImageRectSize = Vector2.new(36, 36)
     searchIcon.ImageRectOffset = Vector2.new(964, 324)
-    searchIcon.ImageColor3 = theme.SubTextColor
+    searchIcon.ImageColor3 = self.Theme.SubTextColor
     searchIcon.ZIndex = 10
     searchIcon.Parent = self.SearchBox
     
@@ -435,8 +435,8 @@ self.TitleBar.Parent = self.MainFrame
     self.SearchInput.BackgroundTransparency = 1
     self.SearchInput.Text = ""
     self.SearchInput.PlaceholderText = "Search..."
-    self.SearchInput.TextColor3 = theme.TextColor
-    self.SearchInput.PlaceholderColor3 = theme.SubTextColor
+    self.SearchInput.TextColor3 = self.Theme.TextColor
+    self.SearchInput.PlaceholderColor3 = self.Theme.SubTextColor
     self.SearchInput.Font = Enum.Font.Gotham
     self.SearchInput.TextSize = 14
     self.SearchInput.TextXAlignment = Enum.TextXAlignment.Left
@@ -450,7 +450,7 @@ self.TitleBar.Parent = self.MainFrame
     closeSearchButton.Position = UDim2.new(1, -25, 0.5, -8)
     closeSearchButton.BackgroundTransparency = 1
     closeSearchButton.Image = "rbxassetid://6031094678"
-    closeSearchButton.ImageColor3 = theme.SubTextColor
+    closeSearchButton.ImageColor3 = self.Theme.SubTextColor
     closeSearchButton.ZIndex = 10
     closeSearchButton.Parent = self.SearchBox
     
@@ -461,7 +461,7 @@ self.TitleBar.Parent = self.MainFrame
     self.MinimizeButton.Position = UDim2.new(1, -70, 0.5, -10)
     self.MinimizeButton.BackgroundTransparency = 1
     self.MinimizeButton.Image = "rbxassetid://6026568240"
-    self.MinimizeButton.ImageColor3 = theme.TextColor
+    self.MinimizeButton.ImageColor3 = self.Theme.TextColor
     self.MinimizeButton.Parent = self.TitleBar
     
     -- Close button
@@ -471,7 +471,7 @@ self.TitleBar.Parent = self.MainFrame
     self.CloseButton.Position = UDim2.new(1, -30, 0.5, -10)
     self.CloseButton.BackgroundTransparency = 1
     self.CloseButton.Image = "rbxassetid://6031094678"
-    self.CloseButton.ImageColor3 = theme.TextColor
+    self.CloseButton.ImageColor3 = self.Theme.TextColor
     self.CloseButton.Parent = self.TitleBar
     
     -- Content container
@@ -487,7 +487,7 @@ self.TitleBar.Parent = self.MainFrame
     self.TabContainer = Instance.new("Frame")
     self.TabContainer.Name = "TabContainer"
     self.TabContainer.Size = UDim2.new(0, 150, 1, 0)
-    self.TabContainer.BackgroundColor3 = theme.Accent
+    self.TabContainer.BackgroundColor3 = self.Theme.Accent
     self.TabContainer.BorderSizePixel = 0
     self.TabContainer.Parent = self.ContentFrame
     
@@ -500,7 +500,7 @@ self.TitleBar.Parent = self.MainFrame
     rightFix.Name = "RightFix"
     rightFix.Size = UDim2.new(0, 10, 1, 0)
     rightFix.Position = UDim2.new(1, -10, 0, 0)
-    rightFix.BackgroundColor3 = theme.Accent
+    rightFix.BackgroundColor3 = self.Theme.Accent
     rightFix.BorderSizePixel = 0
     rightFix.Parent = self.TabContainer
     
@@ -511,7 +511,7 @@ self.TitleBar.Parent = self.MainFrame
     self.TabScroll.BackgroundTransparency = 1
     self.TabScroll.BorderSizePixel = 0
     self.TabScroll.ScrollBarThickness = 2
-    self.TabScroll.ScrollBarImageColor3 = theme.LightAccent
+    self.TabScroll.ScrollBarImageColor3 = self.Theme.LightAccent
     self.TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     self.TabScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
     self.TabScroll.Parent = self.TabContainer
@@ -542,10 +542,10 @@ self.TitleBar.Parent = self.MainFrame
     makeDraggable(self.MainFrame, self.TitleBar)
     
     -- Setup button interactions
-    setupImageButtonHover(self.CloseButton, theme.TextColor, Color3.fromRGB(255, 100, 100))
-    setupImageButtonHover(self.MinimizeButton, theme.TextColor, Color3.fromRGB(100, 200, 255))
-    setupImageButtonHover(self.SearchButton, theme.TextColor, Color3.fromRGB(100, 200, 255))
-    setupImageButtonHover(closeSearchButton, theme.SubTextColor, Color3.fromRGB(255, 100, 100))
+    setupImageButtonHover(self.CloseButton, self.Theme.TextColor, Color3.fromRGB(255, 100, 100))
+    setupImageButtonHover(self.MinimizeButton, self.Theme.TextColor, Color3.fromRGB(100, 200, 255))
+    setupImageButtonHover(self.SearchButton, self.Theme.TextColor, Color3.fromRGB(100, 200, 255))
+    setupImageButtonHover(closeSearchButton, self.Theme.SubTextColor, Color3.fromRGB(255, 100, 100))
     
     -- Button functionality
     self.CloseButton.MouseButton1Click:Connect(function()
@@ -573,14 +573,14 @@ end
 
 -- Create loading screen
 function MinimalistUI:CreateLoadingScreen()
-    local theme = self.Theme
+    local Theme = self.Theme
     
     -- Loading container
     self.LoadingFrame = Instance.new("Frame")
     self.LoadingFrame.Name = "LoadingFrame"
     self.LoadingFrame.Size = UDim2.new(0, 240, 0, 120)
     self.LoadingFrame.Position = UDim2.new(0.5, -120, 0.5, -60)
-    self.LoadingFrame.BackgroundColor3 = theme.Background
+    self.LoadingFrame.BackgroundColor3 = self.Theme.Background
     self.LoadingFrame.BorderSizePixel = 0
     self.LoadingFrame.Parent = self.ScreenGui
     
@@ -606,7 +606,7 @@ function MinimalistUI:CreateLoadingScreen()
     
     -- UI Stroke
     local UIStroke = Instance.new("UIStroke")
-    UIStroke.Color = theme.Accent
+    UIStroke.Color = self.Theme.Accent
     UIStroke.Thickness = 1.5
     UIStroke.Parent = self.LoadingFrame
     
@@ -617,7 +617,7 @@ function MinimalistUI:CreateLoadingScreen()
     titleText.Position = UDim2.new(0, 0, 0, 15)
     titleText.BackgroundTransparency = 1
     titleText.Text = self.Title
-    titleText.TextColor3 = theme.TextColor
+    titleText.TextColor3 = self.Theme.TextColor
     titleText.Font = Enum.Font.GothamBold
     titleText.TextSize = 18
     titleText.Parent = self.LoadingFrame
@@ -627,7 +627,7 @@ function MinimalistUI:CreateLoadingScreen()
     loadingBarContainer.Name = "LoadingBarContainer"
     loadingBarContainer.Size = UDim2.new(0.8, 0, 0, 10)
     loadingBarContainer.Position = UDim2.new(0.1, 0, 0.5, 5)
-    loadingBarContainer.BackgroundColor3 = theme.Accent
+    loadingBarContainer.BackgroundColor3 = self.Theme.Accent
     loadingBarContainer.BorderSizePixel = 0
     loadingBarContainer.Parent = self.LoadingFrame
     
@@ -639,7 +639,7 @@ function MinimalistUI:CreateLoadingScreen()
     self.LoadingBar = Instance.new("Frame")
     self.LoadingBar.Name = "LoadingBar"
     self.LoadingBar.Size = UDim2.new(0, 0, 1, 0)
-    self.LoadingBar.BackgroundColor3 = theme.ToggleOn
+    self.LoadingBar.BackgroundColor3 = self.Theme.ToggleOn
     self.LoadingBar.BorderSizePixel = 0
     self.LoadingBar.Parent = loadingBarContainer
     
@@ -654,7 +654,7 @@ function MinimalistUI:CreateLoadingScreen()
     self.LoadingText.Position = UDim2.new(0, 0, 0.7, 5)
     self.LoadingText.BackgroundTransparency = 1
     self.LoadingText.Text = "Loading..."
-    self.LoadingText.TextColor3 = theme.SubTextColor
+    self.LoadingText.TextColor3 = self.Theme.SubTextColor
     self.LoadingText.Font = Enum.Font.Gotham
     self.LoadingText.TextSize = 14
     self.LoadingText.Parent = self.LoadingFrame
@@ -983,14 +983,14 @@ end
 
 -- Create a section
 function MinimalistUI:CreateSection(tab, title)
-    local theme = self.Theme
+    local Theme = self.Theme
     local sectionIndex = #tab.Sections + 1
     
     -- Section container
     local sectionFrame = Instance.new("Frame")
     sectionFrame.Name = "Section_" .. title
     sectionFrame.Size = UDim2.new(1, -10, 0, 40) -- Will be resized based on content
-    sectionFrame.BackgroundColor3 = theme.Accent
+    sectionFrame.BackgroundColor3 = self.Theme.Accent
     sectionFrame.BorderSizePixel = 0
     sectionFrame.AutomaticSize = Enum.AutomaticSize.Y
     sectionFrame.Parent = tab.Container
@@ -1006,7 +1006,7 @@ function MinimalistUI:CreateSection(tab, title)
     sectionTitle.Position = UDim2.new(0, 10, 0, 5)
     sectionTitle.BackgroundTransparency = 1
     sectionTitle.Text = title
-    sectionTitle.TextColor3 = theme.TextColor
+    sectionTitle.TextColor3 = self.Theme.TextColor
     sectionTitle.Font = Enum.Font.GothamBold
     sectionTitle.TextSize = 14
     sectionTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -1090,7 +1090,7 @@ end
 
 -- Create a button
 function MinimalistUI:CreateButton(section, config)
-    local theme = self.Theme
+    local Theme = self.Theme
     local title = config.Title or "Button"
     local description = config.Description
     local icon = config.Icon
@@ -1108,7 +1108,7 @@ function MinimalistUI:CreateButton(section, config)
     local button = Instance.new("TextButton")
     button.Name = "Button"
     button.Size = UDim2.new(1, 0, 0, 36)
-    button.BackgroundColor3 = theme.ButtonColor
+    button.BackgroundColor3 = self.Theme.ButtonColor
     button.Text = ""
     button.AutoButtonColor = false
     button.ClipsDescendants = true
@@ -1119,7 +1119,7 @@ function MinimalistUI:CreateButton(section, config)
     buttonCorner.Parent = button
     
     local buttonStroke = Instance.new("UIStroke")
-    buttonStroke.Color = theme.LightAccent
+    buttonStroke.Color = self.Theme.LightAccent
     buttonStroke.Thickness = 1
     buttonStroke.Parent = button
     
@@ -1156,7 +1156,7 @@ function MinimalistUI:CreateButton(section, config)
             buttonIcon.Image = icon
         end
         
-        buttonIcon.ImageColor3 = theme.TextColor
+        buttonIcon.ImageColor3 = self.Theme.TextColor
         buttonIcon.Parent = button
     end
     
@@ -1167,7 +1167,7 @@ function MinimalistUI:CreateButton(section, config)
     buttonText.Position = UDim2.new(0, icon and 36 or 8, 0, 0)
     buttonText.BackgroundTransparency = 1
     buttonText.Text = title
-    buttonText.TextColor3 = theme.TextColor
+    buttonText.TextColor3 = self.Theme.TextColor
     buttonText.Font = Enum.Font.GothamSemibold
     buttonText.TextSize = 14
     buttonText.TextXAlignment = Enum.TextXAlignment.Left
@@ -1181,7 +1181,7 @@ function MinimalistUI:CreateButton(section, config)
         descriptionText.Position = UDim2.new(0, 0, 0, 40)
         descriptionText.BackgroundTransparency = 1
         descriptionText.Text = description
-        descriptionText.TextColor3 = theme.SubTextColor
+        descriptionText.TextColor3 = self.Theme.SubTextColor
         descriptionText.Font = Enum.Font.Gotham
         descriptionText.TextSize = 12
         descriptionText.TextWrapped = true
@@ -1190,7 +1190,7 @@ function MinimalistUI:CreateButton(section, config)
     end
     
     -- Button functionality
-    setupButtonHover(button, theme.ButtonColor, theme.ButtonHover, theme.ButtonClick)
+    setupButtonHover(button, self.Theme.ButtonColor, self.Theme.ButtonHover, self.Theme.ButtonClick)
     
     button.MouseButton1Click:Connect(function()
         createRipple(button)
@@ -1235,7 +1235,7 @@ end
 
 -- Create a toggle
 function MinimalistUI:CreateToggle(section, config)
-    local theme = self.Theme
+    local Theme = self.Theme
     local title = config.Title or "Toggle"
     local description = config.Description
     local default = config.Default or false
@@ -1253,7 +1253,7 @@ function MinimalistUI:CreateToggle(section, config)
     local toggleButton = Instance.new("TextButton")
     toggleButton.Name = "ToggleButton"
     toggleButton.Size = UDim2.new(1, 0, 0, 36)
-    toggleButton.BackgroundColor3 = theme.ButtonColor
+    toggleButton.BackgroundColor3 = self.Theme.ButtonColor
     toggleButton.BackgroundTransparency = 0.9
     toggleButton.Text = ""
     toggleButton.AutoButtonColor = false
@@ -1270,7 +1270,7 @@ function MinimalistUI:CreateToggle(section, config)
     toggleText.Position = UDim2.new(0, 8, 0, 0)
     toggleText.BackgroundTransparency = 1
     toggleText.Text = title
-    toggleText.TextColor3 = theme.TextColor
+    toggleText.TextColor3 = self.Theme.TextColor
     toggleText.Font = Enum.Font.GothamSemibold
     toggleText.TextSize = 14
     toggleText.TextXAlignment = Enum.TextXAlignment.Left
@@ -1281,7 +1281,7 @@ function MinimalistUI:CreateToggle(section, config)
     toggleBackground.Name = "ToggleBackground"
     toggleBackground.Size = UDim2.new(0, 40, 0, 20)
     toggleBackground.Position = UDim2.new(1, -48, 0.5, -10)
-    toggleBackground.BackgroundColor3 = theme.ToggleOff
+    toggleBackground.BackgroundColor3 = self.Theme.ToggleOff
     toggleBackground.BorderSizePixel = 0
     toggleBackground.Parent = toggleButton
     
@@ -1310,7 +1310,7 @@ function MinimalistUI:CreateToggle(section, config)
         descriptionText.Position = UDim2.new(0, 0, 0, 40)
         descriptionText.BackgroundTransparency = 1
         descriptionText.Text = description
-        descriptionText.TextColor3 = theme.SubTextColor
+        descriptionText.TextColor3 = self.Theme.SubTextColor
         descriptionText.Font = Enum.Font.Gotham
         descriptionText.TextSize = 12
         descriptionText.TextWrapped = true
@@ -1325,7 +1325,7 @@ function MinimalistUI:CreateToggle(section, config)
     local function updateToggle(value)
         enabled = value
         
-        local targetColor = enabled and theme.ToggleOn or theme.ToggleOff
+        local targetColor = enabled and self.Theme.ToggleOn or self.Theme.ToggleOff
         local targetPosition = enabled and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
         
         TweenService:Create(toggleBackground, TweenInfo.new(0.2), {
@@ -1402,7 +1402,7 @@ end
 
 -- Create a slider
 function MinimalistUI:CreateSlider(section, config)
-    local theme = self.Theme
+    local Theme = self.Theme
     local title = config.Title or "Slider"
     local description = config.Description
     local min = config.Min or 0
@@ -1426,7 +1426,7 @@ function MinimalistUI:CreateSlider(section, config)
     sliderTitle.Size = UDim2.new(1, 0, 0, 20)
     sliderTitle.BackgroundTransparency = 1
     sliderTitle.Text = title
-    sliderTitle.TextColor3 = theme.TextColor
+    sliderTitle.TextColor3 = self.Theme.TextColor
     sliderTitle.Font = Enum.Font.GothamSemibold
     sliderTitle.TextSize = 14
     sliderTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -1439,7 +1439,7 @@ function MinimalistUI:CreateSlider(section, config)
     valueDisplay.Position = UDim2.new(1, -50, 0, 0)
     valueDisplay.BackgroundTransparency = 1
     valueDisplay.Text = tostring(default) .. suffix
-    valueDisplay.TextColor3 = theme.SubTextColor
+    valueDisplay.TextColor3 = self.Theme.SubTextColor
     valueDisplay.Font = Enum.Font.Gotham
     valueDisplay.TextSize = 14
     valueDisplay.TextXAlignment = Enum.TextXAlignment.Right
@@ -1450,7 +1450,7 @@ function MinimalistUI:CreateSlider(section, config)
     sliderBackground.Name = "SliderBackground"
     sliderBackground.Size = UDim2.new(1, 0, 0, 8)
     sliderBackground.Position = UDim2.new(0, 0, 0, 30)
-    sliderBackground.BackgroundColor3 = theme.SliderBackground
+    sliderBackground.BackgroundColor3 = self.Theme.SliderBackground
     sliderBackground.BorderSizePixel = 0
     sliderBackground.Parent = sliderFrame
     
@@ -1462,7 +1462,7 @@ function MinimalistUI:CreateSlider(section, config)
     local sliderFill = Instance.new("Frame")
     sliderFill.Name = "SliderFill"
     sliderFill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
-    sliderFill.BackgroundColor3 = theme.SliderFill
+    sliderFill.BackgroundColor3 = self.Theme.SliderFill
     sliderFill.BorderSizePixel = 0
     sliderFill.Parent = sliderBackground
     
@@ -1501,7 +1501,7 @@ function MinimalistUI:CreateSlider(section, config)
         descriptionText.Position = UDim2.new(0, 0, 0, 45)
         descriptionText.BackgroundTransparency = 1
         descriptionText.Text = description
-        descriptionText.TextColor3 = theme.SubTextColor
+        descriptionText.TextColor3 = self.Theme.SubTextColor
         descriptionText.Font = Enum.Font.Gotham
         descriptionText.TextSize = 12
         descriptionText.TextWrapped = true
@@ -1620,7 +1620,7 @@ end
 
 -- Create a dropdown
 function MinimalistUI:CreateDropdown(section, config)
-    local theme = self.Theme
+    local Theme = self.Theme
     local title = config.Title or "Dropdown"
     local description = config.Description
     local options = config.Options or {}
@@ -1643,7 +1643,7 @@ function MinimalistUI:CreateDropdown(section, config)
     dropdownTitle.Size = UDim2.new(1, 0, 0, 20)
     dropdownTitle.BackgroundTransparency = 1
     dropdownTitle.Text = title
-    dropdownTitle.TextColor3 = theme.TextColor
+    dropdownTitle.TextColor3 = self.Theme.TextColor
     dropdownTitle.Font = Enum.Font.GothamSemibold
     dropdownTitle.TextSize = 14
     dropdownTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -1654,7 +1654,7 @@ function MinimalistUI:CreateDropdown(section, config)
     dropdownButton.Name = "DropdownButton"
     dropdownButton.Size = UDim2.new(1, 0, 0, 36)
     dropdownButton.Position = UDim2.new(0, 0, 0, 24)
-    dropdownButton.BackgroundColor3 = theme.DropdownBackground
+    dropdownButton.BackgroundColor3 = self.Theme.DropdownBackground
     dropdownButton.Text = ""
     dropdownButton.AutoButtonColor = false
     dropdownButton.Parent = dropdownFrame
@@ -1664,7 +1664,7 @@ function MinimalistUI:CreateDropdown(section, config)
     buttonCorner.Parent = dropdownButton
     
     local buttonStroke = Instance.new("UIStroke")
-    buttonStroke.Color = theme.LightAccent
+    buttonStroke.Color = self.Theme.LightAccent
     buttonStroke.Thickness = 1
     buttonStroke.Parent = dropdownButton
     
@@ -1675,7 +1675,7 @@ function MinimalistUI:CreateDropdown(section, config)
     selectedText.Position = UDim2.new(0, 10, 0, 0)
     selectedText.BackgroundTransparency = 1
     selectedText.Text = multi and "Select options..." or "Select an option..."
-    selectedText.TextColor3 = theme.SubTextColor
+    selectedText.TextColor3 = self.Theme.SubTextColor
     selectedText.Font = Enum.Font.Gotham
     selectedText.TextSize = 14
     selectedText.TextXAlignment = Enum.TextXAlignment.Left
@@ -1689,7 +1689,7 @@ function MinimalistUI:CreateDropdown(section, config)
     dropdownArrow.Position = UDim2.new(1, -26, 0.5, -8)
     dropdownArrow.BackgroundTransparency = 1
     dropdownArrow.Image = "rbxassetid://6031091004"
-    dropdownArrow.ImageColor3 = theme.TextColor
+    dropdownArrow.ImageColor3 = self.Theme.TextColor
     dropdownArrow.Parent = dropdownButton
     
     -- Description (if provided)
@@ -1700,7 +1700,7 @@ function MinimalistUI:CreateDropdown(section, config)
         descriptionText.Position = UDim2.new(0, 0, 0, 64)
         descriptionText.BackgroundTransparency = 1
         descriptionText.Text = description
-        descriptionText.TextColor3 = theme.SubTextColor
+        descriptionText.TextColor3 = self.Theme.SubTextColor
         descriptionText.Font = Enum.Font.Gotham
         descriptionText.TextSize = 12
         descriptionText.TextWrapped = true
@@ -1713,7 +1713,7 @@ function MinimalistUI:CreateDropdown(section, config)
     dropdownMenu.Name = "DropdownMenu"
     dropdownMenu.Size = UDim2.new(1, 0, 0, 0)
     dropdownMenu.Position = UDim2.new(0, 0, 1, 4)
-    dropdownMenu.BackgroundColor3 = theme.DropdownBackground
+    dropdownMenu.BackgroundColor3 = self.Theme.DropdownBackground
     dropdownMenu.BorderSizePixel = 0
     dropdownMenu.ClipsDescendants = true
     dropdownMenu.Visible = false
@@ -1725,7 +1725,7 @@ function MinimalistUI:CreateDropdown(section, config)
     menuCorner.Parent = dropdownMenu
     
     local menuStroke = Instance.new("UIStroke")
-    menuStroke.Color = theme.LightAccent
+    menuStroke.Color = self.Theme.LightAccent
     menuStroke.Thickness = 1
     menuStroke.Parent = dropdownMenu
     
@@ -1736,12 +1736,12 @@ function MinimalistUI:CreateDropdown(section, config)
         searchBox.Name = "SearchBox"
         searchBox.Size = UDim2.new(1, -20, 0, 30)
         searchBox.Position = UDim2.new(0, 10, 0, 5)
-        searchBox.BackgroundColor3 = theme.InputBackground
+        searchBox.BackgroundColor3 = self.Theme.InputBackground
         searchBox.BackgroundTransparency = 0.5
         searchBox.Text = ""
         searchBox.PlaceholderText = "Search..."
-        searchBox.TextColor3 = theme.TextColor
-        searchBox.PlaceholderColor3 = theme.SubTextColor
+        searchBox.TextColor3 = self.Theme.TextColor
+        searchBox.PlaceholderColor3 = self.Theme.SubTextColor
         searchBox.Font = Enum.Font.Gotham
         searchBox.TextSize = 14
         searchBox.TextXAlignment = Enum.TextXAlignment.Left
@@ -1761,7 +1761,7 @@ function MinimalistUI:CreateDropdown(section, config)
     optionsContainer.BackgroundTransparency = 1
     optionsContainer.BorderSizePixel = 0
     optionsContainer.ScrollBarThickness = 4
-    optionsContainer.ScrollBarImageColor3 = theme.LightAccent
+    optionsContainer.ScrollBarImageColor3 = self.Theme.LightAccent
     optionsContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     optionsContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
     optionsContainer.ZIndex = 10
@@ -1781,7 +1781,7 @@ function MinimalistUI:CreateDropdown(section, config)
         if multi then
             if #selectedOptions == 0 then
                 selectedText.Text = "Select options..."
-                selectedText.TextColor3 = theme.SubTextColor
+                selectedText.TextColor3 = self.Theme.SubTextColor
             else
                 local displayText = ""
                 for i, option in ipairs(selectedOptions) do
@@ -1797,15 +1797,15 @@ function MinimalistUI:CreateDropdown(section, config)
                     end
                 end
                 selectedText.Text = displayText
-                selectedText.TextColor3 = theme.TextColor
+                selectedText.TextColor3 = self.Theme.TextColor
             end
         else
             if selectedOptions then
                 selectedText.Text = selectedOptions
-                selectedText.TextColor3 = theme.TextColor
+                selectedText.TextColor3 = self.Theme.TextColor
             else
                 selectedText.Text = "Select an option..."
-                selectedText.TextColor3 = theme.SubTextColor
+                selectedText.TextColor3 = self.Theme.SubTextColor
             end
         end
     end
@@ -1830,7 +1830,7 @@ function MinimalistUI:CreateDropdown(section, config)
             local optionButton = Instance.new("TextButton")
             optionButton.Name = "Option_" .. option
             optionButton.Size = UDim2.new(1, 0, 0, 30)
-            optionButton.BackgroundColor3 = theme.ButtonColor
+            optionButton.BackgroundColor3 = self.Theme.ButtonColor
             optionButton.BackgroundTransparency = 0.9
             optionButton.Text = ""
             optionButton.ZIndex = 10
@@ -1847,7 +1847,7 @@ function MinimalistUI:CreateDropdown(section, config)
             optionText.Position = UDim2.new(0, 10, 0, 0)
             optionText.BackgroundTransparency = 1
             optionText.Text = option
-            optionText.TextColor3 = theme.TextColor
+            optionText.TextColor3 = self.Theme.TextColor
             optionText.Font = Enum.Font.Gotham
             optionText.TextSize = 14
             optionText.TextXAlignment = Enum.TextXAlignment.Left
@@ -1860,7 +1860,7 @@ function MinimalistUI:CreateDropdown(section, config)
                 checkbox.Name = "Checkbox"
                 checkbox.Size = UDim2.new(0, 16, 0, 16)
                 checkbox.Position = UDim2.new(1, -26, 0.5, -8)
-                checkbox.BackgroundColor3 = theme.ToggleOff
+                checkbox.BackgroundColor3 = self.Theme.ToggleOff
                 checkbox.BorderSizePixel = 0
                 checkbox.ZIndex = 10
                 checkbox.Parent = optionButton
@@ -1882,7 +1882,7 @@ function MinimalistUI:CreateDropdown(section, config)
                 
                 -- Update checkbox if option is selected
                 if table.find(selectedOptions, option) then
-                    checkbox.BackgroundColor3 = theme.ToggleOn
+                    checkbox.BackgroundColor3 = self.Theme.ToggleOn
                     checkmark.ImageTransparency = 0
                 end
             end
@@ -1913,7 +1913,7 @@ function MinimalistUI:CreateDropdown(section, config)
                         
                         -- Update checkbox
                         TweenService:Create(checkbox, TweenInfo.new(0.2), {
-                            BackgroundColor3 = theme.ToggleOff
+                            BackgroundColor3 = self.Theme.ToggleOff
                         }):Play()
                         
                         TweenService:Create(checkmark, TweenInfo.new(0.2), {
@@ -1925,7 +1925,7 @@ function MinimalistUI:CreateDropdown(section, config)
                         
                         -- Update checkbox
                         TweenService:Create(checkbox, TweenInfo.new(0.2), {
-                            BackgroundColor3 = theme.ToggleOn
+                            BackgroundColor3 = self.Theme.ToggleOn
                         }):Play()
                         
                         TweenService:Create(checkmark, TweenInfo.new(0.2), {
@@ -2155,7 +2155,7 @@ end
 
 -- Create a label
 function MinimalistUI:CreateLabel(section, config)
-    local theme = self.Theme
+    local Theme = self.Theme
     local title = config.Title or "Label"
     local alignment = config.Alignment or Enum.TextXAlignment.Left
     
@@ -2173,7 +2173,7 @@ function MinimalistUI:CreateLabel(section, config)
     labelText.Size = UDim2.new(1, 0, 1, 0)
     labelText.BackgroundTransparency = 1
     labelText.Text = title
-    labelText.TextColor3 = theme.TextColor
+    labelText.TextColor3 = self.Theme.TextColor
     labelText.Font = Enum.Font.GothamSemibold
     labelText.TextSize = 14
     labelText.TextXAlignment = alignment
@@ -2208,7 +2208,7 @@ end
 
 -- Create a paragraph
 function MinimalistUI:CreateParagraph(section, config)
-    local theme = self.Theme
+    local Theme = self.Theme
     local title = config.Title
     local content = config.Content or "Paragraph content"
     
@@ -2228,7 +2228,7 @@ function MinimalistUI:CreateParagraph(section, config)
         titleText.Size = UDim2.new(1, 0, 0, 20)
         titleText.BackgroundTransparency = 1
         titleText.Text = title
-        titleText.TextColor3 = theme.TextColor
+        titleText.TextColor3 = self.Theme.TextColor
         titleText.Font = Enum.Font.GothamSemibold
         titleText.TextSize = 14
         titleText.TextXAlignment = Enum.TextXAlignment.Left
@@ -2242,7 +2242,7 @@ function MinimalistUI:CreateParagraph(section, config)
     contentText.Position = UDim2.new(0, 0, 0, title and 24 or 0)
     contentText.BackgroundTransparency = 1
     contentText.Text = content
-    contentText.TextColor3 = theme.SubTextColor
+    contentText.TextColor3 = self.Theme.SubTextColor
     contentText.Font = Enum.Font.Gotham
     contentText.TextSize = 14
     contentText.TextWrapped = true
@@ -2285,7 +2285,7 @@ end
 
 -- Create a divider
 function MinimalistUI:CreateDivider(section)
-    local theme = self.Theme
+    local Theme = self.Theme
     
     -- Divider container
     local dividerFrame = Instance.new("Frame")
@@ -2300,7 +2300,7 @@ function MinimalistUI:CreateDivider(section)
     dividerLine.Name = "DividerLine"
     dividerLine.Size = UDim2.new(1, 0, 0, 1)
     dividerLine.Position = UDim2.new(0, 0, 0.5, 0)
-    dividerLine.BackgroundColor3 = theme.LightAccent
+    dividerLine.BackgroundColor3 = self.Theme.LightAccent
     dividerLine.BorderSizePixel = 0
     dividerLine.Parent = dividerFrame
     
