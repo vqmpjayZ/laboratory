@@ -1,3 +1,4 @@
+--ub beta
 return function()
     local player = game.Players.LocalPlayer
     local UserInputService = game:GetService("UserInputService")
@@ -12,12 +13,12 @@ return function()
         local sizedicons = Icons['48px']
         local r = sizedicons[name]
         if not r then
-            error("Lucide Icons: Failed to find icon by the name of \"" .. name .. "\".", 2)
+            return nil
         end
         local rirs = r[2]
         local riro = r[3]
         if type(r[1]) ~= "number" or type(rirs) ~= "table" or type(riro) ~= "table" then
-            error("Lucide Icons: Internal error: Invalid auto-generated asset entry")
+            return nil
         end
         local irs = Vector2.new(rirs[1], rirs[2])
         local iro = Vector2.new(riro[1], riro[2])
@@ -188,16 +189,16 @@ return function()
     titleText.TextXAlignment = Enum.TextXAlignment.Left
     titleText.Parent = titleBar
     
-    -- Close button
+    -- Close button (using text X)
     local closeButton = Instance.new("TextButton")
     closeButton.Name = "CloseButton"
     closeButton.Size = UDim2.new(0, 24, 0, 24)
     closeButton.Position = UDim2.new(1, -30, 0.5, -12)
     closeButton.BackgroundTransparency = 1
-    closeButton.Text = "✕"
+    closeButton.Text = "x" -- Using the multiplication symbol as X
     closeButton.TextColor3 = Color3.fromRGB(200, 200, 200)
     closeButton.Font = Enum.Font.GothamBold
-    closeButton.TextSize = 14
+    closeButton.TextSize = 24
     closeButton.Parent = titleBar
     
     -- Content container
@@ -249,6 +250,15 @@ return function()
     actionText.AutoButtonColor = false
     actionText.Parent = contentFrame
     
+    -- Underline for action text
+    local underline = Instance.new("Frame")
+    underline.Name = "Underline"
+    underline.Size = UDim2.new(1, 0, 0, 1)
+    underline.Position = UDim2.new(0, 0, 1, 0)
+    underline.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    underline.BorderSizePixel = 0
+    underline.Parent = actionText
+    
     -- Key input container
     local keyContainer = Instance.new("Frame")
     keyContainer.Name = "KeyContainer"
@@ -267,7 +277,21 @@ return function()
     keyContainerStroke.Thickness = 1
     keyContainerStroke.Parent = keyContainer
     
-    -- Key input box
+    -- Masked key display (shows dots)
+    local maskedKeyDisplay = Instance.new("TextLabel")
+    maskedKeyDisplay.Name = "MaskedKeyDisplay"
+    maskedKeyDisplay.Size = UDim2.new(1, -50, 1, 0)
+    maskedKeyDisplay.Position = UDim2.new(0, 10, 0, 0)
+    maskedKeyDisplay.BackgroundTransparency = 1
+    maskedKeyDisplay.Text = ""
+    maskedKeyDisplay.TextColor3 = Color3.fromRGB(255, 255, 255)
+    maskedKeyDisplay.Font = Enum.Font.Gotham
+    maskedKeyDisplay.TextSize = 14
+    maskedKeyDisplay.TextXAlignment = Enum.TextXAlignment.Left
+    maskedKeyDisplay.ZIndex = 2
+    maskedKeyDisplay.Parent = keyContainer
+    
+    -- Key input box (hidden when masked)
     local keyInput = Instance.new("TextBox")
     keyInput.Name = "KeyInput"
     keyInput.Size = UDim2.new(1, -50, 1, 0)
@@ -281,6 +305,7 @@ return function()
     keyInput.TextSize = 14
     keyInput.TextXAlignment = Enum.TextXAlignment.Left
     keyInput.ClearTextOnFocus = false
+    keyInput.Visible = false -- Hidden by default
     keyInput.Parent = keyContainer
     
     -- Toggle visibility button using Lucide icons
@@ -291,10 +316,7 @@ return function()
     visibilityButton.BackgroundTransparency = 1
     
     -- Try to get the eye-off icon
-    local eyeOffIcon
-    pcall(function()
-        eyeOffIcon = getIcon("eye-off")
-    end)
+    local eyeOffIcon = getIcon("eye-off")
     
     if eyeOffIcon then
         visibilityButton.Image = "rbxassetid://" .. eyeOffIcon.id
@@ -303,8 +325,6 @@ return function()
     else
         -- Fallback if icon loading fails
         visibilityButton.Image = "rbxassetid://6023565892"
-        visibilityButton.ImageRectSize = Vector2.new(48, 48)
-        visibilityButton.ImageRectOffset = Vector2.new(48, 0)
     end
     
     visibilityButton.ImageColor3 = Color3.fromRGB(150, 150, 170)
@@ -348,6 +368,64 @@ return function()
     statusText.Font = Enum.Font.Gotham
     statusText.TextSize = 13
     statusText.Parent = contentFrame
+    
+    -- Notification frame for copy link
+    local notificationFrame = Instance.new("Frame")
+    notificationFrame.Name = "NotificationFrame"
+    notificationFrame.Size = UDim2.new(0, 240, 0, 60)
+    notificationFrame.Position = UDim2.new(0.5, 0, 0.5, -120)
+    notificationFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    notificationFrame.BorderSizePixel = 0
+    notificationFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    notificationFrame.Visible = false
+    notificationFrame.Parent = keySystemGui
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 8)
+    notifCorner.Parent = notificationFrame
+    
+    local notifStroke = Instance.new("UIStroke")
+    notifStroke.Color = Color3.fromRGB(70, 70, 90)
+    notifStroke.Thickness = 1.5
+    notifStroke.Parent = notificationFrame
+    
+    local notifShadow = Instance.new("ImageLabel")
+    notifShadow.Name = "Shadow"
+    notifShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    notifShadow.BackgroundTransparency = 1
+    notifShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    notifShadow.Size = UDim2.new(1, 40, 1, 40)
+    notifShadow.ZIndex = 0
+    notifShadow.Image = "rbxassetid://6014261993"
+    notifShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    notifShadow.ImageTransparency = 0.5
+    notifShadow.ScaleType = Enum.ScaleType.Slice
+    notifShadow.SliceCenter = Rect.new(49, 49, 450, 450)
+    notifShadow.Parent = notificationFrame
+    
+    local notifTitle = Instance.new("TextLabel")
+    notifTitle.Name = "Title"
+    notifTitle.Size = UDim2.new(1, -20, 0, 20)
+    notifTitle.Position = UDim2.new(0, 10, 0, 10)
+    notifTitle.BackgroundTransparency = 1
+    notifTitle.Text = "Link Copied"
+    notifTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    notifTitle.Font = Enum.Font.GothamBold
+    notifTitle.TextSize = 14
+    notifTitle.TextXAlignment = Enum.TextXAlignment.Left
+    notifTitle.Parent = notificationFrame
+    
+    local notifText = Instance.new("TextLabel")
+    notifText.Name = "Text"
+    notifText.Size = UDim2.new(1, -20, 0, 20)
+    notifText.Position = UDim2.new(0, 10, 0, 30)
+    notifText.BackgroundTransparency = 1
+    notifText.Text = "Link copied to clipboard!"
+    notifText.TextColor3 = Color3.fromRGB(200, 200, 200)
+    notifText.Font = Enum.Font.Gotham
+    notifText.TextSize = 13
+    notifText.TextXAlignment = Enum.TextXAlignment.Left
+    notifText.Parent = notificationFrame
     
     -- Button hover and click effects
     local function createRipple(button)
@@ -421,13 +499,50 @@ return function()
         TweenService:Create(actionText, TweenInfo.new(0.2), {
             TextColor3 = Color3.fromRGB(255, 255, 255) -- Full white on hover
         }):Play()
+        TweenService:Create(underline, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        }):Play()
     end)
     
     actionText.MouseLeave:Connect(function()
         TweenService:Create(actionText, TweenInfo.new(0.2), {
             TextColor3 = Color3.fromRGB(240, 240, 240) -- Back to bright white
         }):Play()
+        TweenService:Create(underline, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        }):Play()
     end)
+    
+    -- Show notification function
+    local function showNotification(title, text)
+        notifTitle.Text = title
+        notifText.Text = text
+        notificationFrame.Visible = true
+        notificationFrame.Position = UDim2.new(0.5, 0, 0.5, -120)
+        notificationFrame.BackgroundTransparency = 0
+        
+        -- Animate in
+        TweenService:Create(notificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0.5, 0, 0.1, 0)
+        }):Play()
+        
+        -- Auto hide after 3 seconds
+        delay(3, function()
+            -- Animate out
+            local fadeTween = TweenService:Create(notificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+                Position = UDim2.new(0.5, 0, 0, -70),
+                BackgroundTransparency = 1
+            })
+            fadeTween:Play()
+            
+            fadeTween.Completed:Connect(function()
+                notificationFrame.Visible = false
+            end)
+        end)
+    end
+    
+    -- Store the real key value
+    local realKeyValue = ""
     
     -- Password visibility toggle
     local keyVisible = false
@@ -436,44 +551,42 @@ return function()
         
         if keyVisible then
             -- Show password
-            local eyeIcon
-            pcall(function()
-                eyeIcon = getIcon("eye")
-            end)
+            local eyeIcon = getIcon("eye")
             
             if eyeIcon then
                 visibilityButton.Image = "rbxassetid://" .. eyeIcon.id
                 visibilityButton.ImageRectSize = eyeIcon.imageRectSize
                 visibilityButton.ImageRectOffset = eyeIcon.imageRectOffset
-            else
-                -- Fallback
-                visibilityButton.Image = "rbxassetid://6023565892"
-                visibilityButton.ImageRectSize = Vector2.new(48, 48)
-                visibilityButton.ImageRectOffset = Vector2.new(0, 0)
             end
             
+            keyInput.Text = realKeyValue
             keyInput.Visible = true
+            maskedKeyDisplay.Visible = false
         else
             -- Hide password
-            local eyeOffIcon
-            pcall(function()
-                eyeOffIcon = getIcon("eye-off")
-            end)
+            local eyeOffIcon = getIcon("eye-off")
             
             if eyeOffIcon then
                 visibilityButton.Image = "rbxassetid://" .. eyeOffIcon.id
                 visibilityButton.ImageRectSize = eyeOffIcon.imageRectSize
                 visibilityButton.ImageRectOffset = eyeOffIcon.imageRectOffset
-            else
-                -- Fallback
-                visibilityButton.Image = "rbxassetid://6023565892"
-                visibilityButton.ImageRectSize = Vector2.new(48, 48)
-                visibilityButton.ImageRectOffset = Vector2.new(48, 0)
             end
             
-            -- Create masked text display
-            local maskedText = string.rep("•", #keyInput.Text)
-            keyInput.Text = maskedText
+            keyInput.Visible = false
+            maskedKeyDisplay.Visible = true
+            
+            -- Update masked text
+            local maskedText = string.rep("•", #realKeyValue)
+            maskedKeyDisplay.Text = maskedText
+        end
+    end)
+    
+    -- Update masked text when key input changes
+    keyInput.Changed:Connect(function(prop)
+        if prop == "Text" then
+            realKeyValue = keyInput.Text
+            local maskedText = string.rep("•", #realKeyValue)
+            maskedKeyDisplay.Text = maskedText
         end
     end)
     
@@ -482,6 +595,14 @@ return function()
         pcall(function()
             setclipboard(KeySystemConfig.ActionLink)
         end)
+        
+        -- Show notification with the link
+        local linkText = KeySystemConfig.ActionLink
+        if #linkText > 30 then
+            linkText = string.sub(linkText, 1, 27) .. "..."
+        end
+        showNotification("Link Copied", linkText)
+        
         statusText.Text = "Link copied to clipboard!"
         statusText.TextColor3 = Color3.fromRGB(100, 255, 100)
         
@@ -496,14 +617,7 @@ return function()
     
     -- Key verification
     local function onVerifyClick()
-        local inputKey = keyInput.Text
-        
-        -- If the key is masked, we need to get the original key
-        if not keyVisible and string.find(inputKey, "•") then
-            statusText.Text = "Please enter a key!"
-            statusText.TextColor3 = Color3.fromRGB(255, 100, 100)
-            return
-        end
+        local inputKey = realKeyValue
         
         if inputKey == "" then
             statusText.Text = "Please enter a key!"
@@ -580,21 +694,14 @@ return function()
     end)
     
     closeButton.MouseButton1Click:Connect(function()
-        -- Shake animation to indicate you can't close without a key
-        local originalPosition = mainFrame.Position
-        for i = 1, 3 do
-            mainFrame.Position = originalPosition + UDim2.new(0, math.random(-5, 5), 0, 0)
-            wait(0.05)
-        end
-        mainFrame.Position = originalPosition
+        -- Fade out animation
+        local fadeTween = TweenService:Create(mainFrame, TweenInfo.new(0.5), {
+            Size = UDim2.new(0, 320, 0, 0)
+        })
+        fadeTween:Play()
         
-        -- Show message
-        statusText.Text = "Please verify your key to continue!"
-        statusText.TextColor3 = Color3.fromRGB(255, 100, 100)
-        
-        -- Reset status text after 3 seconds
-        delay(3, function()
-            statusText.Text = ""
+        fadeTween.Completed:Connect(function()
+            keySystemGui:Destroy()
         end)
     end)
     
@@ -608,7 +715,9 @@ return function()
     -- Check for saved key and auto-verify if enabled
     local savedKey = getSavedKey()
     if savedKey then
-        keyInput.Text = savedKey
+        realKeyValue = savedKey
+        local maskedText = string.rep("•", #realKeyValue)
+        maskedKeyDisplay.Text = maskedText
         
         -- Auto verify if we have a saved key
         delay(0.5, function()
