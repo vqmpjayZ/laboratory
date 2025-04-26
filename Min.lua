@@ -269,7 +269,7 @@ function MinimalistUI.new(config)
         print("Invalid Size provided, using default")
         self.Size = UDim2.new(0, 600, 0, 400)
     end
-    
+
     self.Subtitle = config.Subtitle or ""
     self.Size = config.Size or UDim2.new(0, 600, 0, 400)
     self.Position = config.Position or UDim2.new(0.5, -300, 0.5, -200)
@@ -309,7 +309,7 @@ function MinimalistUI.new(config)
     -- Create main container
     self.MainFrame = Instance.new("Frame")
     self.MainFrame.Name = "MainFrame"
-    self.MainFrame.Size = size
+    self.MainFrame.Size = self.Size
     self.MainFrame.Position = position
     self.MainFrame.BackgroundColor3 = theme.Background
     self.MainFrame.BorderSizePixel = 0
