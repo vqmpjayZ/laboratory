@@ -2337,5 +2337,9 @@ function MinimalistUI:Destroy()
     end
 end
 
+function MinimalistUI:Ready()
+    self:UpdateLoading(1, "Ready!")
+end
+
 -- Return the library
 return MinimalistUI
