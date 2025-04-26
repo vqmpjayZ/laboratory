@@ -2265,11 +2265,13 @@ end
 -- Return the library
 local Module = {}
 
-function Module:CreateWindow(config)
+-- Directly copy the CreateWindow function to the module
+Module.CreateWindow = function(self, config)
     return RayUI:CreateWindow(config)
 end
 
-function Module:Notify(config)
+-- Directly copy the Notify function to the module
+Module.Notify = function(self, config)
     return RayUI:Notify(config)
 end
 
