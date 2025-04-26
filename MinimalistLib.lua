@@ -1,7 +1,6 @@
 --[[
-    Minimalist Interface Suite Library
+    Minimalist UI Library
     A clean, lightweight UI library with a focus on simplicity and functionality
-    Version 2
 ]]
 
 local MinimalistUI = {}
@@ -288,6 +287,15 @@ function MinimalistUI.new(config)
     self.Minimized = false
     self.Visible = true
     self.SearchActive = false
+    
+    local function safeSetSize(instance, size)
+        if typeof(size) ~= "UDim2" then
+            warn("Invalid size for " .. instance.Name .. ": " .. tostring(size) .. " (Type: " .. typeof(size) .. ")")
+            -- Provide a default size to prevent errors
+            return UDim2.new(1, 0, 0, 30)
+        end
+        return size
+    end
     
     -- Create ScreenGui
     self.ScreenGui = Instance.new("ScreenGui")
