@@ -153,15 +153,21 @@ local function makeDraggable(frame, handle)
     end)
 end
 
--- Theme definitions
 local Themes = {
     Dark = {
+        -- Main colors
         Primary = Color3.fromRGB(30, 30, 35),
         Secondary = Color3.fromRGB(40, 40, 45),
         Accent = Color3.fromRGB(100, 100, 255),
         LightAccent = Color3.fromRGB(60, 60, 70),
+        DarkAccent = Color3.fromRGB(25, 25, 30),
+        
+        -- Text colors
         TextColor = Color3.fromRGB(240, 240, 240),
         SubTextColor = Color3.fromRGB(180, 180, 180),
+        
+        -- UI element colors
+        Background = Color3.fromRGB(30, 30, 35),
         ButtonColor = Color3.fromRGB(50, 50, 55),
         ButtonHover = Color3.fromRGB(60, 60, 65),
         ButtonClick = Color3.fromRGB(45, 45, 50),
@@ -174,12 +180,19 @@ local Themes = {
         NotificationBackground = Color3.fromRGB(35, 35, 40)
     },
     Light = {
+        -- Main colors
         Primary = Color3.fromRGB(240, 240, 245),
         Secondary = Color3.fromRGB(230, 230, 235),
         Accent = Color3.fromRGB(70, 70, 220),
         LightAccent = Color3.fromRGB(200, 200, 210),
+        DarkAccent = Color3.fromRGB(220, 220, 225),
+        
+        -- Text colors
         TextColor = Color3.fromRGB(30, 30, 35),
         SubTextColor = Color3.fromRGB(100, 100, 110),
+        
+        -- UI element colors
+        Background = Color3.fromRGB(240, 240, 245),
         ButtonColor = Color3.fromRGB(220, 220, 225),
         ButtonHover = Color3.fromRGB(210, 210, 215),
         ButtonClick = Color3.fromRGB(200, 200, 205),
@@ -192,12 +205,19 @@ local Themes = {
         NotificationBackground = Color3.fromRGB(235, 235, 240)
     },
     Discord = {
+        -- Main colors
         Primary = Color3.fromRGB(54, 57, 63),
         Secondary = Color3.fromRGB(47, 49, 54),
         Accent = Color3.fromRGB(114, 137, 218),
         LightAccent = Color3.fromRGB(66, 69, 74),
+        DarkAccent = Color3.fromRGB(41, 43, 47),
+        
+        -- Text colors
         TextColor = Color3.fromRGB(255, 255, 255),
         SubTextColor = Color3.fromRGB(185, 187, 190),
+        
+        -- UI element colors
+        Background = Color3.fromRGB(54, 57, 63),
         ButtonColor = Color3.fromRGB(64, 68, 75),
         ButtonHover = Color3.fromRGB(71, 75, 82),
         ButtonClick = Color3.fromRGB(58, 62, 69),
@@ -210,12 +230,19 @@ local Themes = {
         NotificationBackground = Color3.fromRGB(47, 49, 54)
     },
     Spotify = {
+        -- Main colors
         Primary = Color3.fromRGB(24, 24, 24),
         Secondary = Color3.fromRGB(18, 18, 18),
         Accent = Color3.fromRGB(30, 215, 96),
         LightAccent = Color3.fromRGB(40, 40, 40),
+        DarkAccent = Color3.fromRGB(16, 16, 16),
+        
+        -- Text colors
         TextColor = Color3.fromRGB(255, 255, 255),
         SubTextColor = Color3.fromRGB(170, 170, 170),
+        
+        -- UI element colors
+        Background = Color3.fromRGB(24, 24, 24),
         ButtonColor = Color3.fromRGB(40, 40, 40),
         ButtonHover = Color3.fromRGB(50, 50, 50),
         ButtonClick = Color3.fromRGB(35, 35, 35),
