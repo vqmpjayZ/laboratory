@@ -2,7 +2,7 @@
     Rayfield-Inspired UI Library
     A clean, modern UI library with support for various components
 ]]
---v2
+
 local UILibrary = {}
 
 -- Services
@@ -2406,25 +2406,17 @@ function UILibrary:CreateWindow(options)
     
     -- Initialize the library
     function Library:Init()
-        -- Create UI
-        self:CreateUI()
-        
-        -- Connect input events
-        UserInputService.InputBegan:Connect(function(input, gameProcessed)
-            if input.KeyCode == self.ToggleKey and not gameProcessed then
-                self:Toggle()
-            end
-        end)
-        
         return self
     end
     
-    return {
-        CreateWindow = function(self, options)
-            Library:CreateUI(options)
-            return Library
-        end
-    }
+    local Interface = {}
+    
+    function Interface:CreateWindow(options)
+        Library:CreateUI(options)
+        return Library
+    end
+    
+    return Interface
 end
 
-return RayfieldInspired
+return RayfieldInspired()
