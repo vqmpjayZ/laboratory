@@ -335,19 +335,19 @@ function MinimalistUI.new(config)
     UICorner.CornerRadius = UDim.new(0, 8)
     UICorner.Parent = self.MainFrame
     
-    -- UI Stroke
-    local UIStroke = Instance.new("UIStroke")
-    UIStroke.Color = theme.Accent
-    UIStroke.Thickness = 1.5
-    UIStroke.Parent = self.MainFrame
+-- UI Stroke
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = self.Theme.Accent  -- Changed from theme.Accent to self.Theme.Accent
+UIStroke.Thickness = 1.5
+UIStroke.Parent = self.MainFrame
     
-    -- Title bar
-    self.TitleBar = Instance.new("Frame")
-    self.TitleBar.Name = "TitleBar"
-    self.TitleBar.Size = UDim2.new(1, 0, 0, 40)
-    self.TitleBar.BackgroundColor3 = theme.DarkAccent
-    self.TitleBar.BorderSizePixel = 0
-    self.TitleBar.Parent = self.MainFrame
+-- Title bar
+self.TitleBar = Instance.new("Frame")
+self.TitleBar.Name = "TitleBar"
+self.TitleBar.Size = UDim2.new(1, 0, 0, 40)
+self.TitleBar.BackgroundColor3 = self.Theme.DarkAccent  -- Changed from theme.DarkAccent
+self.TitleBar.BorderSizePixel = 0
+self.TitleBar.Parent = self.MainFrame
     
     local titleCorner = Instance.new("UICorner")
     titleCorner.CornerRadius = UDim.new(0, 8)
