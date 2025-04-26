@@ -3,7 +3,7 @@ return function()
     local UserInputService = game:GetService("UserInputService")
     local TweenService = game:GetService("TweenService")
     local HttpService = game:GetService("HttpService")
-    
+--[[   
     local Icons = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
     
     local function getIcon(name)
@@ -27,7 +27,7 @@ return function()
         }
         return asset
     end
-    
+   ]] 
     local KeySystemConfig = {
         Title = "Key System",
         NoteTitle = "How to get a key",
@@ -57,37 +57,92 @@ return function()
         return secureHash(hwid .. "-" .. tostring(userId))
     end
     
-    local function getSavedKey()
-        local success, result = pcall(function()
-            return readfile(KeySystemConfig.FileName)
-        end)
-        
-        if success then
-            local data = HttpService:JSONDecode(result)
-            if data.hash == secureHash(data.key .. data.identifier .. KeySystemConfig.Title) then
-                return data.key
+    local function ensureFolderExists()
+        pcall(function()
+            if not isfolder("QuantamGuard") then
+                makefolder("QuantamGuard")
             end
-        end
-        return nil
+        end)
     end
     
     local function saveKey(key)
         if not KeySystemConfig.SaveKey then return end
         
+        ensureFolderExists()
+        
         local identifier = getUniqueIdentifier()
         local data = {
             key = key,
             identifier = identifier,
-            hash = secureHash(key .. identifier .. KeySystemConfig.Title)
+            hash = secureHash(key .. identifier .. KeySystemConfig.Title),
+            scriptName = KeySystemConfig.Title,
+            saveTime = os.time()
         }
         
+        local fileName = "QuantamGuard/" .. KeySystemConfig.Title .. " Key.txt"
+        
         pcall(function()
-            writefile(KeySystemConfig.FileName, HttpService:JSONEncode(data))
+            writefile(fileName, HttpService:JSONEncode(data))
         end)
     end
     
+    local function getSavedKeys()
+        local keys = {}
+        
+        pcall(function()
+            if isfolder("QuantamGuard") then
+                local files = listfiles("QuantamGuard")
+                
+                for _, file in ipairs(files) do
+                    if string.match(file, "%.txt$") then
+                        local success, fileContent = pcall(function()
+                            return readfile(file)
+                        end)
+                        
+                        if success then
+                            local success2, data = pcall(function()
+                                return HttpService:JSONDecode(fileContent)
+                            end)
+                            
+                            if success2 and data.key and data.hash then
+                                local identifier = getUniqueIdentifier()
+                                if data.hash == secureHash(data.key .. data.identifier .. data.scriptName) then
+                                    table.insert(keys, data.key)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        
+        return keys
+    end
+    
     local function verifyKey(inputKey)
-        return inputKey == KeySystemConfig.Key
+        if type(KeySystemConfig.Key) == "string" then
+            return inputKey == KeySystemConfig.Key
+        elseif type(KeySystemConfig.Key) == "table" then
+            for _, validKey in ipairs(KeySystemConfig.Key) do
+                if inputKey == validKey then
+                    return true
+                end
+            end
+        end
+        return false
+    end
+    
+    local function hasValidSavedKey()
+        if not KeySystemConfig.SaveKey then return false end
+        
+        local savedKeys = getSavedKeys()
+        for _, key in ipairs(savedKeys) do
+            if verifyKey(key) then
+                return key
+            end
+        end
+        
+        return false
     end
     
     local keySystemGui = Instance.new("ScreenGui")
@@ -253,7 +308,7 @@ return function()
     
     local keyInput = Instance.new("TextBox")
     keyInput.Name = "KeyInput"
-    keyInput.Size = UDim2.new(1, -50, 1, 0)
+    keyInput.Size = UDim2.new(1, -20, 1, 0)
     keyInput.Position = UDim2.new(0, 10, 0, 0)
     keyInput.BackgroundTransparency = 1
     keyInput.Text = ""
@@ -265,25 +320,6 @@ return function()
     keyInput.TextXAlignment = Enum.TextXAlignment.Left
     keyInput.ClearTextOnFocus = false
     keyInput.Parent = keyContainer
-    
-    local visibilityButton = Instance.new("ImageButton")
-    visibilityButton.Name = "VisibilityButton"
-    visibilityButton.Size = UDim2.new(0, 24, 0, 24)
-    visibilityButton.Position = UDim2.new(1, -32, 0.5, -12)
-    visibilityButton.BackgroundTransparency = 1
-    
-    local eyeOffIcon = getIcon("eye-off")
-    
-    if eyeOffIcon then
-        visibilityButton.Image = "rbxassetid://" .. eyeOffIcon.id
-        visibilityButton.ImageRectSize = eyeOffIcon.imageRectSize
-        visibilityButton.ImageRectOffset = eyeOffIcon.imageRectOffset
-    else
-        visibilityButton.Image = "rbxassetid://6023565892"
-    end
-    
-    visibilityButton.ImageColor3 = Color3.fromRGB(150, 150, 170)
-    visibilityButton.Parent = keyContainer
     
     local verifyButton = Instance.new("TextButton")
     verifyButton.Name = "VerifyButton"
@@ -484,47 +520,6 @@ return function()
         end)
     end
     
-    local keyVisible = false
-    local realKeyValue = ""
-    
-    keyInput.Changed:Connect(function(prop)
-        if prop == "Text" then
-            realKeyValue = keyInput.Text
-            
-            if not keyVisible then
-                local maskedText = string.rep("•", #realKeyValue)
-                keyInput.Text = maskedText
-            end
-        end
-    end)
-    
-    visibilityButton.MouseButton1Click:Connect(function()
-        keyVisible = not keyVisible
-        
-        if keyVisible then
-            local eyeIcon = getIcon("eye")
-            
-            if eyeIcon then
-                visibilityButton.Image = "rbxassetid://" .. eyeIcon.id
-                visibilityButton.ImageRectSize = eyeIcon.imageRectSize
-                visibilityButton.ImageRectOffset = eyeIcon.imageRectOffset
-            end
-            
-            keyInput.Text = realKeyValue
-        else
-            local eyeOffIcon = getIcon("eye-off")
-            
-            if eyeOffIcon then
-                visibilityButton.Image = "rbxassetid://" .. eyeOffIcon.id
-                visibilityButton.ImageRectSize = eyeOffIcon.imageRectSize
-                visibilityButton.ImageRectOffset = eyeOffIcon.imageRectOffset
-            end
-            
-            local maskedText = string.rep("•", #realKeyValue)
-            keyInput.Text = maskedText
-        end
-    end)
-    
     actionText.MouseButton1Click:Connect(function()
         pcall(function()
             setclipboard(KeySystemConfig.ActionLink)
@@ -547,7 +542,7 @@ return function()
     local successCallback = function() end
     
     local function onVerifyClick()
-        local inputKey = realKeyValue
+        local inputKey = keyInput.Text
         
         if inputKey == "" then
             statusText.Text = "Please enter a key!"
@@ -631,16 +626,9 @@ return function()
         }):Play()
     end)
     
-    local savedKey = getSavedKey()
-    if savedKey then
-        realKeyValue = savedKey
-        
-        if not keyVisible then
-            local maskedText = string.rep("•", #realKeyValue)
-            keyInput.Text = maskedText
-        else
-            keyInput.Text = realKeyValue
-        end
+    local validSavedKey = hasValidSavedKey()
+    if validSavedKey and KeySystemConfig.SaveKey then
+        keyInput.Text = validSavedKey
         
         delay(0.5, function()
             onVerifyClick()
@@ -698,19 +686,6 @@ return function()
             table.insert(KeySystemConfig.Key, key)
         end
         
-        verifyKey = function(inputKey)
-            if type(KeySystemConfig.Key) == "string" then
-                return inputKey == KeySystemConfig.Key
-            elseif type(KeySystemConfig.Key) == "table" then
-                for _, validKey in ipairs(KeySystemConfig.Key) do
-                    if inputKey == validKey then
-                        return true
-                    end
-                end
-            end
-            return false
-        end
-        
         return self
     end
     
@@ -730,15 +705,12 @@ return function()
     end
     
     function KeySystemAPI:HasValidKey()
-        local savedKey = getSavedKey()
-        if savedKey then
-            return verifyKey(savedKey)
-        end
-        return false
+        return hasValidSavedKey() ~= false
     end
     
     function KeySystemAPI:SkipIfValidKey()
-        if self:HasValidKey() then
+        local validKey = hasValidSavedKey()
+        if validKey and KeySystemConfig.SaveKey then
             keySystemGui:Destroy()
             successCallback()
             return true
@@ -760,6 +732,24 @@ return function()
                     callback()
                 end
             end)
+        end)
+        
+        return self
+    end
+    
+    function KeySystemAPI:ClearSavedKeys()
+        pcall(function()
+            if isfolder("QuantamGuard") then
+                local files = listfiles("QuantamGuard")
+                
+                for _, file in ipairs(files) do
+                    if string.match(file, "%.txt$") then
+                        pcall(function()
+                            delfile(file)
+                        end)
+                    end
+                end
+            end
         end)
         
         return self
