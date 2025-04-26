@@ -153,44 +153,109 @@ local function makeDraggable(frame, handle)
     end)
 end
 
--- Create the main window
-function MinimalistUI.new(config)
-    config = config or {}
-    local title = config.Title or "Minimalist UI"
-    local subtitle = config.Subtitle or ""
-    local size = config.Size or UDim2.new(0, 600, 0, 400)
-    local position = config.Position or UDim2.new(0.5, -300, 0.5, -200)
-    local theme = config.Theme or {
-        Background = Color3.fromRGB(25, 25, 35),
-        Accent = Color3.fromRGB(40, 40, 60),
-        LightAccent = Color3.fromRGB(60, 60, 90),
-        DarkAccent = Color3.fromRGB(30, 30, 40),
+-- Theme definitions
+local Themes = {
+    Dark = {
+        Primary = Color3.fromRGB(30, 30, 35),
+        Secondary = Color3.fromRGB(40, 40, 45),
+        Accent = Color3.fromRGB(100, 100, 255),
+        LightAccent = Color3.fromRGB(60, 60, 70),
+        TextColor = Color3.fromRGB(240, 240, 240),
+        SubTextColor = Color3.fromRGB(180, 180, 180),
+        ButtonColor = Color3.fromRGB(50, 50, 55),
+        ButtonHover = Color3.fromRGB(60, 60, 65),
+        ButtonClick = Color3.fromRGB(45, 45, 50),
+        ToggleOn = Color3.fromRGB(100, 100, 255),
+        ToggleOff = Color3.fromRGB(60, 60, 70),
+        SliderBackground = Color3.fromRGB(40, 40, 45),
+        SliderFill = Color3.fromRGB(100, 100, 255),
+        DropdownBackground = Color3.fromRGB(45, 45, 50),
+        InputBackground = Color3.fromRGB(35, 35, 40),
+        NotificationBackground = Color3.fromRGB(35, 35, 40)
+    },
+    Light = {
+        Primary = Color3.fromRGB(240, 240, 245),
+        Secondary = Color3.fromRGB(230, 230, 235),
+        Accent = Color3.fromRGB(70, 70, 220),
+        LightAccent = Color3.fromRGB(200, 200, 210),
+        TextColor = Color3.fromRGB(30, 30, 35),
+        SubTextColor = Color3.fromRGB(100, 100, 110),
+        ButtonColor = Color3.fromRGB(220, 220, 225),
+        ButtonHover = Color3.fromRGB(210, 210, 215),
+        ButtonClick = Color3.fromRGB(200, 200, 205),
+        ToggleOn = Color3.fromRGB(70, 70, 220),
+        ToggleOff = Color3.fromRGB(180, 180, 190),
+        SliderBackground = Color3.fromRGB(200, 200, 210),
+        SliderFill = Color3.fromRGB(70, 70, 220),
+        DropdownBackground = Color3.fromRGB(225, 225, 230),
+        InputBackground = Color3.fromRGB(215, 215, 220),
+        NotificationBackground = Color3.fromRGB(235, 235, 240)
+    },
+    Discord = {
+        Primary = Color3.fromRGB(54, 57, 63),
+        Secondary = Color3.fromRGB(47, 49, 54),
+        Accent = Color3.fromRGB(114, 137, 218),
+        LightAccent = Color3.fromRGB(66, 69, 74),
         TextColor = Color3.fromRGB(255, 255, 255),
-        SubTextColor = Color3.fromRGB(200, 200, 200),
-        ButtonColor = Color3.fromRGB(50, 50, 75),
-        ButtonHover = Color3.fromRGB(60, 60, 90),
-        ButtonClick = Color3.fromRGB(45, 45, 65),
-        ToggleOn = Color3.fromRGB(80, 150, 255),
-        ToggleOff = Color3.fromRGB(60, 60, 90),
-        SliderBackground = Color3.fromRGB(40, 40, 60),
-        SliderFill = Color3.fromRGB(80, 150, 255),
-        DropdownBackground = Color3.fromRGB(35, 35, 45),
-        InputBackground = Color3.fromRGB(35, 35, 45),
-        NotificationBackground = Color3.fromRGB(30, 30, 40)
+        SubTextColor = Color3.fromRGB(185, 187, 190),
+        ButtonColor = Color3.fromRGB(64, 68, 75),
+        ButtonHover = Color3.fromRGB(71, 75, 82),
+        ButtonClick = Color3.fromRGB(58, 62, 69),
+        ToggleOn = Color3.fromRGB(114, 137, 218),
+        ToggleOff = Color3.fromRGB(66, 69, 74),
+        SliderBackground = Color3.fromRGB(66, 69, 74),
+        SliderFill = Color3.fromRGB(114, 137, 218),
+        DropdownBackground = Color3.fromRGB(64, 68, 75),
+        InputBackground = Color3.fromRGB(48, 51, 57),
+        NotificationBackground = Color3.fromRGB(47, 49, 54)
+    },
+    Spotify = {
+        Primary = Color3.fromRGB(24, 24, 24),
+        Secondary = Color3.fromRGB(18, 18, 18),
+        Accent = Color3.fromRGB(30, 215, 96),
+        LightAccent = Color3.fromRGB(40, 40, 40),
+        TextColor = Color3.fromRGB(255, 255, 255),
+        SubTextColor = Color3.fromRGB(170, 170, 170),
+        ButtonColor = Color3.fromRGB(40, 40, 40),
+        ButtonHover = Color3.fromRGB(50, 50, 50),
+        ButtonClick = Color3.fromRGB(35, 35, 35),
+        ToggleOn = Color3.fromRGB(30, 215, 96),
+        ToggleOff = Color3.fromRGB(80, 80, 80),
+        SliderBackground = Color3.fromRGB(80, 80, 80),
+        SliderFill = Color3.fromRGB(30, 215, 96),
+        DropdownBackground = Color3.fromRGB(40, 40, 40),
+        InputBackground = Color3.fromRGB(30, 30, 30),
+        NotificationBackground = Color3.fromRGB(24, 24, 24)
     }
+}
+
+function MinimalistUI.new(config)
+    local self = setmetatable({}, MinimalistUI)
     
-    local self = setmetatable({
-        Title = title,
-        Subtitle = subtitle,
-        Size = size,
-        Position = position,
-        Theme = theme,
-        Tabs = {},
-        ActiveTab = nil,
-        Minimized = false,
-        Visible = true,
-        SearchActive = false
-    }, MinimalistUI)
+    -- Default configuration
+    config = config or {}
+    self.Title = config.Title or "MinimalistUI"
+    self.Subtitle = config.Subtitle or ""
+    self.Size = config.Size or UDim2.new(0, 600, 0, 400)
+    self.Position = config.Position or UDim2.new(0.5, -300, 0.5, -200)
+    
+    -- Theme initialization
+    local themeName = config.Theme or "Dark"
+    if themeName == "Adaptive" then
+        -- Determine theme based on system theme
+        local isDark = (settings().Studio.Theme == Enum.UITheme.Dark)
+        self.Theme = isDark and Themes.Dark or Themes.Light
+    else
+        -- Use specified theme or default to Dark if invalid
+        self.Theme = Themes[themeName] or Themes.Dark
+    end
+    
+    -- Initialize other properties
+    self.Tabs = {}
+    self.ActiveTab = nil
+    self.Minimized = false
+    self.Visible = true
+    self.SearchActive = false
     
     -- Create ScreenGui
     self.ScreenGui = Instance.new("ScreenGui")
