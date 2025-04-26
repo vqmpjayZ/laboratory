@@ -2263,10 +2263,14 @@ function RayUI:UpdateSearch(searchText)
 end
 
 -- Return the library
-local UI = {}
+local Module = {}
 
-function UI.new()
-    return setmetatable({}, {__index = RayUI})
+function Module:CreateWindow(config)
+    return RayUI:CreateWindow(config)
 end
 
-return UI.new()
+function Module:Notify(config)
+    return RayUI:Notify(config)
+end
+
+return Module
