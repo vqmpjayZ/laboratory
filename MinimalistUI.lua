@@ -1,6 +1,7 @@
 --[[
-    Minimalist UI Library
+    Minimalist Interface Suite Library
     A clean, lightweight UI library with a focus on simplicity and functionality
+    Version 2
 ]]
 
 local MinimalistUI = {}
@@ -265,6 +266,10 @@ function MinimalistUI.new(config)
     self.Subtitle = config.Subtitle or ""
     self.Size = config.Size or UDim2.new(0, 600, 0, 400)
     self.Position = config.Position or UDim2.new(0.5, -300, 0.5, -200)
+    self.Draggable = config.Draggable ~= false
+    self.Resizable = config.Resizable ~= false
+    self.MinSize = config.MinSize or Vector2.new(400, 300)
+    self.MaxSize = config.MaxSize or Vector2.new(800, 600)
     
     -- Theme initialization
     local themeName = config.Theme or "Dark"
