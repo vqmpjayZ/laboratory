@@ -1,30 +1,24 @@
---[[
-  QuantumGuard
-  A custom key system with many security features and saveable keys for Roblox scripts.
-  Version = 1A
---]]
 return function()
     local player = game.Players.LocalPlayer
     local UserInputService = game:GetService("UserInputService")
     local TweenService = game:GetService("TweenService")
     local HttpService = game:GetService("HttpService")
-
-    local Icons = {}
-    Icons['48px'] = {
-        ["eye"] = {6023565892, {48, 48}, {0, 0}},
-        ["eye-off"] = {6023565892, {48, 48}, {48, 0}}
-    }
+    
+    -- Lucide Icons implementation using the loadstring
+    local Icons = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
     
     local function getIcon(name)
-        name = string.match(string.lower(name), "^%s*(.*)%s*$")
+        name = string.match(string.lower(name), "^%s*(.*)%s*$") :: string
         local sizedicons = Icons['48px']
         local r = sizedicons[name]
         if not r then
-            warn("Failed to find icon by the name of \"" .. name .. "\".")
-            return {id = 0, imageRectSize = Vector2.new(0, 0), imageRectOffset = Vector2.new(0, 0)}
+            error("Lucide Icons: Failed to find icon by the name of \"" .. name .. "\".", 2)
         end
         local rirs = r[2]
         local riro = r[3]
+        if type(r[1]) ~= "number" or type(rirs) ~= "table" or type(riro) ~= "table" then
+            error("Lucide Icons: Internal error: Invalid auto-generated asset entry")
+        end
         local irs = Vector2.new(rirs[1], rirs[2])
         local iro = Vector2.new(riro[1], riro[2])
         local asset = {
@@ -34,7 +28,8 @@ return function()
         }
         return asset
     end
-
+    
+    -- Default configuration
     local KeySystemConfig = {
         Title = "Key System",
         NoteTitle = "How to get a key",
@@ -45,7 +40,8 @@ return function()
         SaveKey = true,
         FileName = "KeySystemSave.txt"
     }
-
+    
+    -- Create a secure hash function for key verification
     local function secureHash(input)
         if not input then return "0" end
         local hash = 0
@@ -54,7 +50,8 @@ return function()
         end
         return tostring(hash)
     end
-
+    
+    -- Create a unique identifier for this user/machine
     local function getUniqueIdentifier()
         local hwid = ""
         pcall(function()
@@ -63,7 +60,8 @@ return function()
         local userId = player.UserId
         return secureHash(hwid .. "-" .. tostring(userId))
     end
-
+    
+    -- Check if key is already saved
     local function getSavedKey()
         local success, result = pcall(function()
             return readfile(KeySystemConfig.FileName)
@@ -71,13 +69,15 @@ return function()
         
         if success then
             local data = HttpService:JSONDecode(result)
+            -- Verify the key hasn't been tampered with
             if data.hash == secureHash(data.key .. data.identifier .. KeySystemConfig.Title) then
                 return data.key
             end
         end
         return nil
     end
-
+    
+    -- Save key for future use
     local function saveKey(key)
         if not KeySystemConfig.SaveKey then return end
         
@@ -92,17 +92,21 @@ return function()
             writefile(KeySystemConfig.FileName, HttpService:JSONEncode(data))
         end)
     end
-
+    
+    -- Verify the key
     local function verifyKey(inputKey)
+        -- Simple key check (you can make this more complex)
         return inputKey == KeySystemConfig.Key
     end
-
+    
+    -- Create the key system UI
     local keySystemGui = Instance.new("ScreenGui")
     keySystemGui.Name = "KeySystemGui"
     keySystemGui.ResetOnSpawn = false
     keySystemGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    keySystemGui.DisplayOrder = 999999999
-
+    keySystemGui.DisplayOrder = 999999999 -- Make sure it's on top of everything
+    
+    -- Set parent based on availability
     if syn and syn.protect_gui then
         syn.protect_gui(keySystemGui)
         keySystemGui.Parent = game:GetService("CoreGui")
@@ -111,17 +115,19 @@ return function()
     else
         keySystemGui.Parent = game:GetService("CoreGui")
     end
-
+    
+    -- Main container with animation
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0, 320, 0, 0)
+    mainFrame.Size = UDim2.new(0, 320, 0, 0) -- Start with 0 height for animation
     mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
     mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
     mainFrame.BorderSizePixel = 0
     mainFrame.ClipsDescendants = true
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     mainFrame.Parent = keySystemGui
-
+    
+    -- Shadow effect
     local shadow = Instance.new("ImageLabel")
     shadow.Name = "Shadow"
     shadow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -135,16 +141,19 @@ return function()
     shadow.ScaleType = Enum.ScaleType.Slice
     shadow.SliceCenter = Rect.new(49, 49, 450, 450)
     shadow.Parent = mainFrame
-
+    
+    -- Rounded corners
     local UICorner = Instance.new("UICorner")
     UICorner.CornerRadius = UDim.new(0, 8)
     UICorner.Parent = mainFrame
-
+    
+    -- UI Stroke
     local UIStroke = Instance.new("UIStroke")
     UIStroke.Color = Color3.fromRGB(60, 60, 80)
     UIStroke.Thickness = 1.5
     UIStroke.Parent = mainFrame
-
+    
+    -- Title bar
     local titleBar = Instance.new("Frame")
     titleBar.Name = "TitleBar"
     titleBar.Size = UDim2.new(1, 0, 0, 40)
@@ -155,7 +164,8 @@ return function()
     local titleCorner = Instance.new("UICorner")
     titleCorner.CornerRadius = UDim.new(0, 8)
     titleCorner.Parent = titleBar
-
+    
+    -- Fix the bottom corners of title bar
     local bottomFix = Instance.new("Frame")
     bottomFix.Name = "BottomFix"
     bottomFix.Size = UDim2.new(1, 0, 0, 10)
@@ -164,7 +174,8 @@ return function()
     bottomFix.BorderSizePixel = 0
     bottomFix.ZIndex = 0
     bottomFix.Parent = titleBar
-
+    
+    -- Title text
     local titleText = Instance.new("TextLabel")
     titleText.Name = "TitleText"
     titleText.Size = UDim2.new(1, -20, 1, 0)
@@ -176,14 +187,28 @@ return function()
     titleText.TextSize = 16
     titleText.TextXAlignment = Enum.TextXAlignment.Left
     titleText.Parent = titleBar
-
+    
+    -- Close button
+    local closeButton = Instance.new("TextButton")
+    closeButton.Name = "CloseButton"
+    closeButton.Size = UDim2.new(0, 24, 0, 24)
+    closeButton.Position = UDim2.new(1, -30, 0.5, -12)
+    closeButton.BackgroundTransparency = 1
+    closeButton.Text = "✕"
+    closeButton.TextColor3 = Color3.fromRGB(200, 200, 200)
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.TextSize = 14
+    closeButton.Parent = titleBar
+    
+    -- Content container
     local contentFrame = Instance.new("Frame")
     contentFrame.Name = "ContentFrame"
     contentFrame.Size = UDim2.new(1, 0, 1, -40)
     contentFrame.Position = UDim2.new(0, 0, 0, 40)
     contentFrame.BackgroundTransparency = 1
     contentFrame.Parent = mainFrame
-
+    
+    -- Note title
     local noteTitle = Instance.new("TextLabel")
     noteTitle.Name = "NoteTitle"
     noteTitle.Size = UDim2.new(1, -40, 0, 20)
@@ -195,7 +220,8 @@ return function()
     noteTitle.TextSize = 14
     noteTitle.TextXAlignment = Enum.TextXAlignment.Left
     noteTitle.Parent = contentFrame
-
+    
+    -- Note text
     local noteText = Instance.new("TextLabel")
     noteText.Name = "NoteText"
     noteText.Size = UDim2.new(1, -40, 0, 40)
@@ -208,28 +234,22 @@ return function()
     noteText.TextWrapped = true
     noteText.TextXAlignment = Enum.TextXAlignment.Left
     noteText.Parent = contentFrame
-
+    
+    -- Action text (as a TextButton that looks like a link)
     local actionText = Instance.new("TextButton")
     actionText.Name = "ActionText"
     actionText.Size = UDim2.new(1, -40, 0, 20)
     actionText.Position = UDim2.new(0, 20, 0, 85)
     actionText.BackgroundTransparency = 1
     actionText.Text = KeySystemConfig.ActionText
-    actionText.TextColor3 = Color3.fromRGB(90, 150, 255)
+    actionText.TextColor3 = Color3.fromRGB(240, 240, 240) -- Brighter white
     actionText.Font = Enum.Font.GothamSemibold
     actionText.TextSize = 14
     actionText.TextXAlignment = Enum.TextXAlignment.Left
     actionText.AutoButtonColor = false
     actionText.Parent = contentFrame
-
-    local underline = Instance.new("Frame")
-    underline.Name = "Underline"
-    underline.Size = UDim2.new(1, 0, 0, 1)
-    underline.Position = UDim2.new(0, 0, 1, 0)
-    underline.BackgroundColor3 = Color3.fromRGB(90, 150, 255)
-    underline.BorderSizePixel = 0
-    underline.Parent = actionText
-
+    
+    -- Key input container
     local keyContainer = Instance.new("Frame")
     keyContainer.Name = "KeyContainer"
     keyContainer.Size = UDim2.new(1, -40, 0, 40)
@@ -246,7 +266,8 @@ return function()
     keyContainerStroke.Color = Color3.fromRGB(60, 60, 80)
     keyContainerStroke.Thickness = 1
     keyContainerStroke.Parent = keyContainer
-
+    
+    -- Key input box
     local keyInput = Instance.new("TextBox")
     keyInput.Name = "KeyInput"
     keyInput.Size = UDim2.new(1, -50, 1, 0)
@@ -261,38 +282,40 @@ return function()
     keyInput.TextXAlignment = Enum.TextXAlignment.Left
     keyInput.ClearTextOnFocus = false
     keyInput.Parent = keyContainer
-
-    local maskedKeyDisplay = Instance.new("TextLabel")
-    maskedKeyDisplay.Name = "MaskedKeyDisplay"
-    maskedKeyDisplay.Size = UDim2.new(1, -50, 1, 0)
-    maskedKeyDisplay.Position = UDim2.new(0, 10, 0, 0)
-    maskedKeyDisplay.BackgroundTransparency = 1
-    maskedKeyDisplay.Text = ""
-    maskedKeyDisplay.TextColor3 = Color3.fromRGB(255, 255, 255)
-    maskedKeyDisplay.Font = Enum.Font.Gotham
-    maskedKeyDisplay.TextSize = 14
-    maskedKeyDisplay.TextXAlignment = Enum.TextXAlignment.Left
-    maskedKeyDisplay.ZIndex = 2
-    maskedKeyDisplay.Parent = keyContainer
-
+    
+    -- Toggle visibility button using Lucide icons
     local visibilityButton = Instance.new("ImageButton")
     visibilityButton.Name = "VisibilityButton"
     visibilityButton.Size = UDim2.new(0, 24, 0, 24)
     visibilityButton.Position = UDim2.new(1, -32, 0.5, -12)
     visibilityButton.BackgroundTransparency = 1
     
-    local eyeIcon = getIcon("eye-off")
-    visibilityButton.Image = "rbxassetid://" .. eyeIcon.id
-    visibilityButton.ImageRectSize = eyeIcon.imageRectSize
-    visibilityButton.ImageRectOffset = eyeIcon.imageRectOffset
+    -- Try to get the eye-off icon
+    local eyeOffIcon
+    pcall(function()
+        eyeOffIcon = getIcon("eye-off")
+    end)
+    
+    if eyeOffIcon then
+        visibilityButton.Image = "rbxassetid://" .. eyeOffIcon.id
+        visibilityButton.ImageRectSize = eyeOffIcon.imageRectSize
+        visibilityButton.ImageRectOffset = eyeOffIcon.imageRectOffset
+    else
+        -- Fallback if icon loading fails
+        visibilityButton.Image = "rbxassetid://6023565892"
+        visibilityButton.ImageRectSize = Vector2.new(48, 48)
+        visibilityButton.ImageRectOffset = Vector2.new(48, 0)
+    end
+    
     visibilityButton.ImageColor3 = Color3.fromRGB(150, 150, 170)
     visibilityButton.Parent = keyContainer
-
+    
+    -- Verify button
     local verifyButton = Instance.new("TextButton")
     verifyButton.Name = "VerifyButton"
     verifyButton.Size = UDim2.new(1, -40, 0, 40)
     verifyButton.Position = UDim2.new(0, 20, 0, 165)
-    verifyButton.BackgroundColor3 = Color3.fromRGB(70, 120, 220)
+    verifyButton.BackgroundColor3 = Color3.fromRGB(70, 120, 220) -- Brighter blue color
     verifyButton.Text = "Verify Key"
     verifyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     verifyButton.Font = Enum.Font.GothamBold
@@ -304,15 +327,17 @@ return function()
     local verifyCorner = Instance.new("UICorner")
     verifyCorner.CornerRadius = UDim.new(0, 6)
     verifyCorner.Parent = verifyButton
-
+    
+    -- Gradient for verify button
     local verifyGradient = Instance.new("UIGradient")
     verifyGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 140, 240)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 140, 240)), -- Brighter gradient
         ColorSequenceKeypoint.new(1, Color3.fromRGB(70, 120, 220))
     })
     verifyGradient.Rotation = 90
     verifyGradient.Parent = verifyButton
-
+    
+    -- Status text
     local statusText = Instance.new("TextLabel")
     statusText.Name = "StatusText"
     statusText.Size = UDim2.new(1, -40, 0, 20)
@@ -323,7 +348,8 @@ return function()
     statusText.Font = Enum.Font.Gotham
     statusText.TextSize = 13
     statusText.Parent = contentFrame
-
+    
+    -- Button hover and click effects
     local function createRipple(button)
         local ripple = Instance.new("Frame")
         ripple.Name = "Ripple"
@@ -353,7 +379,8 @@ return function()
             ripple:Destroy()
         end)
     end
-
+    
+    -- Setup button hover effects
     local function setupButtonHover(button, normalColor, hoverColor, pressColor)
         button.MouseEnter:Connect(function()
             TweenService:Create(button, TweenInfo.new(0.2), {
@@ -380,97 +407,128 @@ return function()
             }):Play()
         end)
     end
-
+    
+    -- Setup hover effects for verify button
     setupButtonHover(
         verifyButton, 
         Color3.fromRGB(70, 120, 220), 
         Color3.fromRGB(90, 140, 240), 
         Color3.fromRGB(60, 110, 200)
     )
-
+    
+    -- Setup hover effects for action text
     actionText.MouseEnter:Connect(function()
         TweenService:Create(actionText, TweenInfo.new(0.2), {
-            TextColor3 = Color3.fromRGB(120, 180, 255)
-        }):Play()
-        TweenService:Create(underline, TweenInfo.new(0.2), {
-            BackgroundColor3 = Color3.fromRGB(120, 180, 255)
+            TextColor3 = Color3.fromRGB(255, 255, 255) -- Full white on hover
         }):Play()
     end)
     
     actionText.MouseLeave:Connect(function()
         TweenService:Create(actionText, TweenInfo.new(0.2), {
-            TextColor3 = Color3.fromRGB(90, 150, 255)
-        }):Play()
-        TweenService:Create(underline, TweenInfo.new(0.2), {
-            BackgroundColor3 = Color3.fromRGB(90, 150, 255)
+            TextColor3 = Color3.fromRGB(240, 240, 240) -- Back to bright white
         }):Play()
     end)
-
+    
+    -- Password visibility toggle
     local keyVisible = false
     visibilityButton.MouseButton1Click:Connect(function()
         keyVisible = not keyVisible
         
         if keyVisible then
-            local eyeIcon = getIcon("eye")
-            visibilityButton.Image = "rbxassetid://" .. eyeIcon.id
-            visibilityButton.ImageRectSize = eyeIcon.imageRectSize
-            visibilityButton.ImageRectOffset = eyeIcon.imageRectOffset
-            maskedKeyDisplay.Visible = false
+            -- Show password
+            local eyeIcon
+            pcall(function()
+                eyeIcon = getIcon("eye")
+            end)
+            
+            if eyeIcon then
+                visibilityButton.Image = "rbxassetid://" .. eyeIcon.id
+                visibilityButton.ImageRectSize = eyeIcon.imageRectSize
+                visibilityButton.ImageRectOffset = eyeIcon.imageRectOffset
+            else
+                -- Fallback
+                visibilityButton.Image = "rbxassetid://6023565892"
+                visibilityButton.ImageRectSize = Vector2.new(48, 48)
+                visibilityButton.ImageRectOffset = Vector2.new(0, 0)
+            end
+            
+            keyInput.Visible = true
         else
-            local eyeIcon = getIcon("eye-off")
-            visibilityButton.Image = "rbxassetid://" .. eyeIcon.id
-            visibilityButton.ImageRectSize = eyeIcon.imageRectSize
-            visibilityButton.ImageRectOffset = eyeIcon.imageRectOffset
-            maskedKeyDisplay.Visible = true
-
+            -- Hide password
+            local eyeOffIcon
+            pcall(function()
+                eyeOffIcon = getIcon("eye-off")
+            end)
+            
+            if eyeOffIcon then
+                visibilityButton.Image = "rbxassetid://" .. eyeOffIcon.id
+                visibilityButton.ImageRectSize = eyeOffIcon.imageRectSize
+                visibilityButton.ImageRectOffset = eyeOffIcon.imageRectOffset
+            else
+                -- Fallback
+                visibilityButton.Image = "rbxassetid://6023565892"
+                visibilityButton.ImageRectSize = Vector2.new(48, 48)
+                visibilityButton.ImageRectOffset = Vector2.new(48, 0)
+            end
+            
+            -- Create masked text display
             local maskedText = string.rep("•", #keyInput.Text)
-            maskedKeyDisplay.Text = maskedText
+            keyInput.Text = maskedText
         end
     end)
-
-    keyInput.Changed:Connect(function(prop)
-        if prop == "Text" then
-            local maskedText = string.rep("•", #keyInput.Text)
-            maskedKeyDisplay.Text = maskedText
-        end
-    end)
-
+    
+    -- Copy link
     actionText.MouseButton1Click:Connect(function()
         pcall(function()
             setclipboard(KeySystemConfig.ActionLink)
         end)
         statusText.Text = "Link copied to clipboard!"
         statusText.TextColor3 = Color3.fromRGB(100, 255, 100)
-
+        
+        -- Reset status text after 3 seconds
         delay(3, function()
             statusText.Text = ""
         end)
     end)
-
+    
+    -- Success callback storage
     local successCallback = function() end
-
+    
+    -- Key verification
     local function onVerifyClick()
         local inputKey = keyInput.Text
+        
+        -- If the key is masked, we need to get the original key
+        if not keyVisible and string.find(inputKey, "•") then
+            statusText.Text = "Please enter a key!"
+            statusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+            return
+        end
         
         if inputKey == "" then
             statusText.Text = "Please enter a key!"
             statusText.TextColor3 = Color3.fromRGB(255, 100, 100)
             return
         end
-
+        
+        -- Show loading animation
         local originalText = verifyButton.Text
         verifyButton.Text = "Verifying..."
-
+        
+        -- Simulate network delay (for realism)
         delay(math.random(0.5, 1.5), function()
             if verifyKey(inputKey) then
                 statusText.Text = "Key verified successfully!"
                 statusText.TextColor3 = Color3.fromRGB(100, 255, 100)
-
+                
+                -- Save the key if enabled
                 if KeySystemConfig.SaveKey then
                     saveKey(inputKey)
                 end
-
+                
+                -- Close key system with success animation
                 delay(1, function()
+                    -- Fade out animation
                     local fadeTween = TweenService:Create(mainFrame, TweenInfo.new(0.5), {
                         Size = UDim2.new(0, 320, 0, 0)
                     })
@@ -478,7 +536,8 @@ return function()
                     
                     fadeTween.Completed:Connect(function()
                         keySystemGui:Destroy()
-
+                        
+                        -- Call success callback
                         successCallback()
                     end)
                 end)
@@ -486,7 +545,8 @@ return function()
                 statusText.Text = "Invalid key! Please try again."
                 statusText.TextColor3 = Color3.fromRGB(255, 100, 100)
                 verifyButton.Text = originalText
-
+                
+                -- Shake animation for invalid key
                 local originalPosition = mainFrame.Position
                 for i = 1, 5 do
                     mainFrame.Position = originalPosition + UDim2.new(0, math.random(-5, 5), 0, 0)
@@ -498,32 +558,68 @@ return function()
     end
     
     verifyButton.MouseButton1Click:Connect(onVerifyClick)
-
+    
+    -- Allow Enter key to submit
     keyInput.FocusLost:Connect(function(enterPressed)
         if enterPressed then
             onVerifyClick()
         end
     end)
-
+    
+    -- Close button functionality
+    closeButton.MouseEnter:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(255, 255, 255)
+        }):Play()
+    end)
+    
+    closeButton.MouseLeave:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(200, 200, 200)
+        }):Play()
+    end)
+    
+    closeButton.MouseButton1Click:Connect(function()
+        -- Shake animation to indicate you can't close without a key
+        local originalPosition = mainFrame.Position
+        for i = 1, 3 do
+            mainFrame.Position = originalPosition + UDim2.new(0, math.random(-5, 5), 0, 0)
+            wait(0.05)
+        end
+        mainFrame.Position = originalPosition
+        
+        -- Show message
+        statusText.Text = "Please verify your key to continue!"
+        statusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+        
+        -- Reset status text after 3 seconds
+        delay(3, function()
+            statusText.Text = ""
+        end)
+    end)
+    
+    -- Delayed appearance for smooth loading
     delay(0.1, function()
         TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
             Size = UDim2.new(0, 320, 0, 260)
         }):Play()
     end)
-
+    
+    -- Check for saved key and auto-verify if enabled
     local savedKey = getSavedKey()
     if savedKey then
         keyInput.Text = savedKey
-        local maskedText = string.rep("•", #savedKey)
-        maskedKeyDisplay.Text = maskedText
-
+        
+        -- Auto verify if we have a saved key
         delay(0.5, function()
             onVerifyClick()
         end)
     end
-
+    
+    -- Return the API
     local KeySystemAPI = {}
-
+    
+    -- Configure the key system
     function KeySystemAPI:Configure(config)
         if config.Title then
             KeySystemConfig.Title = config.Title
@@ -560,18 +656,22 @@ return function()
         if config.FileName then
             KeySystemConfig.FileName = config.FileName
         end
+        
         return self
     end
-
+    
+    -- Support for multiple keys
     function KeySystemAPI:AddKey(key)
         if type(KeySystemConfig.Key) == "string" then
+            -- Convert single key to table
             KeySystemConfig.Key = {KeySystemConfig.Key}
         end
         
         if type(KeySystemConfig.Key) == "table" then
             table.insert(KeySystemConfig.Key, key)
         end
-
+        
+        -- Update the verify function to check multiple keys
         verifyKey = function(inputKey)
             if type(KeySystemConfig.Key) == "string" then
                 return inputKey == KeySystemConfig.Key
@@ -587,22 +687,26 @@ return function()
         
         return self
     end
-
+    
+    -- Set the callback for when key is verified
     function KeySystemAPI:OnSuccess(callback)
         if type(callback) == "function" then
             successCallback = callback
         end
         return self
     end
-
+    
+    -- Manually check a key
     function KeySystemAPI:VerifyKey(key)
         return verifyKey(key)
     end
-
+    
+    -- Destroy the key system
     function KeySystemAPI:Destroy()
         keySystemGui:Destroy()
     end
-
+    
+    -- Check if a key is already saved and valid
     function KeySystemAPI:HasValidKey()
         local savedKey = getSavedKey()
         if savedKey then
@@ -610,7 +714,8 @@ return function()
         end
         return false
     end
-
+    
+    -- Skip the key system if a valid key exists
     function KeySystemAPI:SkipIfValidKey()
         if self:HasValidKey() then
             keySystemGui:Destroy()
@@ -618,6 +723,29 @@ return function()
             return true
         end
         return false
+    end
+    
+    -- Allow closing the key system
+    function KeySystemAPI:AllowClose(callback)
+        -- Update close button functionality
+        closeButton.MouseButton1Click:Connect(function()
+            -- Fade out animation
+            local fadeTween = TweenService:Create(mainFrame, TweenInfo.new(0.5), {
+                Size = UDim2.new(0, 320, 0, 0)
+            })
+            fadeTween:Play()
+            
+            fadeTween.Completed:Connect(function()
+                keySystemGui:Destroy()
+                
+                -- Call close callback if provided
+                if type(callback) == "function" then
+                    callback()
+                end
+            end)
+        end)
+        
+        return self
     end
     
     return KeySystemAPI
