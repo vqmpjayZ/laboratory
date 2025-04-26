@@ -4,7 +4,7 @@
 ]]
 
 local UILibrary = {}
-
+--local Version = 1
 -- Services
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -2404,19 +2404,31 @@ function UILibrary:CreateWindow(options)
         return Notification
     end
     
-    -- Initialize the library
     function Library:Init()
+        -- Create UI
+        self:CreateUI()
+        
+        -- Connect input events
+        UserInputService.InputBegan:Connect(function(input, gameProcessed)
+            if input.KeyCode == self.ToggleKey and not gameProcessed then
+                self:Toggle()
+            end
+        end)
+        
+        -- Return the library
         return self
     end
     
-    local Interface = {}
-    
-    function Interface:CreateWindow(options)
-        Library:CreateUI(options)
-        return Library
-    end
-    
-    return Interface
+    return Library
 end
 
-return RayfieldInspired()
+-- Create the interface
+local Interface = {}
+
+function Interface:CreateWindow(options)
+    local LibraryInstance = RayfieldInspired()
+    LibraryInstance:CreateUI(options)
+    return LibraryInstance
+end
+
+return Interface
