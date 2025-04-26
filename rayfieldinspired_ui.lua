@@ -2,7 +2,7 @@
     Rayfield-Inspired UI Library
     A clean, modern UI library with support for various components
 ]]
-
+--v2
 local UILibrary = {}
 
 -- Services
@@ -2419,7 +2419,12 @@ function UILibrary:CreateWindow(options)
         return self
     end
     
-    return Library:Init()
+    return {
+        CreateWindow = function(self, options)
+            Library:CreateUI(options)
+            return Library
+        end
+    }
 end
 
 return RayfieldInspired
