@@ -262,6 +262,14 @@ function MinimalistUI.new(config)
     -- Default configuration
     config = config or {}
     self.Title = config.Title or "MinimalistUI"
+
+    if typeof(config.Size) == "UDim2" then
+        self.Size = config.Size
+    else
+        print("Invalid Size provided, using default")
+        self.Size = UDim2.new(0, 600, 0, 400)
+    end
+    
     self.Subtitle = config.Subtitle or ""
     self.Size = config.Size or UDim2.new(0, 600, 0, 400)
     self.Position = config.Position or UDim2.new(0.5, -300, 0.5, -200)
@@ -287,16 +295,7 @@ function MinimalistUI.new(config)
     self.Minimized = false
     self.Visible = true
     self.SearchActive = false
-    
-    local function safeSetSize(instance, size)
-        if typeof(size) ~= "UDim2" then
-            warn("Invalid size for " .. instance.Name .. ": " .. tostring(size) .. " (Type: " .. typeof(size) .. ")")
-            -- Provide a default size to prevent errors
-            return UDim2.new(1, 0, 0, 30)
-        end
-        return size
-    end
-    
+
     -- Create ScreenGui
     self.ScreenGui = Instance.new("ScreenGui")
     self.ScreenGui.Name = "MinimalistUI"
