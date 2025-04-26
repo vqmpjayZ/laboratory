@@ -1,13 +1,39 @@
 --[[
   QuantumGuard
   A custom key system with many security features and saveable keys for Roblox scripts.
+  Version = 1A
 --]]
-
 return function()
     local player = game.Players.LocalPlayer
     local UserInputService = game:GetService("UserInputService")
     local TweenService = game:GetService("TweenService")
     local HttpService = game:GetService("HttpService")
+
+    local Icons = {}
+    Icons['48px'] = {
+        ["eye"] = {6023565892, {48, 48}, {0, 0}},
+        ["eye-off"] = {6023565892, {48, 48}, {48, 0}}
+    }
+    
+    local function getIcon(name)
+        name = string.match(string.lower(name), "^%s*(.*)%s*$")
+        local sizedicons = Icons['48px']
+        local r = sizedicons[name]
+        if not r then
+            warn("Failed to find icon by the name of \"" .. name .. "\".")
+            return {id = 0, imageRectSize = Vector2.new(0, 0), imageRectOffset = Vector2.new(0, 0)}
+        end
+        local rirs = r[2]
+        local riro = r[3]
+        local irs = Vector2.new(rirs[1], rirs[2])
+        local iro = Vector2.new(riro[1], riro[2])
+        local asset = {
+            id = r[1],
+            imageRectSize = irs,
+            imageRectOffset = iro,
+        }
+        return asset
+    end
 
     local KeySystemConfig = {
         Title = "Key System",
@@ -75,16 +101,21 @@ return function()
     keySystemGui.Name = "KeySystemGui"
     keySystemGui.ResetOnSpawn = false
     keySystemGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    keySystemGui.Parent = player.PlayerGui
+    keySystemGui.DisplayOrder = 999999999
 
-    local blurEffect = Instance.new("BlurEffect")
-    blurEffect.Size = 0
-    blurEffect.Parent = game:GetService("Lighting")
+    if syn and syn.protect_gui then
+        syn.protect_gui(keySystemGui)
+        keySystemGui.Parent = game:GetService("CoreGui")
+    elseif gethui then
+        keySystemGui.Parent = gethui()
+    else
+        keySystemGui.Parent = game:GetService("CoreGui")
+    end
 
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(0, 320, 0, 0)
-    mainFrame.Position = UDim2.new(0.5, -160, 0.5, -130)
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
     mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
     mainFrame.BorderSizePixel = 0
     mainFrame.ClipsDescendants = true
@@ -178,40 +209,31 @@ return function()
     noteText.TextXAlignment = Enum.TextXAlignment.Left
     noteText.Parent = contentFrame
 
-    local actionButton = Instance.new("TextButton")
-    actionButton.Name = "ActionButton"
-    actionButton.Size = UDim2.new(1, -40, 0, 30)
-    actionButton.Position = UDim2.new(0, 20, 0, 85)
-    actionButton.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-    actionButton.Text = KeySystemConfig.ActionText
-    actionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    actionButton.Font = Enum.Font.GothamSemibold
-    actionButton.TextSize = 14
-    actionButton.AutoButtonColor = false
-    actionButton.ClipsDescendants = true
-    actionButton.Parent = contentFrame
-    
-    local actionCorner = Instance.new("UICorner")
-    actionCorner.CornerRadius = UDim.new(0, 6)
-    actionCorner.Parent = actionButton
-    
-    local actionStroke = Instance.new("UIStroke")
-    actionStroke.Color = Color3.fromRGB(80, 80, 120)
-    actionStroke.Thickness = 1
-    actionStroke.Parent = actionButton
+    local actionText = Instance.new("TextButton")
+    actionText.Name = "ActionText"
+    actionText.Size = UDim2.new(1, -40, 0, 20)
+    actionText.Position = UDim2.new(0, 20, 0, 85)
+    actionText.BackgroundTransparency = 1
+    actionText.Text = KeySystemConfig.ActionText
+    actionText.TextColor3 = Color3.fromRGB(90, 150, 255)
+    actionText.Font = Enum.Font.GothamSemibold
+    actionText.TextSize = 14
+    actionText.TextXAlignment = Enum.TextXAlignment.Left
+    actionText.AutoButtonColor = false
+    actionText.Parent = contentFrame
 
-    local actionGradient = Instance.new("UIGradient")
-    actionGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 60, 90)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 50, 75))
-    })
-    actionGradient.Rotation = 90
-    actionGradient.Parent = actionButton
+    local underline = Instance.new("Frame")
+    underline.Name = "Underline"
+    underline.Size = UDim2.new(1, 0, 0, 1)
+    underline.Position = UDim2.new(0, 0, 1, 0)
+    underline.BackgroundColor3 = Color3.fromRGB(90, 150, 255)
+    underline.BorderSizePixel = 0
+    underline.Parent = actionText
 
     local keyContainer = Instance.new("Frame")
     keyContainer.Name = "KeyContainer"
     keyContainer.Size = UDim2.new(1, -40, 0, 40)
-    keyContainer.Position = UDim2.new(0, 20, 0, 125)
+    keyContainer.Position = UDim2.new(0, 20, 0, 115)
     keyContainer.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     keyContainer.BorderSizePixel = 0
     keyContainer.Parent = contentFrame
@@ -239,37 +261,38 @@ return function()
     keyInput.TextXAlignment = Enum.TextXAlignment.Left
     keyInput.ClearTextOnFocus = false
     keyInput.Parent = keyContainer
-    keyInput.Visible = false
 
-    local maskedKeyInput = Instance.new("TextLabel")
-    maskedKeyInput.Name = "MaskedKeyInput"
-    maskedKeyInput.Size = UDim2.new(1, -50, 1, 0)
-    maskedKeyInput.Position = UDim2.new(0, 10, 0, 0)
-    maskedKeyInput.BackgroundTransparency = 1
-    maskedKeyInput.Text = ""
-    maskedKeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    maskedKeyInput.Font = Enum.Font.Gotham
-    maskedKeyInput.TextSize = 14
-    maskedKeyInput.TextXAlignment = Enum.TextXAlignment.Left
-    maskedKeyInput.Parent = keyContainer
-    maskedKeyInput.Visible = true
+    local maskedKeyDisplay = Instance.new("TextLabel")
+    maskedKeyDisplay.Name = "MaskedKeyDisplay"
+    maskedKeyDisplay.Size = UDim2.new(1, -50, 1, 0)
+    maskedKeyDisplay.Position = UDim2.new(0, 10, 0, 0)
+    maskedKeyDisplay.BackgroundTransparency = 1
+    maskedKeyDisplay.Text = ""
+    maskedKeyDisplay.TextColor3 = Color3.fromRGB(255, 255, 255)
+    maskedKeyDisplay.Font = Enum.Font.Gotham
+    maskedKeyDisplay.TextSize = 14
+    maskedKeyDisplay.TextXAlignment = Enum.TextXAlignment.Left
+    maskedKeyDisplay.ZIndex = 2
+    maskedKeyDisplay.Parent = keyContainer
 
     local visibilityButton = Instance.new("ImageButton")
     visibilityButton.Name = "VisibilityButton"
-    visibilityButton.Size = UDim2.new(0, 20, 0, 20)
-    visibilityButton.Position = UDim2.new(1, -30, 0.5, -10)
+    visibilityButton.Size = UDim2.new(0, 24, 0, 24)
+    visibilityButton.Position = UDim2.new(1, -32, 0.5, -12)
     visibilityButton.BackgroundTransparency = 1
-    visibilityButton.Image = "rbxassetid://3926307971" -- Eye icon
-    visibilityButton.ImageRectOffset = Vector2.new(564, 4)
-    visibilityButton.ImageRectSize = Vector2.new(36, 36)
+    
+    local eyeIcon = getIcon("eye-off")
+    visibilityButton.Image = "rbxassetid://" .. eyeIcon.id
+    visibilityButton.ImageRectSize = eyeIcon.imageRectSize
+    visibilityButton.ImageRectOffset = eyeIcon.imageRectOffset
     visibilityButton.ImageColor3 = Color3.fromRGB(150, 150, 170)
     visibilityButton.Parent = keyContainer
 
     local verifyButton = Instance.new("TextButton")
     verifyButton.Name = "VerifyButton"
     verifyButton.Size = UDim2.new(1, -40, 0, 40)
-    verifyButton.Position = UDim2.new(0, 20, 0, 175)
-    verifyButton.BackgroundColor3 = Color3.fromRGB(60, 80, 150)
+    verifyButton.Position = UDim2.new(0, 20, 0, 165)
+    verifyButton.BackgroundColor3 = Color3.fromRGB(70, 120, 220)
     verifyButton.Text = "Verify Key"
     verifyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     verifyButton.Font = Enum.Font.GothamBold
@@ -284,8 +307,8 @@ return function()
 
     local verifyGradient = Instance.new("UIGradient")
     verifyGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 100, 170)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 80, 150))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 140, 240)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(70, 120, 220))
     })
     verifyGradient.Rotation = 90
     verifyGradient.Parent = verifyButton
@@ -293,7 +316,7 @@ return function()
     local statusText = Instance.new("TextLabel")
     statusText.Name = "StatusText"
     statusText.Size = UDim2.new(1, -40, 0, 20)
-    statusText.Position = UDim2.new(0, 20, 0, 225)
+    statusText.Position = UDim2.new(0, 20, 0, 215)
     statusText.BackgroundTransparency = 1
     statusText.Text = ""
     statusText.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -359,45 +382,60 @@ return function()
     end
 
     setupButtonHover(
-        actionButton, 
-        Color3.fromRGB(40, 40, 60), 
-        Color3.fromRGB(50, 50, 75), 
-        Color3.fromRGB(35, 35, 55)
+        verifyButton, 
+        Color3.fromRGB(70, 120, 220), 
+        Color3.fromRGB(90, 140, 240), 
+        Color3.fromRGB(60, 110, 200)
     )
 
-    setupButtonHover(
-        verifyButton, 
-        Color3.fromRGB(60, 80, 150), 
-        Color3.fromRGB(70, 90, 160), 
-        Color3.fromRGB(50, 70, 140)
-    )
+    actionText.MouseEnter:Connect(function()
+        TweenService:Create(actionText, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(120, 180, 255)
+        }):Play()
+        TweenService:Create(underline, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(120, 180, 255)
+        }):Play()
+    end)
     
+    actionText.MouseLeave:Connect(function()
+        TweenService:Create(actionText, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(90, 150, 255)
+        }):Play()
+        TweenService:Create(underline, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(90, 150, 255)
+        }):Play()
+    end)
+
     local keyVisible = false
     visibilityButton.MouseButton1Click:Connect(function()
         keyVisible = not keyVisible
         
         if keyVisible then
-            visibilityButton.ImageRectOffset = Vector2.new(524, 4)
-            keyInput.Visible = true
-            maskedKeyInput.Visible = false
+            local eyeIcon = getIcon("eye")
+            visibilityButton.Image = "rbxassetid://" .. eyeIcon.id
+            visibilityButton.ImageRectSize = eyeIcon.imageRectSize
+            visibilityButton.ImageRectOffset = eyeIcon.imageRectOffset
+            maskedKeyDisplay.Visible = false
         else
-            visibilityButton.ImageRectOffset = Vector2.new(564, 4)
-            keyInput.Visible = false
-            maskedKeyInput.Visible = true
+            local eyeIcon = getIcon("eye-off")
+            visibilityButton.Image = "rbxassetid://" .. eyeIcon.id
+            visibilityButton.ImageRectSize = eyeIcon.imageRectSize
+            visibilityButton.ImageRectOffset = eyeIcon.imageRectOffset
+            maskedKeyDisplay.Visible = true
 
             local maskedText = string.rep("•", #keyInput.Text)
-            maskedKeyInput.Text = maskedText
+            maskedKeyDisplay.Text = maskedText
         end
     end)
 
     keyInput.Changed:Connect(function(prop)
         if prop == "Text" then
             local maskedText = string.rep("•", #keyInput.Text)
-            maskedKeyInput.Text = maskedText
+            maskedKeyDisplay.Text = maskedText
         end
     end)
 
-    actionButton.MouseButton1Click:Connect(function()
+    actionText.MouseButton1Click:Connect(function()
         pcall(function()
             setclipboard(KeySystemConfig.ActionLink)
         end)
@@ -431,20 +469,15 @@ return function()
                 if KeySystemConfig.SaveKey then
                     saveKey(inputKey)
                 end
-                
+
                 delay(1, function()
                     local fadeTween = TweenService:Create(mainFrame, TweenInfo.new(0.5), {
                         Size = UDim2.new(0, 320, 0, 0)
                     })
                     fadeTween:Play()
-
-                    TweenService:Create(blurEffect, TweenInfo.new(0.5), {
-                        Size = 0
-                    }):Play()
                     
                     fadeTween.Completed:Connect(function()
                         keySystemGui:Destroy()
-                        blurEffect:Destroy()
 
                         successCallback()
                     end)
@@ -472,10 +505,6 @@ return function()
         end
     end)
 
-    TweenService:Create(blurEffect, TweenInfo.new(0.5), {
-        Size = 10
-    }):Play()
-
     delay(0.1, function()
         TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
             Size = UDim2.new(0, 320, 0, 260)
@@ -486,7 +515,11 @@ return function()
     if savedKey then
         keyInput.Text = savedKey
         local maskedText = string.rep("•", #savedKey)
-        maskedKeyInput.Text = maskedText
+        maskedKeyDisplay.Text = maskedText
+
+        delay(0.5, function()
+            onVerifyClick()
+        end)
     end
 
     local KeySystemAPI = {}
@@ -509,7 +542,7 @@ return function()
         
         if config.ActionText then
             KeySystemConfig.ActionText = config.ActionText
-            actionButton.Text = config.ActionText
+            actionText.Text = config.ActionText
         end
         
         if config.ActionLink then
@@ -526,6 +559,30 @@ return function()
         
         if config.FileName then
             KeySystemConfig.FileName = config.FileName
+        end
+        return self
+    end
+
+    function KeySystemAPI:AddKey(key)
+        if type(KeySystemConfig.Key) == "string" then
+            KeySystemConfig.Key = {KeySystemConfig.Key}
+        end
+        
+        if type(KeySystemConfig.Key) == "table" then
+            table.insert(KeySystemConfig.Key, key)
+        end
+
+        verifyKey = function(inputKey)
+            if type(KeySystemConfig.Key) == "string" then
+                return inputKey == KeySystemConfig.Key
+            elseif type(KeySystemConfig.Key) == "table" then
+                for _, validKey in ipairs(KeySystemConfig.Key) do
+                    if inputKey == validKey then
+                        return true
+                    end
+                end
+            end
+            return false
         end
         
         return self
@@ -544,7 +601,6 @@ return function()
 
     function KeySystemAPI:Destroy()
         keySystemGui:Destroy()
-        blurEffect:Destroy()
     end
 
     function KeySystemAPI:HasValidKey()
@@ -558,7 +614,6 @@ return function()
     function KeySystemAPI:SkipIfValidKey()
         if self:HasValidKey() then
             keySystemGui:Destroy()
-            blurEffect:Destroy()
             successCallback()
             return true
         end
