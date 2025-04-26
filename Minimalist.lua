@@ -285,7 +285,7 @@ function MinimalistUI.new(config)
         self.Theme = isDark and self.Themes.Dark or self.Themes.Light
     else
         -- Use specified self.Theme or default to Dark if invalid
-        self.Theme = self.Themes[self.ThemeName] or self.Themes.Dark
+        self.Theme = Themes[ThemeName] or Themes.Dark
     end
     
     -- Initialize other properties
