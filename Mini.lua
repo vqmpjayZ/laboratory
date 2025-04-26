@@ -792,25 +792,30 @@ function MinimalistUI:UpdateSearch(query)
     end
 end
 
--- Create a new tab
 function MinimalistUI:CreateTab(title, icon)
-    local theme = self.Theme
+    -- Ensure ContentArea exists
+    if not self.ContentArea then
+        warn("ContentArea not initialized. Creating it now.")
+        self.ContentArea = Instance.new("Frame")
+        self.ContentArea.Name = "ContentArea"
+        self.ContentArea.Size = UDim2.new(1, -150, 1, -50)
+        self.ContentArea.Position = UDim2.new(0, 150, 0, 50)
+        self.ContentArea.BackgroundTransparency = 1
+        self.ContentArea.Parent = self.MainFrame
+    end
+    
     local tabIndex = #self.Tabs + 1
     
-    -- Tab button
+    -- Create tab button
     local tabButton = Instance.new("TextButton")
     tabButton.Name = "Tab_" .. title
     tabButton.Size = UDim2.new(1, 0, 0, 36)
-    tabButton.BackgroundColor3 = theme.Accent
+    tabButton.Position = UDim2.new(0, 0, 0, (tabIndex - 1) * 36)
     tabButton.BackgroundTransparency = 1
     tabButton.Text = ""
-    tabButton.Parent = self.TabScroll
+    tabButton.Parent = self.TabContainer -- Make sure TabContainer exists
     
-    local tabButtonCorner = Instance.new("UICorner")
-    tabButtonCorner.CornerRadius = UDim.new(0, 6)
-    tabButtonCorner.Parent = tabButton
-    
-    -- Tab icon
+    -- Tab icon (if provided)
     local tabIcon
     if icon then
         tabIcon = Instance.new("ImageLabel")
@@ -818,19 +823,7 @@ function MinimalistUI:CreateTab(title, icon)
         tabIcon.Size = UDim2.new(0, 20, 0, 20)
         tabIcon.Position = UDim2.new(0, 8, 0.5, -10)
         tabIcon.BackgroundTransparency = 1
-        
-        if typeof(icon) == "string" then
-            -- Use Lucide icon
-            local iconData = getIcon(icon)
-            tabIcon.Image = "rbxassetid://" .. iconData.id
-            tabIcon.ImageRectSize = iconData.imageRectSize
-            tabIcon.ImageRectOffset = iconData.imageRectOffset
-        else
-            -- Use custom icon
-            tabIcon.Image = icon
-        end
-        
-        tabIcon.ImageColor3 = theme.TextColor
+        tabIcon.Image = "rbxassetid://" .. icon -- Make sure icon is a valid asset ID
         tabIcon.Parent = tabButton
     end
     
@@ -841,7 +834,7 @@ function MinimalistUI:CreateTab(title, icon)
     tabText.Position = UDim2.new(0, icon and 36 or 8, 0, 0)
     tabText.BackgroundTransparency = 1
     tabText.Text = title
-    tabText.TextColor3 = theme.TextColor
+    tabText.TextColor3 = self.Theme.TextColor
     tabText.Font = Enum.Font.Gotham
     tabText.TextSize = 14
     tabText.TextXAlignment = Enum.TextXAlignment.Left
@@ -852,7 +845,7 @@ function MinimalistUI:CreateTab(title, icon)
     tabIndicator.Name = "TabIndicator"
     tabIndicator.Size = UDim2.new(0, 3, 0, 20)
     tabIndicator.Position = UDim2.new(0, 0, 0.5, -10)
-    tabIndicator.BackgroundColor3 = theme.ToggleOn
+    tabIndicator.BackgroundColor3 = self.Theme.ToggleOn
     tabIndicator.BorderSizePixel = 0
     tabIndicator.Visible = false
     tabIndicator.Parent = tabButton
@@ -868,7 +861,7 @@ function MinimalistUI:CreateTab(title, icon)
     tabContainer.BackgroundTransparency = 1
     tabContainer.BorderSizePixel = 0
     tabContainer.ScrollBarThickness = 4
-    tabContainer.ScrollBarImageColor3 = theme.LightAccent
+    tabContainer.ScrollBarImageColor3 = self.Theme.LightAccent
     tabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     tabContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
     tabContainer.Visible = false
@@ -942,14 +935,41 @@ end
 
 -- Select a tab
 function MinimalistUI:SelectTab(tab)
+    if not tab then
+        warn("Attempted to select nil tab")
+        return
+    end
+    
+    if not tab.Indicator then
+        warn("Tab has no Indicator property")
+        return
+    end
+    
+    if not tab.Container then
+        warn("Tab has no Container property")
+        return
+    end
+    
+    if not tab.Button then
+        warn("Tab has no Button property")
+        return
+    end
+    
     -- Deselect current tab
     if self.ActiveTab then
-        self.ActiveTab.Indicator.Visible = false
-        self.ActiveTab.Container.Visible = false
+        if self.ActiveTab.Indicator then
+            self.ActiveTab.Indicator.Visible = false
+        end
         
-        TweenService:Create(self.ActiveTab.Button, TweenInfo.new(0.2), {
-            BackgroundTransparency = 1
-        }):Play()
+        if self.ActiveTab.Container then
+            self.ActiveTab.Container.Visible = false
+        end
+        
+        if self.ActiveTab.Button then
+            TweenService:Create(self.ActiveTab.Button, TweenInfo.new(0.2), {
+                BackgroundTransparency = 1
+            }):Play()
+        end
     end
     
     -- Select new tab
