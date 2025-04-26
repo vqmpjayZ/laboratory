@@ -2263,16 +2263,4 @@ function RayUI:UpdateSearch(searchText)
 end
 
 -- Return the library
-local Module = {}
-
--- Directly copy the CreateWindow function to the module
-Module.CreateWindow = function(self, config)
-    return RayUI:CreateWindow(config)
-end
-
--- Directly copy the Notify function to the module
-Module.Notify = function(self, config)
-    return RayUI:Notify(config)
-end
-
-return Module
+return RayUI
