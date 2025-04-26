@@ -2263,4 +2263,10 @@ function RayUI:UpdateSearch(searchText)
 end
 
 -- Return the library
-return RayUI
+local UI = {}
+
+function UI.new()
+    return setmetatable({}, {__index = RayUI})
+end
+
+return UI.new()
