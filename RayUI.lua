@@ -1,3 +1,5 @@
+-- WILL MOST LIKELY BE DISCONTINUED
+
 --[[
     RayUI Library
     A lightweight, customizable UI library for Roblox
