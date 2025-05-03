@@ -1640,4 +1640,4 @@ function RayfieldLite.new(title)
     return library
 end
 
-return RayfieldLite
+return RayfieldLite()
