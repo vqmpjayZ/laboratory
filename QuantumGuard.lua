@@ -5,7 +5,765 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
-          A cool key system with security measures - QuantumGaurd
+          A cool key system
 ]]
 
-([[This file wasn't protected with MoonsecV3, ts is bad obfuscation ikik]]):gsub(".", function() end) return(function()local a=game:GetService("Players").LocalPlayer;local b=game:GetService("UserInputService");local c=game:GetService("TweenService");local d=game:GetService("HttpService");local e=loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))();local f=function(g)g=string.match(string.lower(g),"^%s*(.*)%s*$")local h=e['48px']local i=h[g]if not i then return nil end;local j=i[2]local k=i[3]if type(i[1])~="number"or type(j)~="table"or type(k)~="table"then return nil end;local l=Vector2.new(j[1],j[2])local m=Vector2.new(k[1],k[2])local n={id=i[1],imageRectSize=l,imageRectOffset=m}return n end;local o={Title="Key System",NoteTitle="How to get a key",Note="To access this script, you need to get a key.",ActionText="Click here to copy key link",ActionLink="",Key="Hello",SaveKey=true,FileName="KeySystemSave.txt"}local p={}for q=1,16 do p[q]=string.char(math.random(97,122))end;local r=table.concat(p)local s=function(t)if not t then return"0"end;local u=0;for q=1,#t do u=(u*31+string.byte(t,q))%2147483647 end;return tostring(u)..r end;local v=function()local w=""pcall(function()w=game:GetService("RbxAnalyticsService"):GetClientId()end)local x=a.UserId;return s(w.."-"..tostring(x)..r)end;local y=function()pcall(function()if not isfolder("QuantamGuard")then makefolder("QuantamGuard")end end)end;local z=function(A)if not o.SaveKey then return end;y()local B=v()local C={key=A,identifier=B,hash=s(A..B..o.Title..r),scriptName=o.Title,saveTime=os.time()}local D="QuantamGuard/"..o.Title.." Key.txt"pcall(function()writefile(D,d:JSONEncode(C))end)end;local E=function()local F={}pcall(function()if isfolder("QuantamGuard")then local G=listfiles("QuantamGuard")for H,D in ipairs(G)do if string.match(D,"%.txt$")then local I,J=pcall(function()return readfile(D)end)if I then local K,C=pcall(function()return d:JSONDecode(J)end)if K and C.key and C.hash then local B=v()if C.hash==s(C.key..C.identifier..C.scriptName..r)then table.insert(F,C.key)end end end end end end end)return F end;local L=function(M)if type(o.Key)=="string"then return M==o.Key elseif type(o.Key)=="table"then for H,N in ipairs(o.Key)do if M==N then return true end end end;return false end;local O=function()if not o.SaveKey then return false end;local F=E()for H,A in ipairs(F)do if L(A)then return A end end;return false end;local P=Instance.new("ScreenGui")P.Name="KeySystemGui"P.ResetOnSpawn=false;P.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;P.DisplayOrder=999999999;if syn and syn.protect_gui then syn.protect_gui(P)P.Parent=game:GetService("CoreGui")elseif gethui then P.Parent=gethui()else P.Parent=game:GetService("CoreGui")end;local Q=Instance.new("Frame")Q.Name="MainFrame"Q.Size=UDim2.new(0,320,0,0)Q.Position=UDim2.new(0.5,0,0.5,0)Q.BackgroundColor3=Color3.fromRGB(25,25,35)Q.BorderSizePixel=0;Q.ClipsDescendants=true;Q.AnchorPoint=Vector2.new(0.5,0.5)Q.Parent=P;local R=Instance.new("ImageLabel")R.Name="Shadow"R.AnchorPoint=Vector2.new(0.5,0.5)R.BackgroundTransparency=1;R.Position=UDim2.new(0.5,0,0.5,0)R.Size=UDim2.new(1,40,1,40)R.ZIndex=0;R.Image="rbxassetid://6014261993"R.ImageColor3=Color3.fromRGB(0,0,0)R.ImageTransparency=0.5;R.ScaleType=Enum.ScaleType.Slice;R.SliceCenter=Rect.new(49,49,450,450)R.Parent=Q;local S=Instance.new("UICorner")S.CornerRadius=UDim.new(0,8)S.Parent=Q;local T=Instance.new("UIStroke")T.Color=Color3.fromRGB(60,60,80)T.Thickness=1.5;T.Parent=Q;local U=Instance.new("Frame")U.Name="TitleBar"U.Size=UDim2.new(1,0,0,40)U.BackgroundColor3=Color3.fromRGB(30,30,40)U.BorderSizePixel=0;U.Parent=Q;local V=Instance.new("UICorner")V.CornerRadius=UDim.new(0,8)V.Parent=U;local W=Instance.new("Frame")W.Name="BottomFix"W.Size=UDim2.new(1,0,0,10)W.Position=UDim2.new(0,0,1,-10)W.BackgroundColor3=Color3.fromRGB(30,30,40)W.BorderSizePixel=0;W.ZIndex=0;W.Parent=U;local X=Instance.new("TextLabel")X.Name="TitleText"X.Size=UDim2.new(1,-20,1,0)X.Position=UDim2.new(0,10,0,0)X.BackgroundTransparency=1;X.Text=o.Title;X.TextColor3=Color3.fromRGB(255,255,255)X.Font=Enum.Font.GothamBold;X.TextSize=16;X.TextXAlignment=Enum.TextXAlignment.Left;X.Parent=U;local Y=Instance.new("TextButton")Y.Name="CloseButton"Y.Size=UDim2.new(0,24,0,24)Y.Position=UDim2.new(1,-30,0.5,-12)Y.BackgroundTransparency=1;Y.Text="x"Y.TextColor3=Color3.fromRGB(200,200,200)Y.Font=Enum.Font.GothamBold;Y.TextSize=18;Y.Parent=U;local Z=Instance.new("Frame")Z.Name="ContentFrame"Z.Size=UDim2.new(1,0,1,-40)Z.Position=UDim2.new(0,0,0,40)Z.BackgroundTransparency=1;Z.Parent=Q;local _=Instance.new("TextLabel")_.Name="NoteTitle"_.Size=UDim2.new(1,-40,0,20)_.Position=UDim2.new(0,20,0,15)_.BackgroundTransparency=1;_.Text=o.NoteTitle;_.TextColor3=Color3.fromRGB(255,255,255)_.Font=Enum.Font.GothamBold;_.TextSize=14;_.TextXAlignment=Enum.TextXAlignment.Left;_.Parent=Z;local a0=Instance.new("TextLabel")a0.Name="NoteText"a0.Size=UDim2.new(1,-40,0,40)a0.Position=UDim2.new(0,20,0,35)a0.BackgroundTransparency=1;a0.Text=o.Note;a0.TextColor3=Color3.fromRGB(200,200,200)a0.Font=Enum.Font.Gotham;a0.TextSize=13;a0.TextWrapped=true;a0.TextXAlignment=Enum.TextXAlignment.Left;a0.Parent=Z;local a1=Instance.new("TextButton")a1.Name="ActionText"a1.Size=UDim2.new(1,-40,0,20)a1.Position=UDim2.new(0,20,0,85)a1.BackgroundTransparency=1;a1.Text=o.ActionText;a1.TextColor3=Color3.fromRGB(240,240,240)a1.Font=Enum.Font.GothamSemibold;a1.TextSize=14;a1.TextXAlignment=Enum.TextXAlignment.Left;a1.AutoButtonColor=false;a1.Parent=Z;local a2=Instance.new("Frame")a2.Name="Underline"a2.Size=UDim2.new(1,0,0,1)a2.Position=UDim2.new(0,0,1,0)a2.BackgroundColor3=Color3.fromRGB(240,240,240)a2.BorderSizePixel=0;a2.Parent=a1;local a3=Instance.new("Frame")a3.Name="KeyContainer"a3.Size=UDim2.new(1,-40,0,40)a3.Position=UDim2.new(0,20,0,115)a3.BackgroundColor3=Color3.fromRGB(35,35,45)a3.BorderSizePixel=0;a3.Parent=Z;local a4=Instance.new("UICorner")a4.CornerRadius=UDim.new(0,6)a4.Parent=a3;local a5=Instance.new("UIStroke")a5.Color=Color3.fromRGB(60,60,80)a5.Thickness=1;a5.Parent=a3;local a6=Instance.new("TextBox")a6.Name="KeyInput"a6.Size=UDim2.new(1,-20,1,0)a6.Position=UDim2.new(0,10,0,0)a6.BackgroundTransparency=1;a6.Text=""a6.PlaceholderText="Enter key here..."a6.TextColor3=Color3.fromRGB(255,255,255)a6.PlaceholderColor3=Color3.fromRGB(120,120,140)a6.Font=Enum.Font.Gotham;a6.TextSize=14;a6.TextXAlignment=Enum.TextXAlignment.Left;a6.ClearTextOnFocus=false;a6.Parent=a3;local a7=Instance.new("TextButton")a7.Name="VerifyButton"a7.Size=UDim2.new(1,-40,0,40)a7.Position=UDim2.new(0,20,0,165)a7.BackgroundColor3=Color3.fromRGB(70,120,220)a7.Text="Verify Key"a7.TextColor3=Color3.fromRGB(255,255,255)a7.Font=Enum.Font.GothamBold;a7.TextSize=15;a7.AutoButtonColor=false;a7.ClipsDescendants=true;a7.Parent=Z;local a8=Instance.new("UICorner")a8.CornerRadius=UDim.new(0,6)a8.Parent=a7;local a9=Instance.new("UIGradient")a9.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(90,140,240)),ColorSequenceKeypoint.new(1,Color3.fromRGB(70,120,220))})a9.Rotation=90;a9.Parent=a7;local aa=Instance.new("TextLabel")aa.Name="StatusText"aa.Size=UDim2.new(1,-40,0,20)aa.Position=UDim2.new(0,20,0,215)aa.BackgroundTransparency=1;aa.Text=""aa.TextColor3=Color3.fromRGB(200,200,200)aa.Font=Enum.Font.Gotham;aa.TextSize=13;aa.Parent=Z;local ab=Instance.new("Frame")ab.Name="NotificationFrame"ab.Size=UDim2.new(0,240,0,60)ab.Position=UDim2.new(0.5,0,-0.1,0)ab.BackgroundColor3=Color3.fromRGB(40,40,50)ab.BorderSizePixel=0;ab.AnchorPoint=Vector2.new(0.5,0)ab.Visible=false;ab.Parent=P;local ac=Instance.new("UICorner")ac.CornerRadius=UDim.new(0,8)ac.Parent=ab;local ad=Instance.new("UIStroke")ad.Color=Color3.fromRGB(70,70,90)ad.Thickness=1.5;ad.Parent=ab;local ae=Instance.new("ImageLabel")ae.Name="Shadow"ae.AnchorPoint=Vector2.new(0.5,0.5)ae.BackgroundTransparency=1;ae.Position=UDim2.new(0.5,0,0.5,0)ae.Size=UDim2.new(1,40,1,40)ae.ZIndex=0;ae.Image="rbxassetid://6014261993"ae.ImageColor3=Color3.fromRGB(0,0,0)ae.ImageTransparency=0.5;ae.ScaleType=Enum.ScaleType.Slice;ae.SliceCenter=Rect.new(49,49,450,450)ae.Parent=ab;local af=Instance.new("TextLabel")af.Name="Title"af.Size=UDim2.new(1,-20,0,20)af.Position=UDim2.new(0,10,0,10)af.BackgroundTransparency=1;af.Text="Link Copied"af.TextColor3=Color3.fromRGB(255,255,255)af.Font=Enum.Font.GothamBold;af.TextSize=14;af.TextXAlignment=Enum.TextXAlignment.Left;af.Parent=ab;local ag=Instance.new("TextLabel")ag.Name="Text"ag.Size=UDim2.new(1,-20,0,20)ag.Position=UDim2.new(0,10,0,30)ag.BackgroundTransparency=1;ag.Text="Link copied to clipboard!"ag.TextColor3=Color3.fromRGB(200,200,200)ag.Font=Enum.Font.Gotham;ag.TextSize=13;ag.TextXAlignment=Enum.TextXAlignment.Left;ag.Parent=ab;local ah=function(ai)local aj=Instance.new("Frame")aj.Name="Ripple"aj.BackgroundColor3=Color3.fromRGB(255,255,255)aj.BackgroundTransparency=0.8;aj.BorderSizePixel=0;aj.ZIndex=2;aj.Parent=ai;local ak=Instance.new("UICorner")ak.CornerRadius=UDim.new(1,0)ak.Parent=aj;local al=b:GetMouseLocation()-Vector2.new(ai.AbsolutePosition.X,ai.AbsolutePosition.Y)local am=math.max(ai.AbsoluteSize.X,ai.AbsoluteSize.Y)*2;aj.Position=UDim2.new(0,al.X-am/2,0,al.Y-am/2)aj.Size=UDim2.new(0,0,0,0)local an=c:Create(aj,TweenInfo.new(0.5),{Size=UDim2.new(0,am,0,am),BackgroundTransparency=1})an:Play()an.Completed:Connect(function()aj:Destroy()end)end;local ao=function(ai,ap,aq,ar)ai.MouseEnter:Connect(function()c:Create(ai,TweenInfo.new(0.2),{BackgroundColor3=aq}):Play()end)ai.MouseLeave:Connect(function()c:Create(ai,TweenInfo.new(0.2),{BackgroundColor3=ap}):Play()end)ai.MouseButton1Down:Connect(function()ah(ai)c:Create(ai,TweenInfo.new(0.1),{BackgroundColor3=ar}):Play()end)ai.MouseButton1Up:Connect(function()c:Create(ai,TweenInfo.new(0.1),{BackgroundColor3=aq}):Play()end)end;ao(a7,Color3.fromRGB(70,120,220),Color3.fromRGB(90,140,240),Color3.fromRGB(60,110,200))a1.MouseEnter:Connect(function()c:Create(a1,TweenInfo.new(0.2),{TextColor3=Color3.fromRGB(255,255,255)}):Play()c:Create(a2,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(255,255,255)}):Play()end)a1.MouseLeave:Connect(function()c:Create(a1,TweenInfo.new(0.2),{TextColor3=Color3.fromRGB(240,240,240)}):Play()c:Create(a2,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(240,240,240)}):Play()end)local as=function(at,au)af.Text=at;ag.Text=au;ab.Visible=true;ab.Position=UDim2.new(0.5,0,-0.1,0)ab.BackgroundTransparency=0;c:Create(ab,TweenInfo.new(0.3,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position=UDim2.new(0.5,0,0.05,0)}):Play()delay(3,function()local av=c:Create(ab,TweenInfo.new(0.3,Enum.EasingStyle.Quart,Enum.EasingDirection.In),{Position=UDim2.new(0.5,0,-0.1,0),BackgroundTransparency=1})av:Play()av.Completed:Connect(function()ab.Visible=false end)end)end;a1.MouseButton1Click:Connect(function()pcall(function()setclipboard(o.ActionLink)end)local aw=o.ActionLink;if#aw>30 then aw=string.sub(aw,1,27).."..."end;as("Link Copied",aw)aa.Text="Link copied to clipboard!"aa.TextColor3=Color3.fromRGB(100,255,100)delay(3,function()aa.Text=""end)end)local ax=function()end;local ay=function()local M=a6.Text;if M==""then aa.Text="Please enter a key!"aa.TextColor3=Color3.fromRGB(255,100,100)return end;local az=a7.Text;a7.Text="Verifying..."delay(math.random(0.5,1.5),function()if L(M)then aa.Text="Key verified successfully!"aa.TextColor3=Color3.fromRGB(100,255,100)if o.SaveKey then z(M)end;delay(1,function()local av=c:Create(Q,TweenInfo.new(0.5),{Size=UDim2.new(0,320,0,0)})av:Play()av.Completed:Connect(function()P:Destroy()ax()end)end)else aa.Text="Invalid key! Please try again."aa.TextColor3=Color3.fromRGB(255,100,100)a7.Text=az;local aA=Q.Position;for q=1,5 do Q.Position=aA+UDim2.new(0,math.random(-5,5),0,0)wait(0.05)end;Q.Position=aA end end)end;a7.MouseButton1Click:Connect(ay)a6.FocusLost:Connect(function(aB)if aB then ay()end end)Y.MouseEnter:Connect(function()c:Create(Y,TweenInfo.new(0.2),{TextColor3=Color3.fromRGB(255,255,255)}):Play()end)Y.MouseLeave:Connect(function()c:Create(Y,TweenInfo.new(0.2),{TextColor3=Color3.fromRGB(200,200,200)}):Play()end)Y.MouseButton1Click:Connect(function()local av=c:Create(Q,TweenInfo.new(0.5),{Size=UDim2.new(0,320,0,0)})av:Play()av.Completed:Connect(function()P:Destroy()end)end)delay(0.1,function()c:Create(Q,TweenInfo.new(0.5,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.new(0,320,0,260)}):Play()end)local aC=O()if aC and o.SaveKey then a6.Text=aC;delay(0.5,function()ay()end)end;local aD={}function aD:Configure(aE)if aE.Title then o.Title=aE.Title;X.Text=aE.Title end;if aE.NoteTitle then o.NoteTitle=aE.NoteTitle;_.Text=aE.NoteTitle end;if aE.Note then o.Note=aE.Note;a0.Text=aE.Note end;if aE.ActionText then o.ActionText=aE.ActionText;a1.Text=aE.ActionText end;if aE.ActionLink then o.ActionLink=aE.ActionLink end;if aE.Key then o.Key=aE.Key end;if aE.SaveKey~=nil then o.SaveKey=aE.SaveKey end;if aE.FileName then o.FileName=aE.FileName end;return self end;function aD:AddKey(A)if type(o.Key)=="string"then o.Key={o.Key}end;if type(o.Key)=="table"then table.insert(o.Key,A)end;return self end;function aD:OnSuccess(aF)if type(aF)=="function"then ax=aF end;return self end;function aD:VerifyKey(A)return L(A)end;function aD:Destroy()P:Destroy()end;function aD:HasValidKey()return O()~=false end;function aD:SkipIfValidKey()local aG=O()if aG and o.SaveKey then P:Destroy()ax()return true end;return false end;function aD:AllowClose(aF)Y.MouseButton1Click:Connect(function()local av=c:Create(Q,TweenInfo.new(0.5),{Size=UDim2.new(0,320,0,0)})av:Play()av.Completed:Connect(function()P:Destroy()if type(aF)=="function"then aF()end end)end)return self end;function aD:ClearSavedKeys()pcall(function()if isfolder("QuantamGuard")then local G=listfiles("QuantamGuard")for H,D in ipairs(G)do if string.match(D,"%.txt$")then pcall(function()delfile(D)end)end end end end)return self end;local aH={}local aI={"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9"}for q=1,32 do aH[q]=aI[math.random(1,#aI)]end;local aJ=table.concat(aH)local aK=getfenv()local aL={}for aM,aN in pairs(aK)do aL[aM]=aN end;local aO=setmetatable({},{__index=function(self,aM)if aL[aM]then return aL[aM]end end,__newindex=function(self,aM,aN)error("Attempt to modify protected environment")end,__metatable="Locked"})local aP={}for q=1,10 do local aQ={}for aR=1,10 do aQ[aR]=math.random(1,100)end;aP[q]=aQ end;local aS=function()local aT=debug.getinfo(2,"S").source;if aT:sub(1,1)=="@"then aT=aT:sub(2)end;if aT~="KeySystem.lua"then error("Tampering detected")end end;aS()local aU={}for q=1,5 do aU[q]=function()aS()end end;for q=1,#aU do aU[q]()end;local aV={}local aW={}for q=1,5 do aW[q]=function()for aR=1,5 do aS()end end end;for q=1,#aW do aV[q]=aW[q]end;for q=1,#aV do aV[q]()end;return aD end)()
+return function()
+    local player = game.Players.LocalPlayer
+    local UserInputService = game:GetService("UserInputService")
+    local TweenService = game:GetService("TweenService")
+    local HttpService = game:GetService("HttpService")
+--[[   
+    local Icons = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
+    
+    local function getIcon(name)
+        name = string.match(string.lower(name), "^%s*(.*)%s*$") :: string
+        local sizedicons = Icons['48px']
+        local r = sizedicons[name]
+        if not r then
+            return nil
+        end
+        local rirs = r[2]
+        local riro = r[3]
+        if type(r[1]) ~= "number" or type(rirs) ~= "table" or type(riro) ~= "table" then
+            return nil
+        end
+        local irs = Vector2.new(rirs[1], rirs[2])
+        local iro = Vector2.new(riro[1], riro[2])
+        local asset = {
+            id = r[1],
+            imageRectSize = irs,
+            imageRectOffset = iro,
+        }
+        return asset
+    end
+   ]] 
+    local KeySystemConfig = {
+        Title = "Key System",
+        NoteTitle = "How to get a key",
+        Note = "To access this script, you need to get a key.",
+        ActionText = "Click here to copy key link",
+        ActionLink = "",
+        Key = "Hello",
+        SaveKey = true,
+        FileName = "KeySystemSave.txt"
+    }
+    
+    local function secureHash(input)
+        if not input then return "0" end
+        local hash = 0
+        for i = 1, #input do
+            hash = (hash * 31 + string.byte(input, i)) % 2147483647
+        end
+        return tostring(hash)
+    end
+    
+    local function getUniqueIdentifier()
+        local hwid = ""
+        pcall(function()
+            hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+        end)
+        local userId = player.UserId
+        return secureHash(hwid .. "-" .. tostring(userId))
+    end
+    
+    local function ensureFolderExists()
+        pcall(function()
+            if not isfolder("QuantamGuard") then
+                makefolder("QuantamGuard")
+            end
+        end)
+    end
+    
+    local function saveKey(key)
+        if not KeySystemConfig.SaveKey then return end
+        
+        ensureFolderExists()
+        
+        local identifier = getUniqueIdentifier()
+        local data = {
+            key = key,
+            identifier = identifier,
+            hash = secureHash(key .. identifier .. KeySystemConfig.Title),
+            scriptName = KeySystemConfig.Title,
+            saveTime = os.time()
+        }
+        
+        local fileName = "QuantamGuard/" .. KeySystemConfig.Title .. " Key.txt"
+        
+        pcall(function()
+            writefile(fileName, HttpService:JSONEncode(data))
+        end)
+    end
+    
+    local function getSavedKeys()
+        local keys = {}
+        
+        pcall(function()
+            if isfolder("QuantamGuard") then
+                local files = listfiles("QuantamGuard")
+                
+                for _, file in ipairs(files) do
+                    if string.match(file, "%.txt$") then
+                        local success, fileContent = pcall(function()
+                            return readfile(file)
+                        end)
+                        
+                        if success then
+                            local success2, data = pcall(function()
+                                return HttpService:JSONDecode(fileContent)
+                            end)
+                            
+                            if success2 and data.key and data.hash then
+                                local identifier = getUniqueIdentifier()
+                                if data.hash == secureHash(data.key .. data.identifier .. data.scriptName) then
+                                    table.insert(keys, data.key)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        
+        return keys
+    end
+    
+    local function verifyKey(inputKey)
+        if type(KeySystemConfig.Key) == "string" then
+            return inputKey == KeySystemConfig.Key
+        elseif type(KeySystemConfig.Key) == "table" then
+            for _, validKey in ipairs(KeySystemConfig.Key) do
+                if inputKey == validKey then
+                    return true
+                end
+            end
+        end
+        return false
+    end
+    
+    local function hasValidSavedKey()
+        if not KeySystemConfig.SaveKey then return false end
+        
+        local savedKeys = getSavedKeys()
+        for _, key in ipairs(savedKeys) do
+            if verifyKey(key) then
+                return key
+            end
+        end
+        
+        return false
+    end
+    
+    local keySystemGui = Instance.new("ScreenGui")
+    keySystemGui.Name = "KeySystemGui"
+    keySystemGui.ResetOnSpawn = false
+    keySystemGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    keySystemGui.DisplayOrder = 999999999
+    
+    if syn and syn.protect_gui then
+        syn.protect_gui(keySystemGui)
+        keySystemGui.Parent = game:GetService("CoreGui")
+    elseif gethui then
+        keySystemGui.Parent = gethui()
+    else
+        keySystemGui.Parent = game:GetService("CoreGui")
+    end
+    
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Name = "MainFrame"
+    mainFrame.Size = UDim2.new(0, 320, 0, 0)
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    mainFrame.BorderSizePixel = 0
+    mainFrame.ClipsDescendants = true
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainFrame.Parent = keySystemGui
+    
+    local shadow = Instance.new("ImageLabel")
+    shadow.Name = "Shadow"
+    shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    shadow.BackgroundTransparency = 1
+    shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    shadow.Size = UDim2.new(1, 40, 1, 40)
+    shadow.ZIndex = 0
+    shadow.Image = "rbxassetid://6014261993"
+    shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    shadow.ImageTransparency = 0.5
+    shadow.ScaleType = Enum.ScaleType.Slice
+    shadow.SliceCenter = Rect.new(49, 49, 450, 450)
+    shadow.Parent = mainFrame
+    
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 8)
+    UICorner.Parent = mainFrame
+    
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.Color = Color3.fromRGB(60, 60, 80)
+    UIStroke.Thickness = 1.5
+    UIStroke.Parent = mainFrame
+    
+    local titleBar = Instance.new("Frame")
+    titleBar.Name = "TitleBar"
+    titleBar.Size = UDim2.new(1, 0, 0, 40)
+    titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    titleBar.BorderSizePixel = 0
+    titleBar.Parent = mainFrame
+    
+    local titleCorner = Instance.new("UICorner")
+    titleCorner.CornerRadius = UDim.new(0, 8)
+    titleCorner.Parent = titleBar
+    
+    local bottomFix = Instance.new("Frame")
+    bottomFix.Name = "BottomFix"
+    bottomFix.Size = UDim2.new(1, 0, 0, 10)
+    bottomFix.Position = UDim2.new(0, 0, 1, -10)
+    bottomFix.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    bottomFix.BorderSizePixel = 0
+    bottomFix.ZIndex = 0
+    bottomFix.Parent = titleBar
+    
+    local titleText = Instance.new("TextLabel")
+    titleText.Name = "TitleText"
+    titleText.Size = UDim2.new(1, -20, 1, 0)
+    titleText.Position = UDim2.new(0, 10, 0, 0)
+    titleText.BackgroundTransparency = 1
+    titleText.Text = KeySystemConfig.Title
+    titleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleText.Font = Enum.Font.GothamBold
+    titleText.TextSize = 16
+    titleText.TextXAlignment = Enum.TextXAlignment.Left
+    titleText.Parent = titleBar
+    
+    local closeButton = Instance.new("TextButton")
+    closeButton.Name = "CloseButton"
+    closeButton.Size = UDim2.new(0, 24, 0, 24)
+    closeButton.Position = UDim2.new(1, -30, 0.5, -12)
+    closeButton.BackgroundTransparency = 1
+    closeButton.Text = "x"
+    closeButton.TextColor3 = Color3.fromRGB(200, 200, 200)
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.TextSize = 18
+    closeButton.Parent = titleBar
+    
+    local contentFrame = Instance.new("Frame")
+    contentFrame.Name = "ContentFrame"
+    contentFrame.Size = UDim2.new(1, 0, 1, -40)
+    contentFrame.Position = UDim2.new(0, 0, 0, 40)
+    contentFrame.BackgroundTransparency = 1
+    contentFrame.Parent = mainFrame
+    
+    local noteTitle = Instance.new("TextLabel")
+    noteTitle.Name = "NoteTitle"
+    noteTitle.Size = UDim2.new(1, -40, 0, 20)
+    noteTitle.Position = UDim2.new(0, 20, 0, 15)
+    noteTitle.BackgroundTransparency = 1
+    noteTitle.Text = KeySystemConfig.NoteTitle
+    noteTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    noteTitle.Font = Enum.Font.GothamBold
+    noteTitle.TextSize = 14
+    noteTitle.TextXAlignment = Enum.TextXAlignment.Left
+    noteTitle.Parent = contentFrame
+    
+    local noteText = Instance.new("TextLabel")
+    noteText.Name = "NoteText"
+    noteText.Size = UDim2.new(1, -40, 0, 40)
+    noteText.Position = UDim2.new(0, 20, 0, 35)
+    noteText.BackgroundTransparency = 1
+    noteText.Text = KeySystemConfig.Note
+    noteText.TextColor3 = Color3.fromRGB(200, 200, 200)
+    noteText.Font = Enum.Font.Gotham
+    noteText.TextSize = 13
+    noteText.TextWrapped = true
+    noteText.TextXAlignment = Enum.TextXAlignment.Left
+    noteText.Parent = contentFrame
+    
+    local actionText = Instance.new("TextButton")
+    actionText.Name = "ActionText"
+    actionText.Size = UDim2.new(1, -40, 0, 20)
+    actionText.Position = UDim2.new(0, 20, 0, 85)
+    actionText.BackgroundTransparency = 1
+    actionText.Text = KeySystemConfig.ActionText
+    actionText.TextColor3 = Color3.fromRGB(240, 240, 240)
+    actionText.Font = Enum.Font.GothamSemibold
+    actionText.TextSize = 14
+    actionText.TextXAlignment = Enum.TextXAlignment.Left
+    actionText.AutoButtonColor = false
+    actionText.Parent = contentFrame
+    
+    local underline = Instance.new("Frame")
+    underline.Name = "Underline"
+    underline.Size = UDim2.new(1, 0, 0, 1)
+    underline.Position = UDim2.new(0, 0, 1, 0)
+    underline.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    underline.BorderSizePixel = 0
+    underline.Parent = actionText
+    
+    local keyContainer = Instance.new("Frame")
+    keyContainer.Name = "KeyContainer"
+    keyContainer.Size = UDim2.new(1, -40, 0, 40)
+    keyContainer.Position = UDim2.new(0, 20, 0, 115)
+    keyContainer.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    keyContainer.BorderSizePixel = 0
+    keyContainer.Parent = contentFrame
+    
+    local keyContainerCorner = Instance.new("UICorner")
+    keyContainerCorner.CornerRadius = UDim.new(0, 6)
+    keyContainerCorner.Parent = keyContainer
+    
+    local keyContainerStroke = Instance.new("UIStroke")
+    keyContainerStroke.Color = Color3.fromRGB(60, 60, 80)
+    keyContainerStroke.Thickness = 1
+    keyContainerStroke.Parent = keyContainer
+    
+    local keyInput = Instance.new("TextBox")
+    keyInput.Name = "KeyInput"
+    keyInput.Size = UDim2.new(1, -20, 1, 0)
+    keyInput.Position = UDim2.new(0, 10, 0, 0)
+    keyInput.BackgroundTransparency = 1
+    keyInput.Text = ""
+    keyInput.PlaceholderText = "Enter key here..."
+    keyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+    keyInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 140)
+    keyInput.Font = Enum.Font.Gotham
+    keyInput.TextSize = 14
+    keyInput.TextXAlignment = Enum.TextXAlignment.Left
+    keyInput.ClearTextOnFocus = false
+    keyInput.Parent = keyContainer
+    
+    local verifyButton = Instance.new("TextButton")
+    verifyButton.Name = "VerifyButton"
+    verifyButton.Size = UDim2.new(1, -40, 0, 40)
+    verifyButton.Position = UDim2.new(0, 20, 0, 165)
+    verifyButton.BackgroundColor3 = Color3.fromRGB(70, 120, 220)
+    verifyButton.Text = "Verify Key"
+    verifyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    verifyButton.Font = Enum.Font.GothamBold
+    verifyButton.TextSize = 15
+    verifyButton.AutoButtonColor = false
+    verifyButton.ClipsDescendants = true
+    verifyButton.Parent = contentFrame
+    
+    local verifyCorner = Instance.new("UICorner")
+    verifyCorner.CornerRadius = UDim.new(0, 6)
+    verifyCorner.Parent = verifyButton
+    
+    local verifyGradient = Instance.new("UIGradient")
+    verifyGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 140, 240)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(70, 120, 220))
+    })
+    verifyGradient.Rotation = 90
+    verifyGradient.Parent = verifyButton
+    
+    local statusText = Instance.new("TextLabel")
+    statusText.Name = "StatusText"
+    statusText.Size = UDim2.new(1, -40, 0, 20)
+    statusText.Position = UDim2.new(0, 20, 0, 215)
+    statusText.BackgroundTransparency = 1
+    statusText.Text = ""
+    statusText.TextColor3 = Color3.fromRGB(200, 200, 200)
+    statusText.Font = Enum.Font.Gotham
+    statusText.TextSize = 13
+    statusText.Parent = contentFrame
+    
+    local notificationFrame = Instance.new("Frame")
+    notificationFrame.Name = "NotificationFrame"
+    notificationFrame.Size = UDim2.new(0, 240, 0, 60)
+    notificationFrame.Position = UDim2.new(0.5, 0, -0.1, 0)
+    notificationFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    notificationFrame.BorderSizePixel = 0
+    notificationFrame.AnchorPoint = Vector2.new(0.5, 0)
+    notificationFrame.Visible = false
+    notificationFrame.Parent = keySystemGui
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 8)
+    notifCorner.Parent = notificationFrame
+    
+    local notifStroke = Instance.new("UIStroke")
+    notifStroke.Color = Color3.fromRGB(70, 70, 90)
+    notifStroke.Thickness = 1.5
+    notifStroke.Parent = notificationFrame
+    
+    local notifShadow = Instance.new("ImageLabel")
+    notifShadow.Name = "Shadow"
+    notifShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    notifShadow.BackgroundTransparency = 1
+    notifShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    notifShadow.Size = UDim2.new(1, 40, 1, 40)
+    notifShadow.ZIndex = 0
+    notifShadow.Image = "rbxassetid://6014261993"
+    notifShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    notifShadow.ImageTransparency = 0.5
+    notifShadow.ScaleType = Enum.ScaleType.Slice
+    notifShadow.SliceCenter = Rect.new(49, 49, 450, 450)
+    notifShadow.Parent = notificationFrame
+    
+    local notifTitle = Instance.new("TextLabel")
+    notifTitle.Name = "Title"
+    notifTitle.Size = UDim2.new(1, -20, 0, 20)
+    notifTitle.Position = UDim2.new(0, 10, 0, 10)
+    notifTitle.BackgroundTransparency = 1
+    notifTitle.Text = "Link Copied"
+    notifTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    notifTitle.Font = Enum.Font.GothamBold
+    notifTitle.TextSize = 14
+    notifTitle.TextXAlignment = Enum.TextXAlignment.Left
+    notifTitle.Parent = notificationFrame
+    
+    local notifText = Instance.new("TextLabel")
+    notifText.Name = "Text"
+    notifText.Size = UDim2.new(1, -20, 0, 20)
+    notifText.Position = UDim2.new(0, 10, 0, 30)
+    notifText.BackgroundTransparency = 1
+    notifText.Text = "Link copied to clipboard!"
+    notifText.TextColor3 = Color3.fromRGB(200, 200, 200)
+    notifText.Font = Enum.Font.Gotham
+    notifText.TextSize = 13
+    notifText.TextXAlignment = Enum.TextXAlignment.Left
+    notifText.Parent = notificationFrame
+    
+    local function createRipple(button)
+        local ripple = Instance.new("Frame")
+        ripple.Name = "Ripple"
+        ripple.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        ripple.BackgroundTransparency = 0.8
+        ripple.BorderSizePixel = 0
+        ripple.ZIndex = 2
+        ripple.Parent = button
+        
+        local rippleCorner = Instance.new("UICorner")
+        rippleCorner.CornerRadius = UDim.new(1, 0)
+        rippleCorner.Parent = ripple
+        
+        local mousePos = UserInputService:GetMouseLocation() - Vector2.new(button.AbsolutePosition.X, button.AbsolutePosition.Y)
+        local size = math.max(button.AbsoluteSize.X, button.AbsoluteSize.Y) * 2
+        
+        ripple.Position = UDim2.new(0, mousePos.X - size/2, 0, mousePos.Y - size/2)
+        ripple.Size = UDim2.new(0, 0, 0, 0)
+        
+        local tween = TweenService:Create(ripple, TweenInfo.new(0.5), {
+            Size = UDim2.new(0, size, 0, size),
+            BackgroundTransparency = 1
+        })
+        tween:Play()
+        
+        tween.Completed:Connect(function()
+            ripple:Destroy()
+        end)
+    end
+    
+    local function setupButtonHover(button, normalColor, hoverColor, pressColor)
+        button.MouseEnter:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = hoverColor
+            }):Play()
+        end)
+        
+        button.MouseLeave:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = normalColor
+            }):Play()
+        end)
+        
+        button.MouseButton1Down:Connect(function()
+            createRipple(button)
+            TweenService:Create(button, TweenInfo.new(0.1), {
+                BackgroundColor3 = pressColor
+            }):Play()
+        end)
+        
+        button.MouseButton1Up:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.1), {
+                BackgroundColor3 = hoverColor
+            }):Play()
+        end)
+    end
+    
+    setupButtonHover(
+        verifyButton, 
+        Color3.fromRGB(70, 120, 220), 
+        Color3.fromRGB(90, 140, 240), 
+        Color3.fromRGB(60, 110, 200)
+    )
+    
+    actionText.MouseEnter:Connect(function()
+        TweenService:Create(actionText, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(255, 255, 255)
+        }):Play()
+        TweenService:Create(underline, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        }):Play()
+    end)
+    
+    actionText.MouseLeave:Connect(function()
+        TweenService:Create(actionText, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(240, 240, 240)
+        }):Play()
+        TweenService:Create(underline, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        }):Play()
+    end)
+    
+    local function showNotification(title, text)
+        notifTitle.Text = title
+        notifText.Text = text
+        notificationFrame.Visible = true
+        notificationFrame.Position = UDim2.new(0.5, 0, -0.1, 0)
+        notificationFrame.BackgroundTransparency = 0
+        
+        TweenService:Create(notificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0.5, 0, 0.05, 0)
+        }):Play()
+        
+        delay(3, function()
+            local fadeTween = TweenService:Create(notificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+                Position = UDim2.new(0.5, 0, -0.1, 0),
+                BackgroundTransparency = 1
+            })
+            fadeTween:Play()
+            
+            fadeTween.Completed:Connect(function()
+                notificationFrame.Visible = false
+            end)
+        end)
+    end
+    
+    actionText.MouseButton1Click:Connect(function()
+        pcall(function()
+            setclipboard(KeySystemConfig.ActionLink)
+        end)
+        
+        local linkText = KeySystemConfig.ActionLink
+        if #linkText > 30 then
+            linkText = string.sub(linkText, 1, 27) .. "..."
+        end
+        showNotification("Link Copied", linkText)
+        
+        statusText.Text = "Link copied to clipboard!"
+        statusText.TextColor3 = Color3.fromRGB(100, 255, 100)
+        
+        delay(3, function()
+            statusText.Text = ""
+        end)
+    end)
+    
+    local successCallback = function() end
+    
+    local function onVerifyClick()
+        local inputKey = keyInput.Text
+        
+        if inputKey == "" then
+            statusText.Text = "Please enter a key!"
+            statusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+            return
+        end
+        
+        local originalText = verifyButton.Text
+        verifyButton.Text = "Verifying..."
+        
+        delay(math.random(0.5, 1.5), function()
+            if verifyKey(inputKey) then
+                statusText.Text = "Key verified successfully!"
+                statusText.TextColor3 = Color3.fromRGB(100, 255, 100)
+                
+                if KeySystemConfig.SaveKey then
+                    saveKey(inputKey)
+                end
+                
+                delay(1, function()
+                    local fadeTween = TweenService:Create(mainFrame, TweenInfo.new(0.5), {
+                        Size = UDim2.new(0, 320, 0, 0)
+                    })
+                    fadeTween:Play()
+                    
+                    fadeTween.Completed:Connect(function()
+                        keySystemGui:Destroy()
+                        
+                        successCallback()
+                    end)
+                end)
+            else
+                statusText.Text = "Invalid key! Please try again."
+                statusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+                verifyButton.Text = originalText
+                
+                local originalPosition = mainFrame.Position
+                for i = 1, 5 do
+                    mainFrame.Position = originalPosition + UDim2.new(0, math.random(-5, 5), 0, 0)
+                    wait(0.05)
+                end
+                mainFrame.Position = originalPosition
+            end
+        end)
+    end
+    
+    verifyButton.MouseButton1Click:Connect(onVerifyClick)
+    
+    keyInput.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            onVerifyClick()
+        end
+    end)
+    
+    closeButton.MouseEnter:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(255, 255, 255)
+        }):Play()
+    end)
+    
+    closeButton.MouseLeave:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(200, 200, 200)
+        }):Play()
+    end)
+    
+    closeButton.MouseButton1Click:Connect(function()
+        local fadeTween = TweenService:Create(mainFrame, TweenInfo.new(0.5), {
+            Size = UDim2.new(0, 320, 0, 0)
+        })
+        fadeTween:Play()
+        
+        fadeTween.Completed:Connect(function()
+            keySystemGui:Destroy()
+        end)
+    end)
+    
+    delay(0.1, function()
+        TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 320, 0, 260)
+        }):Play()
+    end)
+    
+    local validSavedKey = hasValidSavedKey()
+    if validSavedKey and KeySystemConfig.SaveKey then
+        keyInput.Text = validSavedKey
+        
+        delay(0.5, function()
+            onVerifyClick()
+        end)
+    end
+    
+    local KeySystemAPI = {}
+    
+    function KeySystemAPI:Configure(config)
+        if config.Title then
+            KeySystemConfig.Title = config.Title
+            titleText.Text = config.Title
+        end
+        
+        if config.NoteTitle then
+            KeySystemConfig.NoteTitle = config.NoteTitle
+            noteTitle.Text = config.NoteTitle
+        end
+        
+        if config.Note then
+            KeySystemConfig.Note = config.Note
+            noteText.Text = config.Note
+        end
+        
+        if config.ActionText then
+            KeySystemConfig.ActionText = config.ActionText
+            actionText.Text = config.ActionText
+        end
+        
+        if config.ActionLink then
+            KeySystemConfig.ActionLink = config.ActionLink
+        end
+        
+        if config.Key then
+            KeySystemConfig.Key = config.Key
+        end
+        
+        if config.SaveKey ~= nil then
+            KeySystemConfig.SaveKey = config.SaveKey
+        end
+        
+        if config.FileName then
+            KeySystemConfig.FileName = config.FileName
+        end
+        
+        return self
+    end
+    
+    function KeySystemAPI:AddKey(key)
+        if type(KeySystemConfig.Key) == "string" then
+            KeySystemConfig.Key = {KeySystemConfig.Key}
+        end
+        
+        if type(KeySystemConfig.Key) == "table" then
+            table.insert(KeySystemConfig.Key, key)
+        end
+        
+        return self
+    end
+    
+    function KeySystemAPI:OnSuccess(callback)
+        if type(callback) == "function" then
+            successCallback = callback
+        end
+        return self
+    end
+    
+    function KeySystemAPI:VerifyKey(key)
+        return verifyKey(key)
+    end
+    
+    function KeySystemAPI:Destroy()
+        keySystemGui:Destroy()
+    end
+    
+    function KeySystemAPI:HasValidKey()
+        return hasValidSavedKey() ~= false
+    end
+    
+    function KeySystemAPI:SkipIfValidKey()
+        local validKey = hasValidSavedKey()
+        if validKey and KeySystemConfig.SaveKey then
+            keySystemGui:Destroy()
+            successCallback()
+            return true
+        end
+        return false
+    end
+    
+    function KeySystemAPI:AllowClose(callback)
+        closeButton.MouseButton1Click:Connect(function()
+            local fadeTween = TweenService:Create(mainFrame, TweenInfo.new(0.5), {
+                Size = UDim2.new(0, 320, 0, 0)
+            })
+            fadeTween:Play()
+            
+            fadeTween.Completed:Connect(function()
+                keySystemGui:Destroy()
+                
+                if type(callback) == "function" then
+                    callback()
+                end
+            end)
+        end)
+        
+        return self
+    end
+    
+    function KeySystemAPI:ClearSavedKeys()
+        pcall(function()
+            if isfolder("QuantamGuard") then
+                local files = listfiles("QuantamGuard")
+                
+                for _, file in ipairs(files) do
+                    if string.match(file, "%.txt$") then
+                        pcall(function()
+                            delfile(file)
+                        end)
+                    end
+                end
+            end
+        end)
+        
+        return self
+    end
+    
+    return KeySystemAPI
+end
