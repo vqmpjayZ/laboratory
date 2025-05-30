@@ -5,39 +5,14 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
-          A cool key system
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
 ]]
-
 return function()
     local player = game.Players.LocalPlayer
     local UserInputService = game:GetService("UserInputService")
     local TweenService = game:GetService("TweenService")
     local HttpService = game:GetService("HttpService")
---[[   
-    local Icons = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
-    
-    local function getIcon(name)
-        name = string.match(string.lower(name), "^%s*(.*)%s*$") :: string
-        local sizedicons = Icons['48px']
-        local r = sizedicons[name]
-        if not r then
-            return nil
-        end
-        local rirs = r[2]
-        local riro = r[3]
-        if type(r[1]) ~= "number" or type(rirs) ~= "table" or type(riro) ~= "table" then
-            return nil
-        end
-        local irs = Vector2.new(rirs[1], rirs[2])
-        local iro = Vector2.new(riro[1], riro[2])
-        local asset = {
-            id = r[1],
-            imageRectSize = irs,
-            imageRectOffset = iro,
-        }
-        return asset
-    end
-   ]] 
+
     local KeySystemConfig = {
         Title = "Key System",
         NoteTitle = "How to get a key",
