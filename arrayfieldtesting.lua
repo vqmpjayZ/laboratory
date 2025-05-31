@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------y
+-------------------------------
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -3713,6 +3713,8 @@ local dragStart = nil
 local startPos = nil
 local isVisible = false
 local isAnimating = false
+local savedPosition = UDim2.new(1, -67, 0.5, -22)
+local savedBlurPosition = UDim2.new(1, -70, 0.5, -25)
 
 local function createMobileButton()
     local ScreenGui = Instance.new("ScreenGui")
@@ -3724,7 +3726,7 @@ local function createMobileButton()
     local BlurFrame = Instance.new("Frame")
     BlurFrame.Name = "BlurShadow"
     BlurFrame.Size = UDim2.new(0, 50, 0, 50)
-    BlurFrame.Position = UDim2.new(1, -70, 0.5, -25)
+    BlurFrame.Position = savedBlurPosition
     BlurFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     BlurFrame.BackgroundTransparency = 0.3
     BlurFrame.BorderSizePixel = 0
@@ -3737,7 +3739,7 @@ local function createMobileButton()
     ButtonFrame = Instance.new("Frame")
     ButtonFrame.Name = "ToggleButton"
     ButtonFrame.Size = UDim2.new(0, 45, 0, 45)
-    ButtonFrame.Position = UDim2.new(1, -67, 0.5, -22)
+    ButtonFrame.Position = savedPosition
     ButtonFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
     ButtonFrame.BorderSizePixel = 0
     ButtonFrame.Parent = ScreenGui
@@ -3780,7 +3782,7 @@ local function createMobileButton()
     IconLabel.Size = UDim2.new(0, 18, 0, 18)
     IconLabel.Position = UDim2.new(0.5, -9, 0.5, -9)
     IconLabel.BackgroundTransparency = 1
-    IconLabel.Image = "eye-off"
+    IconLabel.Image = "rbxassetid://16898613353"
     IconLabel.ImageColor3 = Color3.fromRGB(180, 180, 200)
     IconLabel.Parent = ButtonFrame
     
@@ -3838,28 +3840,41 @@ local function animateHover(hovering)
 end
 
 local function updateIcon(hidden)
-    IconLabel.Image = hidden and "eye-off" or "eye"
+    IconLabel.Image = hidden and "rbxassetid://16898613353" or "rbxassetid://16898613353"
+end
+
+local function savePosition()
+    savedPosition = ButtonFrame.Position
+    savedBlurPosition = UDim2.new(
+        ButtonFrame.Position.X.Scale,
+        ButtonFrame.Position.X.Offset - 3,
+        ButtonFrame.Position.Y.Scale,
+        ButtonFrame.Position.Y.Offset - 3
+    )
 end
 
 local function showButton(BlurFrame)
     if isVisible then return end
     isVisible = true
     
-    ButtonFrame.Position = UDim2.new(1, 0, 0.5, -22)
-    BlurFrame.Position = UDim2.new(1, 3, 0.5, -25)
+    local offScreenPos = UDim2.new(savedPosition.X.Scale, savedPosition.X.Offset + 100, savedPosition.Y.Scale, savedPosition.Y.Offset)
+    local offScreenBlurPos = UDim2.new(savedBlurPosition.X.Scale, savedBlurPosition.X.Offset + 100, savedBlurPosition.Y.Scale, savedBlurPosition.Y.Offset)
+    
+    ButtonFrame.Position = offScreenPos
+    BlurFrame.Position = offScreenBlurPos
     ButtonFrame.Visible = true
     BlurFrame.Visible = true
     
     TweenService:Create(
         ButtonFrame,
         TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-        {Position = UDim2.new(1, -67, 0.5, -22)}
+        {Position = savedPosition}
     ):Play()
     
     TweenService:Create(
         BlurFrame,
         TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-        {Position = UDim2.new(1, -70, 0.5, -25)}
+        {Position = savedBlurPosition}
     ):Play()
 end
 
@@ -3867,16 +3882,19 @@ local function hideButton(BlurFrame)
     if not isVisible then return end
     isVisible = false
     
+    local offScreenPos = UDim2.new(savedPosition.X.Scale, savedPosition.X.Offset + 100, savedPosition.Y.Scale, savedPosition.Y.Offset)
+    local offScreenBlurPos = UDim2.new(savedBlurPosition.X.Scale, savedBlurPosition.X.Offset + 100, savedBlurPosition.Y.Scale, savedBlurPosition.Y.Offset)
+    
     local hideTween = TweenService:Create(
         ButtonFrame,
         TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
-        {Position = UDim2.new(1, 0, 0.5, -22)}
+        {Position = offScreenPos}
     )
     
     local hideBlurTween = TweenService:Create(
         BlurFrame,
         TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
-        {Position = UDim2.new(1, 3, 0.5, -25)}
+        {Position = offScreenBlurPos}
     )
     
     hideTween:Play()
@@ -3938,7 +3956,10 @@ end)
 
 UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = false
+        if isDragging then
+            savePosition()
+            isDragging = false
+        end
     end
 end)
 
