@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
-------------------------------- yo
+-------------------------------
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -893,6 +893,11 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
         wait(0.9)
         Notification:Destroy()
     end)
+end
+
+local existingSideTab = Main:FindFirstChild("SideTabList")
+if existingSideTab then
+	existingSideTab:Destroy()
 end
 
 function CloseSideBar()
