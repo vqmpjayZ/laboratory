@@ -25,7 +25,7 @@ Change Logs:
 - Revamped Design
 - Fixed Sidetab having a chance of duplicating once minimized
 - Added Mobile toggle button
-- Switch unhide UI keybind to K instead of RightShift
+- Switched unhide UI keybind to K instead of RightShift
 
 ]]
 
