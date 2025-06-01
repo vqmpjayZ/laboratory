@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------gurt
+-------------------------------
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -910,268 +910,6 @@ Debounce = true
 	Debounce = false
 end
 
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-
-local Player = Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
-
-local ButtonFrame
-local BlurFrame
-local ScreenGui
-local isDragging = false
-local dragStart = nil
-local startPos = nil
-local isVisible = false
-local isAnimating = false
-local savedPosition = UDim2.new(1, -67, 0.5, -22)
-local savedBlurPosition = UDim2.new(1, -70, 0.5, -25)
-
-local MobileToggle = {}
-
-local function createMobileButton()
-    ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "RayfieldMobileToggle"
-    ScreenGui.ResetOnSpawn = false
-    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.Parent = PlayerGui
-    
-    BlurFrame = Instance.new("Frame")
-    BlurFrame.Name = "BlurShadow"
-    BlurFrame.Size = UDim2.new(0, 50, 0, 50)
-    BlurFrame.Position = savedBlurPosition
-    BlurFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    BlurFrame.BackgroundTransparency = 0.3
-    BlurFrame.BorderSizePixel = 0
-    BlurFrame.Visible = false
-    BlurFrame.Parent = ScreenGui
-    
-    local BlurCorner = Instance.new("UICorner")
-    BlurCorner.CornerRadius = UDim.new(0, 10)
-    BlurCorner.Parent = BlurFrame
-    
-    ButtonFrame = Instance.new("Frame")
-    ButtonFrame.Name = "ToggleButton"
-    ButtonFrame.Size = UDim2.new(0, 45, 0, 45)
-    ButtonFrame.Position = savedPosition
-    ButtonFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-    ButtonFrame.BorderSizePixel = 0
-    ButtonFrame.Visible = false
-    ButtonFrame.Parent = ScreenGui
-    
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 8)
-    Corner.Parent = ButtonFrame
-    
-    local GradientFrame = Instance.new("Frame")
-    GradientFrame.Name = "Gradient"
-    GradientFrame.Size = UDim2.new(1, 0, 1, 0)
-    GradientFrame.Position = UDim2.new(0, 0, 0, 0)
-    GradientFrame.BackgroundTransparency = 0.3
-    GradientFrame.Parent = ButtonFrame
-    
-    local GradientCorner = Instance.new("UICorner")
-    GradientCorner.CornerRadius = UDim.new(0, 8)
-    GradientCorner.Parent = GradientFrame
-    
-    local Gradient = Instance.new("UIGradient")
-    Gradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 60)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
-    }
-    Gradient.Rotation = 135
-    Gradient.Parent = GradientFrame
-    
-    local OuterStroke = Instance.new("UIStroke")
-    OuterStroke.Color = Color3.fromRGB(60, 60, 80)
-    OuterStroke.Thickness = 1.5
-    OuterStroke.Parent = ButtonFrame
-    
-    local InnerStroke = Instance.new("UIStroke")
-    InnerStroke.Color = Color3.fromRGB(35, 35, 45)
-    InnerStroke.Thickness = 1
-    InnerStroke.Parent = GradientFrame
-    
-    local IconLabel = Instance.new("ImageLabel")
-    IconLabel.Name = "Icon"
-    IconLabel.Size = UDim2.new(0, 18, 0, 18)
-    IconLabel.Position = UDim2.new(0.5, -9, 0.5, -9)
-    IconLabel.BackgroundTransparency = 1
-    IconLabel.Image = "rbxassetid://7734053495"
-    IconLabel.ImageColor3 = Color3.fromRGB(180, 180, 200)
-    IconLabel.Parent = ButtonFrame
-    
-    local ClickDetector = Instance.new("TextButton")
-    ClickDetector.Name = "ClickDetector"
-    ClickDetector.Size = UDim2.new(1, 0, 1, 0)
-    ClickDetector.Position = UDim2.new(0, 0, 0, 0)
-    ClickDetector.BackgroundTransparency = 1
-    ClickDetector.Text = ""
-    ClickDetector.Parent = ButtonFrame
-
-    ClickDetector.MouseButton1Click:Connect(function()
-        if isAnimating then return end
-        isAnimating = true
-        
-        local clickTween = TweenService:Create(
-            ButtonFrame,
-            TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
-            {Size = UDim2.new(0, 40, 0, 40)}
-        )
-        
-        local releaseTween = TweenService:Create(
-            ButtonFrame,
-            TweenInfo.new(0.12, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-            {Size = UDim2.new(0, 45, 0, 45)}
-        )
-        
-        clickTween:Play()
-        clickTween.Completed:Connect(function()
-            releaseTween:Play()
-            releaseTween.Completed:Connect(function()
-                isAnimating = false
-            end)
-        end)
-    end)
-    
-    ClickDetector.MouseEnter:Connect(function()
-        TweenService:Create(
-            ButtonFrame,
-            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {BackgroundColor3 = Color3.fromRGB(25, 25, 35)}
-        ):Play()
-        
-        TweenService:Create(
-            OuterStroke,
-            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {Color = Color3.fromRGB(80, 80, 100)}
-        ):Play()
-    end)
-    
-    ClickDetector.MouseLeave:Connect(function()
-        TweenService:Create(
-            ButtonFrame,
-            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {BackgroundColor3 = Color3.fromRGB(20, 20, 25)}
-        ):Play()
-        
-        TweenService:Create(
-            OuterStroke,
-            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {Color = Color3.fromRGB(60, 60, 80)}
-        ):Play()
-    end)
-
-    ClickDetector.MouseButton1Down:Connect(function()
-        isDragging = true
-        dragStart = UserInputService:GetMouseLocation()
-        startPos = ButtonFrame.Position
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local currentPos = UserInputService:GetMouseLocation()
-            local delta = currentPos - dragStart
-            local newPos = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
-            ButtonFrame.Position = newPos
-            BlurFrame.Position = UDim2.new(
-                newPos.X.Scale,
-                newPos.X.Offset - 3,
-                newPos.Y.Scale,
-                newPos.Y.Offset - 3
-            )
-        end
-    end)
-    
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            if isDragging then
-                savedPosition = ButtonFrame.Position
-                savedBlurPosition = UDim2.new(
-                    ButtonFrame.Position.X.Scale,
-                    ButtonFrame.Position.X.Offset - 3,
-                    ButtonFrame.Position.Y.Scale,
-                    ButtonFrame.Position.Y.Offset - 3
-                )
-                isDragging = false
-            end
-        end
-    end)
-    
-    return ClickDetector
-end
-
-function MobileToggle:Show()
-    if isVisible then return end
-    isVisible = true
-    
-    local offScreenPos = UDim2.new(savedPosition.X.Scale, savedPosition.X.Offset + 100, savedPosition.Y.Scale, savedPosition.Y.Offset)
-    local offScreenBlurPos = UDim2.new(savedBlurPosition.X.Scale, savedBlurPosition.X.Offset + 100, savedBlurPosition.Y.Scale, savedBlurPosition.Y.Offset)
-    
-    ButtonFrame.Position = offScreenPos
-    BlurFrame.Position = offScreenBlurPos
-    ButtonFrame.Visible = true
-    BlurFrame.Visible = true
-    
-    TweenService:Create(
-        ButtonFrame,
-        TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-        {Position = savedPosition}
-    ):Play()
-    
-    TweenService:Create(
-        BlurFrame,
-        TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-        {Position = savedBlurPosition}
-    ):Play()
-end
-
-function MobileToggle:Hide()
-    if not isVisible then return end
-    isVisible = false
-    
-    local offScreenPos = UDim2.new(savedPosition.X.Scale, savedPosition.X.Offset + 100, savedPosition.Y.Scale, savedPosition.Y.Offset)
-    local offScreenBlurPos = UDim2.new(savedBlurPosition.X.Scale, savedBlurPosition.X.Offset + 100, savedBlurPosition.Y.Scale, savedBlurPosition.Y.Offset)
-    
-    local hideTween = TweenService:Create(
-        ButtonFrame,
-        TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
-        {Position = offScreenPos}
-    )
-    
-    local hideBlurTween = TweenService:Create(
-        BlurFrame,
-        TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
-        {Position = offScreenBlurPos}
-    )
-    
-    hideTween:Play()
-    hideBlurTween:Play()
-    hideTween.Completed:Connect(function()
-        ButtonFrame.Visible = false
-        BlurFrame.Visible = false
-    end)
-end
-
-function MobileToggle.Destroy()
-    if ScreenGui then
-        ScreenGui:Destroy()
-        ScreenGui = nil
-        ButtonFrame = nil
-        BlurFrame = nil
-        isVisible = false
-        isAnimating = false
-        isDragging = false
-    end
-end
-
-local ClickDetector = createMobileButton()
 function Hide()
     if not SideBarClosed then
         spawn(CloseSideBar)
@@ -1191,8 +929,7 @@ function Hide()
         Duration = 7,
         Image = "eye-closed"
     })
-    MobileToggle:Show()
-
+    
 	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 400)}):Play()
 	TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 45)}):Play()
 	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
@@ -1907,7 +1644,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 				TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
 				wait(0.51)
 				ArrayFieldLibrary:Destroy()
-				MobileToggle.Destroy()
+				MobileToggle:Destroy()
 				KeyUI:Destroy()
 			end)
 		else
@@ -3925,10 +3662,276 @@ end)
 	return Window
 end
 
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local ButtonFrame
+local BlurFrame
+local ScreenGui
+local isDragging = false
+local dragStart = nil
+local startPos = nil
+local isVisible = false
+local isAnimating = false
+local savedPosition = UDim2.new(1, -67, 0.5, -22)
+local savedBlurPosition = UDim2.new(1, -70, 0.5, -25)
+
+local MobileToggle = {}
+
+local function createMobileButton()
+    ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "RayfieldMobileToggle"
+    ScreenGui.ResetOnSpawn = false
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.Parent = PlayerGui
+    
+    BlurFrame = Instance.new("Frame")
+    BlurFrame.Name = "BlurShadow"
+    BlurFrame.Size = UDim2.new(0, 50, 0, 50)
+    BlurFrame.Position = savedBlurPosition
+    BlurFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    BlurFrame.BackgroundTransparency = 0.3
+    BlurFrame.BorderSizePixel = 0
+    BlurFrame.Visible = false
+    BlurFrame.Parent = ScreenGui
+    
+    local BlurCorner = Instance.new("UICorner")
+    BlurCorner.CornerRadius = UDim.new(0, 10)
+    BlurCorner.Parent = BlurFrame
+    
+    ButtonFrame = Instance.new("Frame")
+    ButtonFrame.Name = "ToggleButton"
+    ButtonFrame.Size = UDim2.new(0, 45, 0, 45)
+    ButtonFrame.Position = savedPosition
+    ButtonFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    ButtonFrame.BorderSizePixel = 0
+    ButtonFrame.Visible = false
+    ButtonFrame.Parent = ScreenGui
+    
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.Parent = ButtonFrame
+    
+    local GradientFrame = Instance.new("Frame")
+    GradientFrame.Name = "Gradient"
+    GradientFrame.Size = UDim2.new(1, 0, 1, 0)
+    GradientFrame.Position = UDim2.new(0, 0, 0, 0)
+    GradientFrame.BackgroundTransparency = 0.3
+    GradientFrame.Parent = ButtonFrame
+    
+    local GradientCorner = Instance.new("UICorner")
+    GradientCorner.CornerRadius = UDim.new(0, 8)
+    GradientCorner.Parent = GradientFrame
+    
+    local Gradient = Instance.new("UIGradient")
+    Gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 60)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
+    }
+    Gradient.Rotation = 135
+    Gradient.Parent = GradientFrame
+    
+    local OuterStroke = Instance.new("UIStroke")
+    OuterStroke.Color = Color3.fromRGB(60, 60, 80)
+    OuterStroke.Thickness = 1.5
+    OuterStroke.Parent = ButtonFrame
+    
+    local InnerStroke = Instance.new("UIStroke")
+    InnerStroke.Color = Color3.fromRGB(35, 35, 45)
+    InnerStroke.Thickness = 1
+    InnerStroke.Parent = GradientFrame
+    
+    local IconLabel = Instance.new("ImageLabel")
+    IconLabel.Name = "Icon"
+    IconLabel.Size = UDim2.new(0, 18, 0, 18)
+    IconLabel.Position = UDim2.new(0.5, -9, 0.5, -9)
+    IconLabel.BackgroundTransparency = 1
+    IconLabel.Image = "rbxassetid://7734053495"
+    IconLabel.ImageColor3 = Color3.fromRGB(180, 180, 200)
+    IconLabel.Parent = ButtonFrame
+    
+    local ClickDetector = Instance.new("TextButton")
+    ClickDetector.Name = "ClickDetector"
+    ClickDetector.Size = UDim2.new(1, 0, 1, 0)
+    ClickDetector.Position = UDim2.new(0, 0, 0, 0)
+    ClickDetector.BackgroundTransparency = 1
+    ClickDetector.Text = ""
+    ClickDetector.Parent = ButtonFrame
+    
+    -- Click animation
+    ClickDetector.MouseButton1Click:Connect(function()
+        if isAnimating then return end
+        isAnimating = true
+        
+        local clickTween = TweenService:Create(
+            ButtonFrame,
+            TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+            {Size = UDim2.new(0, 40, 0, 40)}
+        )
+        
+        local releaseTween = TweenService:Create(
+            ButtonFrame,
+            TweenInfo.new(0.12, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0, 45, 0, 45)}
+        )
+        
+        clickTween:Play()
+        clickTween.Completed:Connect(function()
+            releaseTween:Play()
+            releaseTween.Completed:Connect(function()
+                isAnimating = false
+            end)
+        end)
+    end)
+    
+    -- Hover effects
+    ClickDetector.MouseEnter:Connect(function()
+        TweenService:Create(
+            ButtonFrame,
+            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundColor3 = Color3.fromRGB(25, 25, 35)}
+        ):Play()
+        
+        TweenService:Create(
+            OuterStroke,
+            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Color = Color3.fromRGB(80, 80, 100)}
+        ):Play()
+    end)
+    
+    ClickDetector.MouseLeave:Connect(function()
+        TweenService:Create(
+            ButtonFrame,
+            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundColor3 = Color3.fromRGB(20, 20, 25)}
+        ):Play()
+        
+        TweenService:Create(
+            OuterStroke,
+            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Color = Color3.fromRGB(60, 60, 80)}
+        ):Play()
+    end)
+    
+    -- Dragging
+    ClickDetector.MouseButton1Down:Connect(function()
+        isDragging = true
+        dragStart = UserInputService:GetMouseLocation()
+        startPos = ButtonFrame.Position
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local currentPos = UserInputService:GetMouseLocation()
+            local delta = currentPos - dragStart
+            local newPos = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+            ButtonFrame.Position = newPos
+            BlurFrame.Position = UDim2.new(
+                newPos.X.Scale,
+                newPos.X.Offset - 3,
+                newPos.Y.Scale,
+                newPos.Y.Offset - 3
+            )
+        end
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if isDragging then
+                savedPosition = ButtonFrame.Position
+                savedBlurPosition = UDim2.new(
+                    ButtonFrame.Position.X.Scale,
+                    ButtonFrame.Position.X.Offset - 3,
+                    ButtonFrame.Position.Y.Scale,
+                    ButtonFrame.Position.Y.Offset - 3
+                )
+                isDragging = false
+            end
+        end
+    end)
+    
+    return ClickDetector
+end
+
+function MobileToggle:Show()
+    if isVisible then return end
+    isVisible = true
+    
+    local offScreenPos = UDim2.new(savedPosition.X.Scale, savedPosition.X.Offset + 100, savedPosition.Y.Scale, savedPosition.Y.Offset)
+    local offScreenBlurPos = UDim2.new(savedBlurPosition.X.Scale, savedBlurPosition.X.Offset + 100, savedBlurPosition.Y.Scale, savedBlurPosition.Y.Offset)
+    
+    ButtonFrame.Position = offScreenPos
+    BlurFrame.Position = offScreenBlurPos
+    ButtonFrame.Visible = true
+    BlurFrame.Visible = true
+    
+    TweenService:Create(
+        ButtonFrame,
+        TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+        {Position = savedPosition}
+    ):Play()
+    
+    TweenService:Create(
+        BlurFrame,
+        TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+        {Position = savedBlurPosition}
+    ):Play()
+end
+
+function MobileToggle:Hide()
+    if not isVisible then return end
+    isVisible = false
+    
+    local offScreenPos = UDim2.new(savedPosition.X.Scale, savedPosition.X.Offset + 100, savedPosition.Y.Scale, savedPosition.Y.Offset)
+    local offScreenBlurPos = UDim2.new(savedBlurPosition.X.Scale, savedBlurPosition.X.Offset + 100, savedBlurPosition.Y.Scale, savedBlurPosition.Y.Offset)
+    
+    local hideTween = TweenService:Create(
+        ButtonFrame,
+        TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+        {Position = offScreenPos}
+    )
+    
+    local hideBlurTween = TweenService:Create(
+        BlurFrame,
+        TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+        {Position = offScreenBlurPos}
+    )
+    
+    hideTween:Play()
+    hideBlurTween:Play()
+    hideTween.Completed:Connect(function()
+        ButtonFrame.Visible = false
+        BlurFrame.Visible = false
+    end)
+end
+
+function MobileToggle:Destroy()
+    if ScreenGui then
+        ScreenGui:Destroy()
+        ScreenGui = nil
+        ButtonFrame = nil
+        BlurFrame = nil
+        isVisible = false
+        isAnimating = false
+        isDragging = false
+    end
+end
+
+local ClickDetector = createMobileButton()
+MobileToggle:Hide()
 
 function ArrayFieldLibrary:Destroy()
 	ArrayField:Destroy()
-	MobileToggle.Destroy()
+	MobileToggle:Hide()
 end
 
 Topbar.ChangeSize.MouseButton1Click:Connect(function()
@@ -3963,6 +3966,72 @@ Topbar.Type.MouseButton1Click:Connect(function()
 		Duration = 10
 	})
 end)
+
+Topbar.Hide.MouseButton1Click:Connect(function()
+    if Debounce then return end
+    if Hidden then
+        Hidden = false
+        Minimised = false
+        Unhide()
+		MobileToggle:Hide()
+    else
+        if not SearchHided then SearchHided = true spawn(CloseSearch) end
+        Hidden = true
+        Hide()
+		MobileToggle:Show()
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if (input.KeyCode == Enum.KeyCode.K and not processed) then
+        if Debounce then return end
+        if Hidden then
+            Hidden = false
+            Unhide()
+        else
+            if not SearchHided then spawn(CloseSearch) end
+            Hidden = true
+            Hide()
+        end
+    end
+end)
+
+for _, TopbarButton in ipairs(Topbar:GetChildren()) do
+	if TopbarButton.ClassName == "ImageButton" then
+		TopbarButton.MouseEnter:Connect(function()
+			if TopbarButton.Name ~= 'Type' then
+				TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+			else
+				TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
+			end
+		end)
+		TopbarButton.MouseLeave:Connect(function()
+			if TopbarButton.Name ~= 'Type' then
+				TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
+			else
+				TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+			end
+		end)
+
+		TopbarButton.MouseButton1Click:Connect(function()
+			TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
+		end)
+	end
+end
+
+
+function ArrayFieldLibrary:LoadConfiguration()
+	if CEnabled then
+		pcall(function()
+			if isfile(ConfigurationFolder .. "/" .. CFileName .. ConfigurationExtension) then
+				LoadConfiguration(readfile(ConfigurationFolder .. "/" .. CFileName .. ConfigurationExtension))
+				ArrayFieldLibrary:Notify({Title = "Configuration Loaded", Content = "The configuration file for this script has been loaded from a previous session"})
+			end
+		end)
+	end
+end
+
+task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
 
 ArrayField.Main.Topbar.Theme.Visible = false
 local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
