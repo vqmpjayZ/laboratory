@@ -909,7 +909,6 @@ Debounce = true
 	wait(0.2)
 	Debounce = false
 end
-
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -928,10 +927,14 @@ local isVisible = false
 local isAnimating = false
 local savedPosition = UDim2.new(1, -67, 0.5, -22)
 local savedBlurPosition = UDim2.new(1, -70, 0.5, -25)
+local buttonCreated = false
 
 local MobileToggle = {}
 
 local function createMobileButton()
+    if buttonCreated then return end
+    buttonCreated = true
+    
     ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "RayfieldMobileToggle"
     ScreenGui.ResetOnSpawn = false
@@ -999,7 +1002,7 @@ local function createMobileButton()
     IconLabel.Size = UDim2.new(0, 18, 0, 18)
     IconLabel.Position = UDim2.new(0.5, -9, 0.5, -9)
     IconLabel.BackgroundTransparency = 1
-    IconLabel.Image = "rbxassetid://16898613353"
+    IconLabel.Image = "rbxassetid://7734053495"
     IconLabel.ImageColor3 = Color3.fromRGB(180, 180, 200)
     IconLabel.Parent = ButtonFrame
     
@@ -1127,75 +1130,14 @@ function MobileToggle.Destroy()
         isVisible = false
         isAnimating = false
         isDragging = false
+        buttonCreated = false
     end
 end
 
-local ClickDetector, BlurFrame = createMobileButton()
-
-ClickDetector.MouseButton1Click:Connect(function()
-    animateClick()
-    if Debounce then return end
-    if Hidden then
-        Hidden = false
-        Unhide()
-    else
-        if not SearchHided then spawn(CloseSearch) end
-        Hidden = true
-        Hide()
-    end
-end)
-
-ClickDetector.MouseEnter:Connect(function()
-    animateHover(true)
-end)
-
-ClickDetector.MouseLeave:Connect(function()
-    animateHover(false)
-end)
-
-ClickDetector.MouseButton1Down:Connect(function()
-    isDragging = true
-    dragStart = UserInputService:GetMouseLocation()
-    startPos = ButtonFrame.Position
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local currentPos = UserInputService:GetMouseLocation()
-        local delta = currentPos - dragStart
-        local newPos = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
-        )
-        ButtonFrame.Position = newPos
-        BlurFrame.Position = UDim2.new(
-            newPos.X.Scale,
-            newPos.X.Offset - 3,
-            newPos.Y.Scale,
-            newPos.Y.Offset - 3
-        )
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        if isDragging then
-            savePosition()
-            isDragging = false
-        end
-    end
-end)
-
-UserInputService.TouchTapInWorld:Connect(function(position, processed)
-    if processed then return end
-    local screenPos = Vector2.new(position.x, position.y)
-    local buttonPos = ButtonFrame.AbsolutePosition
-    local buttonSize = ButtonFrame.AbsoluteSize
+if not buttonCreated then
+    local ClickDetector, BlurFrame = createMobileButton()
     
-    if screenPos.X >= buttonPos.X and screenPos.X <= buttonPos.X + buttonSize.X and
-       screenPos.Y >= buttonPos.Y and screenPos.Y <= buttonPos.Y + buttonSize.Y then
+    ClickDetector.MouseButton1Click:Connect(function()
         animateClick()
         if Debounce then return end
         if Hidden then
@@ -1206,8 +1148,72 @@ UserInputService.TouchTapInWorld:Connect(function(position, processed)
             Hidden = true
             Hide()
         end
-    end
-end)
+    end)
+    
+    ClickDetector.MouseEnter:Connect(function()
+        animateHover(true)
+    end)
+    
+    ClickDetector.MouseLeave:Connect(function()
+        animateHover(false)
+    end)
+    
+    ClickDetector.MouseButton1Down:Connect(function()
+        isDragging = true
+        dragStart = UserInputService:GetMouseLocation()
+        startPos = ButtonFrame.Position
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local currentPos = UserInputService:GetMouseLocation()
+            local delta = currentPos - dragStart
+            local newPos = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+            ButtonFrame.Position = newPos
+            BlurFrame.Position = UDim2.new(
+                newPos.X.Scale,
+                newPos.X.Offset - 3,
+                newPos.Y.Scale,
+                newPos.Y.Offset - 3
+            )
+        end
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if isDragging then
+                savePosition()
+                isDragging = false
+            end
+        end
+    end)
+    
+    UserInputService.TouchTapInWorld:Connect(function(position, processed)
+        if processed then return end
+        local screenPos = Vector2.new(position.x, position.y)
+        local buttonPos = ButtonFrame.AbsolutePosition
+        local buttonSize = ButtonFrame.AbsoluteSize
+        
+        if screenPos.X >= buttonPos.X and screenPos.X <= buttonPos.X + buttonSize.X and
+           screenPos.Y >= buttonPos.Y and screenPos.Y <= buttonPos.Y + buttonSize.Y then
+            animateClick()
+            if Debounce then return end
+            if Hidden then
+                Hidden = false
+                Unhide()
+            else
+                if not SearchHided then spawn(CloseSearch) end
+                Hidden = true
+                Hide()
+            end
+        end
+    end)
+end
 
 function Hide()
 MobileToggle.Show(BlurFrame)
