@@ -1481,9 +1481,9 @@ end)
 
 function Maximise()
 
-    if SideBarClosed then
-		spawn(OpenSideBar)
-	end
+if SideBarClosed then
+    task.delay(0.55, OpenSideBar)
+end
 
 	Debounce = true
 	Topbar.ChangeSize.Image = "rbxassetid://"..10137941941
@@ -1567,7 +1567,8 @@ function Maximise()
 end
 function OpenSideBar()
 	Debounce = true
-	Main.SideTabList.Visible = true 
+	SideBarClosed = false
+	Main.SideTabList.Visible = true
 	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = .03,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
@@ -1582,16 +1583,14 @@ function OpenSideBar()
 		end
 		wait(0.12)
 	end
-	SideBarClosed = false
     Topbar.Type.Active = false
     Topbar.Type.AutoButtonColor = false    
     TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-	wait(.4)
-	Main.SideTabList.Visible = true
-	wait(0.2)
-	Debounce = false
+    task.delay(0.4, function()
+        Debounce = false
+	end)
 end
 function Minimise()
 	Debounce = true
