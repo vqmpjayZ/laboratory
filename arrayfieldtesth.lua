@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------brzh
+-------------------------------
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -897,7 +897,7 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
 end
 
 function CloseSideBar()
-    if Hidden or Minimised or Debounce then return end
+if Hidden or Debounce then return end
 Debounce = true
 	SideBarClosed = true
 	for _,tabbtn in pairs(SideList:GetChildren()) do
