@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------
+-------------------------------s
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -896,23 +896,32 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
     end)
 end
 
-function CloseSideBar()
-	if Debounce then return end
-Debounce = true
+function CloseSideBar(force)
+	if Debounce and not force then return end
+	Debounce = true
+
 	SideBarClosed = true
+
 	for _,tabbtn in pairs(SideList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-			TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
+			TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
 		end
 	end
-	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
-	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
-	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-	wait(.4)
-	Main.SideTabList.Visible = true
-	wait(0.2)
-	Debounce = false
+
+	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(0,160,0,285),
+		Position = UDim2.new(0,14,0.5,22)
+	}):Play()
+
+	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+
+	task.delay(0.45, function()
+		Main.SideTabList.Visible = false
+		Debounce = false
+	end)
 end
 
 local Players = game:GetService("Players")
@@ -1482,7 +1491,7 @@ end)
 function Maximise()
 
 if SideBarClosed then
-	task.delay(.4, OpenSideBar)
+    task.delay(0.5, OpenSideBar)
 end
 
 	Debounce = true
@@ -1571,7 +1580,7 @@ function OpenSideBar()
 	SideBarClosed = false
 	Main.SideTabList.Visible = true
 
-	for _, tabbtn in pairs(SideList:GetChildren()) do
+	for _,tabbtn in pairs(SideList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
 			TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
@@ -1580,14 +1589,14 @@ function OpenSideBar()
 
 	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {
 		BackgroundTransparency = 0,
-		Size = UDim2.new(0, 160, 0, 285),
-		Position = UDim2.new(0, 14, 0.5, 22)
+		Size = UDim2.new(0,160,0,285),
+		Position = UDim2.new(0,14,0.5,22)
 	}):Play()
 
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
-	task.delay(0.4, function()
+	task.delay(0.45, function()
 		Debounce = false
 	end)
 end
@@ -1598,14 +1607,10 @@ function Minimise()
 	if not SearchHided then
 		spawn(CloseSearch)
 	end
-	if not SideBarClosed then
-        spawn(CloseSideBar)
-        TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
-        TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
-        TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-        wait(.1)
-        Main.SideTabList.Visible = false
-	end
+if not SideBarClosed then
+    CloseSideBar(true)
+end
+
 	spawn(function()
 		FadeDescription(nil,true)
 	end)
