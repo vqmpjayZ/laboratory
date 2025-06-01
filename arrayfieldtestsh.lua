@@ -897,7 +897,7 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
 end
 
 function CloseSideBar()
-if Hidden or Debounce then return end
+	if Debounce then return end
 Debounce = true
 	SideBarClosed = true
 	for _,tabbtn in pairs(SideList:GetChildren()) do
@@ -1482,7 +1482,7 @@ end)
 function Maximise()
 
 if SideBarClosed then
-    task.delay(0.55, OpenSideBar)
+	task.delay(.4, OpenSideBar)
 end
 
 	Debounce = true
@@ -1566,32 +1566,32 @@ end
 	Debounce = false
 end
 function OpenSideBar()
+	if Debounce then return end
 	Debounce = true
 	SideBarClosed = false
 	Main.SideTabList.Visible = true
-	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = .03,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
-	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
-	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-	for _,tabbtn in pairs(SideList:GetChildren()) do
+
+	for _, tabbtn in pairs(SideList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-			if tabbtn.Title.TextColor3 ~= Color3.fromRGB(255,255,255) then
-				TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{TextTransparency = .2}):Play()
-			else
-				TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-			end
-			TweenService:Create(tabbtn.Image, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
+			TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
 		end
-		wait(0.12)
 	end
-    Topbar.Type.Active = false
-    Topbar.Type.AutoButtonColor = false    
-    TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
-	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
-	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-    task.delay(0.4, function()
-        Debounce = false
+
+	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {
+		BackgroundTransparency = 0,
+		Size = UDim2.new(0, 160, 0, 285),
+		Position = UDim2.new(0, 14, 0.5, 22)
+	}):Play()
+
+	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+	task.delay(0.4, function()
+		Debounce = false
 	end)
 end
+
 function Minimise()
 	Debounce = true
 	Topbar.ChangeSize.Image = "rbxassetid://"..11036884234
