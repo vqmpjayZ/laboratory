@@ -24,6 +24,8 @@ Change Logs:
 - Removed Themes Button (pointless)
 - Revamped Design
 - Fixed Sidetab having a chance of duplicating once minimized
+- Added Mobile toggle button
+- Switch unhide UI keybind to K instead of RightShift
 
 ]]
 
@@ -1142,7 +1144,11 @@ function MobileToggle:Destroy()
     end
 end
 
-local ClickDetector = createMobileButton()
+local ClickDetector
+
+if UserInputService.TouchEnabled then
+	ClickDetector = createMobileButton()
+end
 
 ClickDetector.MouseButton1Click:Connect(function()
     animateClick()
