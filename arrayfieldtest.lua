@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------
+-------------------------------g
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -145,6 +145,11 @@ pcall(function()
 	_G.LastRayField.Name = 'Old Arrayfield'
 	_G.LastRayField.Enabled = false
 end)
+
+if _G.LastRayField and _G.LastRayField:FindFirstChild("MobileToggleButton") then
+    _G.LastRayField.MobileToggleButton:Destroy()
+end
+
 local ParentObject = function(Gui)
 	local success, failure = pcall(function()
 		if get_hidden_gui or gethui then
