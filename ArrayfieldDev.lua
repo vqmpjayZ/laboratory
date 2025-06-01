@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------
+------------------------------- yo
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -1600,6 +1600,7 @@ function Minimise()
 		spawn(CloseSearch)
 	end
 	if not SideBarClosed then
+		wait(.1)
         spawn(CloseSideBar)
         TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
         TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
