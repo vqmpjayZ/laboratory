@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------
+-------------------------------gurt
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -3929,7 +3929,6 @@ end
 function ArrayFieldLibrary:Destroy()
 	ArrayField:Destroy()
 	MobileToggle.Destroy()
-
 end
 
 Topbar.ChangeSize.MouseButton1Click:Connect(function()
@@ -3964,6 +3963,46 @@ Topbar.Type.MouseButton1Click:Connect(function()
 		Duration = 10
 	})
 end)
+
+ArrayField.Main.Topbar.Theme.Visible = false
+local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
+
+if Search then
+    Search.Parent = nil
+    
+    Search.Parent = ArrayField.Main.Topbar 
+    
+    Search.Position = UDim2.new(0.84, 0, 0.5, 0)
+else
+    warn("Search button not found!")
+end
+
+local Sections = ArrayField.Main:GetChildren()
+for _, section in pairs(Sections) do
+    if section:IsA("Frame") then
+        if section:FindFirstChild("Minimize") then
+            section.Minimize.Visible = false
+        end
+        
+        if section:FindFirstChild("Border") then
+            section.Border.Visible = false
+        end
+        
+        section.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end
+end
+
+for _, section in pairs(Sections) do
+    if section:IsA("Frame") then
+        if section:FindFirstChild("Minimize") then
+            section.Minimize.Visible = false
+        end
+        if section:FindFirstChild("Border") then
+            section.Border.Visible = false
+        end
+        section.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end
+end
 
 local PromptButtons = ArrayField.Main.Prompt.Prompt.Buttons
 PromptButtons.Size = UDim2.new(0, 335, 0, 40)
