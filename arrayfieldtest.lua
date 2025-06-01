@@ -3661,7 +3661,6 @@ end)
 	end
 	return Window
 end
-
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -3761,8 +3760,7 @@ local function createMobileButton()
     ClickDetector.BackgroundTransparency = 1
     ClickDetector.Text = ""
     ClickDetector.Parent = ButtonFrame
-    
-    -- Click animation
+
     ClickDetector.MouseButton1Click:Connect(function()
         if isAnimating then return end
         isAnimating = true
@@ -3786,9 +3784,10 @@ local function createMobileButton()
                 isAnimating = false
             end)
         end)
+        
+        game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.K, false, game)
     end)
-    
-    -- Hover effects
+
     ClickDetector.MouseEnter:Connect(function()
         TweenService:Create(
             ButtonFrame,
@@ -3816,8 +3815,7 @@ local function createMobileButton()
             {Color = Color3.fromRGB(60, 60, 80)}
         ):Play()
     end)
-    
-    -- Dragging
+
     ClickDetector.MouseButton1Down:Connect(function()
         isDragging = true
         dragStart = UserInputService:GetMouseLocation()
