@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------
+-------------------------------e
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -909,7 +909,6 @@ Debounce = true
 	wait(0.2)
 	Debounce = false
 end
-
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -937,7 +936,7 @@ local function createMobileButton()
     ScreenGui.Name = "RayfieldMobileToggle"
     ScreenGui.ResetOnSpawn = false
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.Parent = PlayerGui
+    ScreenGui.Parent = ArrayField
     
     BlurFrame = Instance.new("Frame")
     BlurFrame.Name = "BlurShadow"
@@ -995,13 +994,15 @@ local function createMobileButton()
     InnerStroke.Thickness = 1
     InnerStroke.Parent = GradientFrame
     
-    IconLabel = Instance.new("ImageLabel")
+    IconLabel = Instance.new("TextLabel")
     IconLabel.Name = "Icon"
     IconLabel.Size = UDim2.new(0, 18, 0, 18)
     IconLabel.Position = UDim2.new(0.5, -9, 0.5, -9)
     IconLabel.BackgroundTransparency = 1
-    IconLabel.Image = "rbxassetid://16898669897"
-    IconLabel.ImageColor3 = Color3.fromRGB(180, 180, 200)
+    IconLabel.Text = "👁"
+    IconLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
+    IconLabel.TextScaled = true
+    IconLabel.Font = Enum.Font.SourceSans
     IconLabel.Parent = ButtonFrame
     
     local ClickDetector = Instance.new("TextButton")
