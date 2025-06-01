@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
-------------------------------- hhhhh
+-------------------------------
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -340,7 +340,7 @@ local function FadeDescription(Infos,type,Out:boolean?)
 		elseif type == 'colorpicker' then
 			InfoPrompt.Status.Text = Infos.Color.R..Infos.Color.G..Infos.Color.B
 		end
-
+--[[
 		if not Infos.Info.Image then
 			InfoPrompt.ImageLabel.Visible = false
 			InfoPrompt.Description.Position = InfoPrompt.ImageLabel.Position
@@ -349,7 +349,7 @@ local function FadeDescription(Infos,type,Out:boolean?)
 			InfoPrompt.ImageLabel.Image = 'rbxassetid://'..Infos.Info.Image
 			InfoPrompt.Description.Position = UDim2.new(.5,0,0,160)
 		end
-
+]]
 		InfoPrompt.Title.Text = Infos.Info.Title
 		InfoPrompt.Description.Text = Infos.Info.Description
 	end
@@ -921,6 +921,7 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 local ButtonFrame
 local IconLabel
 local ScreenGui
+local BlurFrame
 local isDragging = false
 local dragStart = nil
 local startPos = nil
@@ -938,7 +939,7 @@ local function createMobileButton()
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ScreenGui.Parent = PlayerGui
     
-    local BlurFrame = Instance.new("Frame")
+    BlurFrame = Instance.new("Frame")
     BlurFrame.Name = "BlurShadow"
     BlurFrame.Size = UDim2.new(0, 50, 0, 50)
     BlurFrame.Position = savedBlurPosition
@@ -1011,7 +1012,7 @@ local function createMobileButton()
     ClickDetector.Text = ""
     ClickDetector.Parent = ButtonFrame
     
-    return ClickDetector, BlurFrame
+    return ClickDetector
 end
 
 local function animateClick()
@@ -1066,8 +1067,8 @@ local function savePosition()
     )
 end
 
-function MobileToggle:Show(BlurFrame)
-    if isVisible then return end
+function MobileToggle:Show()
+    if isVisible or not ButtonFrame or not BlurFrame then return end
     isVisible = true
     
     local offScreenPos = UDim2.new(savedPosition.X.Scale, savedPosition.X.Offset + 100, savedPosition.Y.Scale, savedPosition.Y.Offset)
@@ -1091,8 +1092,8 @@ function MobileToggle:Show(BlurFrame)
     ):Play()
 end
 
-function MobileToggle:Hide(BlurFrame)
-    if not isVisible then return end
+function MobileToggle:Hide()
+    if not isVisible or not ButtonFrame or not BlurFrame then return end
     isVisible = false
     
     local offScreenPos = UDim2.new(savedPosition.X.Scale, savedPosition.X.Offset + 100, savedPosition.Y.Scale, savedPosition.Y.Offset)
@@ -1124,13 +1125,14 @@ function MobileToggle:Destroy()
         ScreenGui = nil
         ButtonFrame = nil
         IconLabel = nil
+        BlurFrame = nil
         isVisible = false
         isAnimating = false
         isDragging = false
     end
 end
 
-local ClickDetector, BlurFrame = createMobileButton()
+local ClickDetector = createMobileButton()
 
 ClickDetector.MouseButton1Click:Connect(function()
     animateClick()
@@ -1210,6 +1212,7 @@ UserInputService.TouchTapInWorld:Connect(function(position, processed)
 end)
 
 function Hide()
+	MobileToggle:Show()
     if not SideBarClosed then
         spawn(CloseSideBar)
         TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
@@ -1284,6 +1287,7 @@ function Hide()
 end
 
 function Unhide()
+	MobileToggle:Hide()
     if SideBarClosed then
         wait(.1)
 		spawn(OpenSideBar)
