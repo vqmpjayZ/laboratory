@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------e
+-------------------------------
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -909,6 +909,7 @@ Debounce = true
 	wait(0.2)
 	Debounce = false
 end
+
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -933,7 +934,7 @@ local MobileToggle = {}
 
 local function createMobileButton()
     ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "RayfieldMobileToggle"
+    ScreenGui.Name = "MobileToggleButton"
     ScreenGui.ResetOnSpawn = false
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ScreenGui.Parent = ArrayField
@@ -994,15 +995,15 @@ local function createMobileButton()
     InnerStroke.Thickness = 1
     InnerStroke.Parent = GradientFrame
     
-    IconLabel = Instance.new("TextLabel")
+    IconLabel = Instance.new("ImageLabel")
     IconLabel.Name = "Icon"
     IconLabel.Size = UDim2.new(0, 18, 0, 18)
     IconLabel.Position = UDim2.new(0.5, -9, 0.5, -9)
     IconLabel.BackgroundTransparency = 1
-    IconLabel.Text = "👁"
-    IconLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
-    IconLabel.TextScaled = true
-    IconLabel.Font = Enum.Font.SourceSans
+    IconLabel.Image = "rbxassetid://16898669897"
+    IconLabel.ImageRectSize = Vector2.new(256, 256)
+    IconLabel.ImageRectOffset = Vector2.new(0, 0)
+    IconLabel.ImageColor3 = Color3.fromRGB(180, 180, 200)
     IconLabel.Parent = ButtonFrame
     
     local ClickDetector = Instance.new("TextButton")
