@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------g
+-------------------------------
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -897,7 +897,7 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
 end
 
 function CloseSideBar()
-
+    if Hidden or Minimised or Debounce then return end
 Debounce = true
 	SideBarClosed = true
 	for _,tabbtn in pairs(SideList:GetChildren()) do
@@ -909,10 +909,10 @@ Debounce = true
 	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-	wait(.4)
-	Main.SideTabList.Visible = true
-	wait(0.2)
-	Debounce = false
+    wait(.4)
+    Main.SideTabList.Visible = false
+    SideBarClosed = true
+    Debounce = false
 end
 
 local Players = game:GetService("Players")
