@@ -5,7 +5,7 @@ by Meta
 
 Original by Sirius
 
--------------------------------
+-------------------------------hfafrf
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
@@ -893,11 +893,6 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
         wait(0.9)
         Notification:Destroy()
     end)
-end
-
-local existingSideTab = Main:FindFirstChild("SideTabList")
-if existingSideTab then
-	existingSideTab:Destroy()
 end
 
 function CloseSideBar()
@@ -2037,12 +2032,17 @@ function ArrayFieldLibrary:CreateWindow(Settings)
         local SDone = false
         local TopTabButton, SideTabButton = TopList.Template:Clone(), SideList.SideTemplate:Clone()
         
-        SideTabButton.Parent = SideList
-        TopTabButton.Parent = TopList
+		local existing = SideList:FindFirstChild(Name)
+		if existing then
+			existing:Destroy()
+		end
         
         TopTabButton.Name = Name 
         SideTabButton.Name = Name
         
+		SideTabButton.Parent = SideList
+        TopTabButton.Parent = TopList
+
         TopTabButton.Title.Text = Name 
         SideTabButton.Title.Text = Name
         SideTabButton.Title.TextWrapped = false 
