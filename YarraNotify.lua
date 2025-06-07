@@ -10,6 +10,7 @@
 ]]
 
 -- [+] Lucide icon support
+-- [+] Fixed General Bugs and improved animations
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -67,7 +68,7 @@ local function createNotification(config)
     local notification = Instance.new("Frame")
     notification.Name = "Notification"
     notification.Size = UDim2.new(0, 0, 0, 0)
-    notification.Position = UDim2.new(1, -185, 0, 20 + (#notifications * 90))
+    notification.Position = UDim2.new(1, -370, 0, 20 + (#notifications * 90))
     notification.BackgroundTransparency = 1
     notification.Parent = screenGui
     
@@ -438,7 +439,7 @@ function NotificationSystem:Remove(notification)
         
         for i, notif in ipairs(notifications) do
             TweenService:Create(notif, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                Position = UDim2.new(1, -185, 0, 20 + ((i - 1) * 90))
+                Position = UDim2.new(1, -370, 0, 20 + ((i - 1) * 90))
             }):Play()
         end
     end
