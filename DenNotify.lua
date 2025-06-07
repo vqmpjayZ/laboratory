@@ -1,7 +1,14 @@
--- boii my name instead of 'ray' fits so tuff!!
--- Notification System in the Rayfield Notification style nd shi
+--[[
+ __   __   ______     _____     ______     __     ______   ______   ______    
+/\ \ / /  /\  __ \   /\  __-.  /\  == \   /\ \   /\  ___\ /\__  _\ /\  ___\   
+\ \ \'/   \ \  __ \  \ \ \/\ \ \ \  __<   \ \ \  \ \  __\ \/_/\ \/ \ \___  \  
+ \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
+  \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
---test: 1
+                               dsc.gg/vadriftz
+                Notification System in the Rayfield Style (kind of)
+]]
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -33,7 +40,7 @@ local function createNotification(config)
     local notification = Instance.new("Frame")
     notification.Name = "Notification"
     notification.Size = UDim2.new(0, 350, 0, 80)
-    notification.Position = UDim2.new(1, 20, 0, 20 + (#notifications * 90))
+    notification.Position = UDim2.new(1, 400, 0, 20 + (#notifications * 90))
     notification.BackgroundTransparency = 1
     notification.Parent = screenGui
     
@@ -189,11 +196,102 @@ local function createNotification(config)
     
     table.insert(notifications, notification)
     
-    TweenService:Create(notification, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Position = UDim2.new(1, -370, 0, 20 + ((#notifications - 1) * 90))
-    }):Play()
+    notification.Rotation = 5
+    blur.BackgroundTransparency = 1
+    shadow.ImageTransparency = 1
+    stroke.Transparency = 1
+    titleLabel.TextTransparency = 1
+    contentLabel.TextTransparency = 1
+    closeButton.TextTransparency = 1
     
-    if config.Duration and config.Duration > 0 then
+    if imageLabel then
+        imageLabel.ImageTransparency = 1
+    end
+    
+    if config.Actions then
+        for i, action in ipairs(config.Actions) do
+            if i > 2 then break end
+            local button = blur:FindFirstChild("Action" .. i)
+            if button then
+                button.BackgroundTransparency = 1
+                button.TextTransparency = 1
+                local buttonStroke = button:FindFirstChild("UIStroke")
+                if buttonStroke then
+                    buttonStroke.Transparency = 1
+                end
+            end
+        end
+    end
+    
+    local slideIn = TweenService:Create(notification, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+        Position = UDim2.new(1, -370, 0, 20 + ((#notifications - 1) * 90)),
+        Rotation = 0
+    })
+    
+    local fadeIn = TweenService:Create(blur, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        BackgroundTransparency = 0.15
+    })
+    
+    local shadowFade = TweenService:Create(shadow, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        ImageTransparency = 0.5
+    })
+    
+    local strokeFade = TweenService:Create(stroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Transparency = 0.3
+    })
+    
+    local titleFade = TweenService:Create(titleLabel, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        TextTransparency = 0
+    })
+    
+    local contentFade = TweenService:Create(contentLabel, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        TextTransparency = 0
+    })
+    
+    local closeFade = TweenService:Create(closeButton, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        TextTransparency = 0
+    })
+    
+    slideIn:Play()
+    task.wait(0.1)
+    fadeIn:Play()
+    shadowFade:Play()
+    strokeFade:Play()
+    task.wait(0.1)
+    titleFade:Play()
+    contentFade:Play()
+    closeFade:Play()
+    
+    if imageLabel then
+        local imageFade = TweenService:Create(imageLabel, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            ImageTransparency = 0
+        })
+        imageFade:Play()
+    end
+    
+    if config.Actions then
+        for i, action in ipairs(config.Actions) do
+            if i > 2 then break end
+            local button = blur:FindFirstChild("Action" .. i)
+            if button then
+                task.wait(0.05)
+                local buttonFade = TweenService:Create(button, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    BackgroundTransparency = 0.2,
+                    TextTransparency = 0
+                })
+                local buttonStroke = button:FindFirstChild("UIStroke")
+                if buttonStroke then
+                    local strokeFadeBtn = TweenService:Create(buttonStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                        Transparency = 0.5
+                    })
+                    strokeFadeBtn:Play()
+                end
+                buttonFade:Play()
+            end
+        end
+    end
+    
+    if config.Duration and config.Duration > 0 and not config.Actions then
         task.wait(config.Duration)
         NotificationSystem:Remove(notification)
     end
@@ -212,15 +310,86 @@ function NotificationSystem:Remove(notification)
     if index then
         table.remove(notifications, index)
         
-        TweenService:Create(notification, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-            Position = UDim2.new(1, 20, 0, notification.Position.Y.Offset)
-        }):Play()
+        local blur = notification:FindFirstChild("Blur")
+        local shadow = notification:FindFirstChild("Shadow")
+        local titleLabel = blur and blur:FindFirstChild("Title")
+        local contentLabel = blur and blur:FindFirstChild("Content")
+        local closeButton = blur and blur:FindFirstChild("Close")
+        local imageLabel = blur and blur:FindFirstChild("Icon")
+        local stroke = blur and blur:FindFirstChild("UIStroke")
         
-        task.wait(0.3)
+        local slideOut = TweenService:Create(notification, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Position = UDim2.new(1, 50, 0, notification.Position.Y.Offset),
+            Rotation = -3
+        })
+        
+        if blur then
+            TweenService:Create(blur, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                BackgroundTransparency = 1
+            }):Play()
+        end
+        
+        if shadow then
+            TweenService:Create(shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                ImageTransparency = 1
+            }):Play()
+        end
+        
+        if stroke then
+            TweenService:Create(stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                Transparency = 1
+            }):Play()
+        end
+        
+        if titleLabel then
+            TweenService:Create(titleLabel, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                TextTransparency = 1
+            }):Play()
+        end
+        
+        if contentLabel then
+            TweenService:Create(contentLabel, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                TextTransparency = 1
+            }):Play()
+        end
+        
+        if closeButton then
+            TweenService:Create(closeButton, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                TextTransparency = 1
+            }):Play()
+        end
+        
+        if imageLabel then
+            TweenService:Create(imageLabel, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                ImageTransparency = 1
+            }):Play()
+        end
+        
+        if blur then
+            for i = 1, 2 do
+                local button = blur:FindFirstChild("Action" .. i)
+                if button then
+                    TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                        BackgroundTransparency = 1,
+                        TextTransparency = 1
+                    }):Play()
+                    local buttonStroke = button:FindFirstChild("UIStroke")
+                    if buttonStroke then
+                        TweenService:Create(buttonStroke, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                            Transparency = 1
+                        }):Play()
+                    end
+                end
+            end
+        end
+        
+        slideOut:Play()
+        
+        task.wait(0.4)
         notification:Destroy()
         
         for i, notif in ipairs(notifications) do
-            TweenService:Create(notif, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            TweenService:Create(notif, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                 Position = UDim2.new(1, -370, 0, 20 + ((i - 1) * 90))
             }):Play()
         end
