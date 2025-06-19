@@ -44,8 +44,8 @@ return function()
     
     local function ensureFolderExists()
         pcall(function()
-            if not isfolder("QuantamGuard") then
-                makefolder("QuantamGuard")
+            if not isfolder("QuantumGuard") then
+                makefolder("QuantumGuard")
             end
         end)
     end
@@ -64,7 +64,7 @@ return function()
             saveTime = os.time()
         }
         
-        local fileName = "QuantamGuard/" .. KeySystemConfig.Title .. " Key.txt"
+        local fileName = "QuantumGuard/" .. KeySystemConfig.Title .. " Key.txt"
         
         pcall(function()
             writefile(fileName, HttpService:JSONEncode(data))
@@ -75,8 +75,8 @@ return function()
         local keys = {}
         
         pcall(function()
-            if isfolder("QuantamGuard") then
-                local files = listfiles("QuantamGuard")
+            if isfolder("QuantumGuard") then
+                local files = listfiles("QuantumGuard")
                 
                 for _, file in ipairs(files) do
                     if string.match(file, "%.txt$") then
@@ -724,8 +724,8 @@ return function()
     
     function KeySystemAPI:ClearSavedKeys()
         pcall(function()
-            if isfolder("QuantamGuard") then
-                local files = listfiles("QuantamGuard")
+            if isfolder("QuantumGuard") then
+                local files = listfiles("QuantumGuard")
                 
                 for _, file in ipairs(files) do
                     if string.match(file, "%.txt$") then
