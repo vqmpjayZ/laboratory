@@ -134,14 +134,12 @@ return function()
     keySystemGui.Name = "KeySystemGui"
     keySystemGui.ResetOnSpawn = false
     keySystemGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    keySystemGui.DisplayOrder = 2147483647 -- Maximum display order
-    keySystemGui.IgnoreGuiInset = true -- Ignore top bar inset
-    
-    -- Enhanced CoreGui placement with multiple fallbacks
+    keySystemGui.DisplayOrder = 2147483647
+    keySystemGui.IgnoreGuiInset = true
+
     local function placeInCoreGui()
         local success = false
-        
-        -- Try gethui first (most reliable for exploits)
+
         if not success then
             pcall(function()
                 if gethui then
@@ -150,8 +148,7 @@ return function()
                 end
             end)
         end
-        
-        -- Try syn.protect_gui
+
         if not success then
             pcall(function()
                 if syn and syn.protect_gui then
@@ -161,16 +158,14 @@ return function()
                 end
             end)
         end
-        
-        -- Try direct CoreGui placement
+
         if not success then
             pcall(function()
                 keySystemGui.Parent = game:GetService("CoreGui")
                 success = true
             end)
         end
-        
-        -- Fallback to PlayerGui if all else fails
+    
         if not success then
             pcall(function()
                 keySystemGui.Parent = player:WaitForChild("PlayerGui")
@@ -188,7 +183,7 @@ return function()
     mainFrame.BorderSizePixel = 0
     mainFrame.ClipsDescendants = true
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    mainFrame.ZIndex = 1000 -- High ZIndex to ensure it's on top
+    mainFrame.ZIndex = 1000
     mainFrame.Parent = keySystemGui
     
     local shadow = Instance.new("ImageLabel")
@@ -398,7 +393,7 @@ return function()
     notificationFrame.BorderSizePixel = 0
     notificationFrame.AnchorPoint = Vector2.new(0.5, 0)
     notificationFrame.Visible = false
-    notificationFrame.ZIndex = 1100 -- Even higher ZIndex for notifications
+    notificationFrame.ZIndex = 1100
     notificationFrame.Parent = keySystemGui
     
     local notifCorner = Instance.new("UICorner")
