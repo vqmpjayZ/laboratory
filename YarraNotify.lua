@@ -11,11 +11,15 @@
 
 -- [+] Lucide icon support
 -- [+] Fixed General Bugs and improved animations
+-- [+] Enhanced CoreGui placement
+-- [+] Dynamic button sizing with collision prevention
+-- [+] Enhanced text collision prevention
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
+local TextService = game:GetService("TextService")
 
 local NotificationSystem = {}
 
@@ -49,14 +53,46 @@ local function createScreenGui()
     screenGui.Name = "NotificationSystem"
     screenGui.ResetOnSpawn = false
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    
-    pcall(function()
-        screenGui.Parent = CoreGui
-    end)
-    
-    if not screenGui.Parent then
-        screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+    screenGui.DisplayOrder = 2147483647
+    screenGui.IgnoreGuiInset = true
+
+    local function placeInCoreGui()
+        local success = false
+
+        if not success then
+            pcall(function()
+                if gethui then
+                    screenGui.Parent = gethui()
+                    success = true
+                end
+            end)
+        end
+
+        if not success then
+            pcall(function()
+                if syn and syn.protect_gui then
+                    syn.protect_gui(screenGui)
+                    screenGui.Parent = CoreGui
+                    success = true
+                end
+            end)
+        end
+
+        if not success then
+            pcall(function()
+                screenGui.Parent = CoreGui
+                success = true
+            end)
+        end
+
+        if not success then
+            pcall(function()
+                screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+            end)
+        end
     end
+    
+    placeInCoreGui()
     
     return screenGui
 end
@@ -64,12 +100,18 @@ end
 local screenGui = createScreenGui()
 local notifications = {}
 
+local function calculateTextSize(text, font, textSize, maxWidth)
+    local textBounds = TextService:GetTextSize(text, textSize, font, Vector2.new(maxWidth, math.huge))
+    return textBounds
+end
+
 local function createNotification(config)
     local notification = Instance.new("Frame")
     notification.Name = "Notification"
     notification.Size = UDim2.new(0, 0, 0, 0)
     notification.Position = UDim2.new(1, -370, 0, 20 + (#notifications * 90))
     notification.BackgroundTransparency = 1
+    notification.ZIndex = 1000
     notification.Parent = screenGui
     
     local blur = Instance.new("Frame")
@@ -79,6 +121,7 @@ local function createNotification(config)
     blur.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
     blur.BackgroundTransparency = 1
     blur.BorderSizePixel = 0
+    blur.ZIndex = 1001
     blur.Parent = notification
     
     local corner = Instance.new("UICorner")
@@ -103,7 +146,7 @@ local function createNotification(config)
     shadow.ImageTransparency = 1
     shadow.ScaleType = Enum.ScaleType.Slice
     shadow.SliceCenter = Rect.new(12, 12, 12, 12)
-    shadow.ZIndex = blur.ZIndex - 1
+    shadow.ZIndex = 999
     shadow.Parent = notification
     
     local stroke = Instance.new("UIStroke")
@@ -121,6 +164,7 @@ local function createNotification(config)
         imageLabel.BackgroundTransparency = 1
         imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
         imageLabel.ImageTransparency = 1
+        imageLabel.ZIndex = 1002
         imageLabel.Parent = blur
         
         pcall(function()
@@ -150,16 +194,63 @@ local function createNotification(config)
         imageLabel.ImageTransparency = 1
         imageLabel.ImageRectOffset = Vector2.new(0, 0)
         imageLabel.ImageRectSize = Vector2.new(0, 0)
+        imageLabel.ZIndex = 1002
         imageLabel.Parent = blur
         
         local iconCorner = Instance.new("UICorner")
         iconCorner.CornerRadius = UDim.new(0, 4)
         iconCorner.Parent = imageLabel
     end
+
+    local buttonData = {}
+    local totalButtonWidth = 0
+    local buttonSpacing = 8
+    local minButtonWidth = 40
+    local maxButtonWidth = 100
+    local maxTextLength = 12
+    local buttonAreaPadding = 15
+    
+    if config.Actions then
+        for i, action in ipairs(config.Actions) do
+            if i > 2 then break end
+
+            local buttonText = action.Name or "Action"
+            if #buttonText > maxTextLength then
+                buttonText = string.sub(buttonText, 1, maxTextLength - 3) .. "..."
+            end
+
+            local textBounds = calculateTextSize(buttonText, Enum.Font.GothamMedium, 11, maxButtonWidth)
+            local buttonWidth = math.max(minButtonWidth, math.min(maxButtonWidth, textBounds.X + 20))
+            
+            buttonData[i] = {
+                text = buttonText,
+                width = buttonWidth,
+                callback = action.Callback
+            }
+            
+            totalButtonWidth = totalButtonWidth + buttonWidth
+            if i > 1 then
+                totalButtonWidth = totalButtonWidth + buttonSpacing
+            end
+        end
+    end
+
+    local closeButtonWidth = 30
+    local buttonAreaWidth = config.Actions and (totalButtonWidth + buttonAreaPadding + closeButtonWidth) or closeButtonWidth
+
+    local notificationWidth = 350
+    local iconAndPadding = 45
+    local availableTextWidth = notificationWidth - iconAndPadding - buttonAreaWidth
+
+    local minTextWidth = 150
+    if availableTextWidth < minTextWidth then
+        availableTextWidth = minTextWidth
+        notificationWidth = iconAndPadding + minTextWidth + buttonAreaWidth
+    end
     
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Name = "Title"
-    titleLabel.Size = UDim2.new(1, config.Actions and -120 or -50, 0, 20)
+    titleLabel.Size = UDim2.new(0, availableTextWidth, 0, 20)
     titleLabel.Position = UDim2.new(0, 45, 0, 8)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = config.Title or "Notification"
@@ -169,11 +260,14 @@ local function createNotification(config)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.TextYAlignment = Enum.TextYAlignment.Top
     titleLabel.TextTransparency = 1
+    titleLabel.TextWrapped = true
+    titleLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    titleLabel.ZIndex = 1002
     titleLabel.Parent = blur
     
     local contentLabel = Instance.new("TextLabel")
     contentLabel.Name = "Content"
-    contentLabel.Size = UDim2.new(1, config.Actions and -120 or -50, 0, 40)
+    contentLabel.Size = UDim2.new(0, availableTextWidth, 0, 40)
     contentLabel.Position = UDim2.new(0, 45, 0, 28)
     contentLabel.BackgroundTransparency = 1
     contentLabel.Text = config.Content or ""
@@ -183,25 +277,28 @@ local function createNotification(config)
     contentLabel.TextXAlignment = Enum.TextXAlignment.Left
     contentLabel.TextYAlignment = Enum.TextYAlignment.Top
     contentLabel.TextWrapped = true
+    contentLabel.TextTruncate = Enum.TextTruncate.AtEnd
     contentLabel.TextTransparency = 1
+    contentLabel.ZIndex = 1002
     contentLabel.Parent = blur
-    
+
     if config.Actions then
-        for i, action in ipairs(config.Actions) do
-            if i > 2 then break end
-            
+        local currentX = 0
+        for i, data in ipairs(buttonData) do
             local button = Instance.new("TextButton")
             button.Name = "Action" .. i
-            button.Size = UDim2.new(0, 50, 0, 25)
-            button.Position = UDim2.new(1, -60 - ((i-1) * 55), 0.5, -12.5)
+            button.Size = UDim2.new(0, data.width, 0, 25)
+            button.Position = UDim2.new(1, -(totalButtonWidth + closeButtonWidth) + currentX, 0.5, -12.5)
             button.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
             button.BackgroundTransparency = 1
             button.BorderSizePixel = 0
-            button.Text = action.Name or "Action"
+            button.Text = data.text
             button.TextColor3 = Color3.fromRGB(255, 255, 255)
             button.TextSize = 11
             button.Font = Enum.Font.GothamMedium
             button.TextTransparency = 1
+            button.TextTruncate = Enum.TextTruncate.AtEnd
+            button.ZIndex = 1003
             button.Parent = blur
             
             local buttonCorner = Instance.new("UICorner")
@@ -215,8 +312,8 @@ local function createNotification(config)
             buttonStroke.Parent = button
             
             button.MouseButton1Click:Connect(function()
-                if action.Callback then
-                    action.Callback()
+                if data.callback then
+                    data.callback()
                 end
                 NotificationSystem:Remove(notification)
             end)
@@ -232,6 +329,8 @@ local function createNotification(config)
                     TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 0.2}):Play()
                 end
             end)
+            
+            currentX = currentX + data.width + buttonSpacing
         end
     end
     
@@ -245,6 +344,7 @@ local function createNotification(config)
     closeButton.TextSize = 16
     closeButton.Font = Enum.Font.GothamBold
     closeButton.TextTransparency = 1
+    closeButton.ZIndex = 1003
     closeButton.Parent = blur
     
     closeButton.MouseButton1Click:Connect(function()
@@ -264,9 +364,9 @@ local function createNotification(config)
     end)
     
     table.insert(notifications, notification)
-    
+
     local sizeExpand = TweenService:Create(notification, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 350, 0, 80)
+        Size = UDim2.new(0, notificationWidth, 0, 80)
     })
     
     local blurFade = TweenService:Create(blur, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
@@ -442,6 +542,22 @@ function NotificationSystem:Remove(notification)
                 Position = UDim2.new(1, -370, 0, 20 + ((i - 1) * 90))
             }):Play()
         end
+    end
+end
+
+function NotificationSystem:Clear()
+    for i = #notifications, 1, -1 do
+        self:Remove(notifications[i])
+    end
+end
+
+function NotificationSystem:GetNotificationCount()
+    return #notifications
+end
+
+function NotificationSystem:SetMaxNotifications(max)
+    while #notifications > max do
+        self:Remove(notifications[1])
     end
 end
 
