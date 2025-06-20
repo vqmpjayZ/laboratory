@@ -13,6 +13,7 @@
 -- [+] Fixed General Bugs and improved animations
 -- [+] Enhanced CoreGui placement
 -- [+] Dynamic button sizing with collision prevention
+-- [+] Enhanced text collision prevention
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -54,6 +55,7 @@ local function createScreenGui()
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.DisplayOrder = 2147483647
     screenGui.IgnoreGuiInset = true
+
     local function placeInCoreGui()
         local success = false
 
@@ -206,6 +208,7 @@ local function createNotification(config)
     local minButtonWidth = 40
     local maxButtonWidth = 100
     local maxTextLength = 12
+    local buttonAreaPadding = 15
     
     if config.Actions then
         for i, action in ipairs(config.Actions) do
@@ -232,11 +235,22 @@ local function createNotification(config)
         end
     end
 
-    local contentWidth = config.Actions and math.max(120, totalButtonWidth + 20) or 50
+    local closeButtonWidth = 30
+    local buttonAreaWidth = config.Actions and (totalButtonWidth + buttonAreaPadding + closeButtonWidth) or closeButtonWidth
+
+    local notificationWidth = 350
+    local iconAndPadding = 45
+    local availableTextWidth = notificationWidth - iconAndPadding - buttonAreaWidth
+
+    local minTextWidth = 150
+    if availableTextWidth < minTextWidth then
+        availableTextWidth = minTextWidth
+        notificationWidth = iconAndPadding + minTextWidth + buttonAreaWidth
+    end
     
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Name = "Title"
-    titleLabel.Size = UDim2.new(1, -contentWidth, 0, 20)
+    titleLabel.Size = UDim2.new(0, availableTextWidth, 0, 20)
     titleLabel.Position = UDim2.new(0, 45, 0, 8)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = config.Title or "Notification"
@@ -246,12 +260,14 @@ local function createNotification(config)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.TextYAlignment = Enum.TextYAlignment.Top
     titleLabel.TextTransparency = 1
+    titleLabel.TextWrapped = true
+    titleLabel.TextTruncate = Enum.TextTruncate.AtEnd
     titleLabel.ZIndex = 1002
     titleLabel.Parent = blur
     
     local contentLabel = Instance.new("TextLabel")
     contentLabel.Name = "Content"
-    contentLabel.Size = UDim2.new(1, -contentWidth, 0, 40)
+    contentLabel.Size = UDim2.new(0, availableTextWidth, 0, 40)
     contentLabel.Position = UDim2.new(0, 45, 0, 28)
     contentLabel.BackgroundTransparency = 1
     contentLabel.Text = config.Content or ""
@@ -261,6 +277,7 @@ local function createNotification(config)
     contentLabel.TextXAlignment = Enum.TextXAlignment.Left
     contentLabel.TextYAlignment = Enum.TextYAlignment.Top
     contentLabel.TextWrapped = true
+    contentLabel.TextTruncate = Enum.TextTruncate.AtEnd
     contentLabel.TextTransparency = 1
     contentLabel.ZIndex = 1002
     contentLabel.Parent = blur
@@ -271,7 +288,7 @@ local function createNotification(config)
             local button = Instance.new("TextButton")
             button.Name = "Action" .. i
             button.Size = UDim2.new(0, data.width, 0, 25)
-            button.Position = UDim2.new(1, -(totalButtonWidth + 10) + currentX, 0.5, -12.5)
+            button.Position = UDim2.new(1, -(totalButtonWidth + closeButtonWidth) + currentX, 0.5, -12.5)
             button.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
             button.BackgroundTransparency = 1
             button.BorderSizePixel = 0
@@ -280,6 +297,7 @@ local function createNotification(config)
             button.TextSize = 11
             button.Font = Enum.Font.GothamMedium
             button.TextTransparency = 1
+            button.TextTruncate = Enum.TextTruncate.AtEnd
             button.ZIndex = 1003
             button.Parent = blur
             
@@ -346,9 +364,9 @@ local function createNotification(config)
     end)
     
     table.insert(notifications, notification)
-    
+
     local sizeExpand = TweenService:Create(notification, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 350, 0, 80)
+        Size = UDim2.new(0, notificationWidth, 0, 80)
     })
     
     local blurFade = TweenService:Create(blur, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
