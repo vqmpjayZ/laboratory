@@ -134,16 +134,51 @@ return function()
     keySystemGui.Name = "KeySystemGui"
     keySystemGui.ResetOnSpawn = false
     keySystemGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    keySystemGui.DisplayOrder = 999999999
+    keySystemGui.DisplayOrder = 2147483647 -- Maximum display order
+    keySystemGui.IgnoreGuiInset = true -- Ignore top bar inset
     
-    if syn and syn.protect_gui then
-        syn.protect_gui(keySystemGui)
-        keySystemGui.Parent = game:GetService("CoreGui")
-    elseif gethui then
-        keySystemGui.Parent = gethui()
-    else
-        keySystemGui.Parent = game:GetService("CoreGui")
+    -- Enhanced CoreGui placement with multiple fallbacks
+    local function placeInCoreGui()
+        local success = false
+        
+        -- Try gethui first (most reliable for exploits)
+        if not success then
+            pcall(function()
+                if gethui then
+                    keySystemGui.Parent = gethui()
+                    success = true
+                end
+            end)
+        end
+        
+        -- Try syn.protect_gui
+        if not success then
+            pcall(function()
+                if syn and syn.protect_gui then
+                    syn.protect_gui(keySystemGui)
+                    keySystemGui.Parent = game:GetService("CoreGui")
+                    success = true
+                end
+            end)
+        end
+        
+        -- Try direct CoreGui placement
+        if not success then
+            pcall(function()
+                keySystemGui.Parent = game:GetService("CoreGui")
+                success = true
+            end)
+        end
+        
+        -- Fallback to PlayerGui if all else fails
+        if not success then
+            pcall(function()
+                keySystemGui.Parent = player:WaitForChild("PlayerGui")
+            end)
+        end
     end
+    
+    placeInCoreGui()
     
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
@@ -153,6 +188,7 @@ return function()
     mainFrame.BorderSizePixel = 0
     mainFrame.ClipsDescendants = true
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainFrame.ZIndex = 1000 -- High ZIndex to ensure it's on top
     mainFrame.Parent = keySystemGui
     
     local shadow = Instance.new("ImageLabel")
@@ -161,7 +197,7 @@ return function()
     shadow.BackgroundTransparency = 1
     shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
     shadow.Size = UDim2.new(1, 40, 1, 40)
-    shadow.ZIndex = 0
+    shadow.ZIndex = 999
     shadow.Image = "rbxassetid://6014261993"
     shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
     shadow.ImageTransparency = 0.5
@@ -183,6 +219,7 @@ return function()
     titleBar.Size = UDim2.new(1, 0, 0, 40)
     titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
     titleBar.BorderSizePixel = 0
+    titleBar.ZIndex = 1001
     titleBar.Parent = mainFrame
     
     local titleCorner = Instance.new("UICorner")
@@ -195,7 +232,7 @@ return function()
     bottomFix.Position = UDim2.new(0, 0, 1, -10)
     bottomFix.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
     bottomFix.BorderSizePixel = 0
-    bottomFix.ZIndex = 0
+    bottomFix.ZIndex = 1000
     bottomFix.Parent = titleBar
     
     local titleText = Instance.new("TextLabel")
@@ -208,6 +245,7 @@ return function()
     titleText.Font = Enum.Font.GothamBold
     titleText.TextSize = 16
     titleText.TextXAlignment = Enum.TextXAlignment.Left
+    titleText.ZIndex = 1002
     titleText.Parent = titleBar
     
     local closeButton = Instance.new("TextButton")
@@ -219,6 +257,7 @@ return function()
     closeButton.TextColor3 = Color3.fromRGB(200, 200, 200)
     closeButton.Font = Enum.Font.GothamBold
     closeButton.TextSize = 18
+    closeButton.ZIndex = 1002
     closeButton.Parent = titleBar
     
     local contentFrame = Instance.new("Frame")
@@ -226,6 +265,7 @@ return function()
     contentFrame.Size = UDim2.new(1, 0, 1, -40)
     contentFrame.Position = UDim2.new(0, 0, 0, 40)
     contentFrame.BackgroundTransparency = 1
+    contentFrame.ZIndex = 1001
     contentFrame.Parent = mainFrame
     
     local noteTitle = Instance.new("TextLabel")
@@ -238,6 +278,7 @@ return function()
     noteTitle.Font = Enum.Font.GothamBold
     noteTitle.TextSize = 14
     noteTitle.TextXAlignment = Enum.TextXAlignment.Left
+    noteTitle.ZIndex = 1002
     noteTitle.Parent = contentFrame
     
     local noteText = Instance.new("TextLabel")
@@ -251,6 +292,7 @@ return function()
     noteText.TextSize = 13
     noteText.TextWrapped = true
     noteText.TextXAlignment = Enum.TextXAlignment.Left
+    noteText.ZIndex = 1002
     noteText.Parent = contentFrame
     
     local actionText = Instance.new("TextButton")
@@ -264,6 +306,7 @@ return function()
     actionText.TextSize = 14
     actionText.TextXAlignment = Enum.TextXAlignment.Left
     actionText.AutoButtonColor = false
+    actionText.ZIndex = 1002
     actionText.Parent = contentFrame
     
     local underline = Instance.new("Frame")
@@ -272,6 +315,7 @@ return function()
     underline.Position = UDim2.new(0, 0, 1, 0)
     underline.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     underline.BorderSizePixel = 0
+    underline.ZIndex = 1002
     underline.Parent = actionText
     
     local keyContainer = Instance.new("Frame")
@@ -280,6 +324,7 @@ return function()
     keyContainer.Position = UDim2.new(0, 20, 0, 115)
     keyContainer.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     keyContainer.BorderSizePixel = 0
+    keyContainer.ZIndex = 1002
     keyContainer.Parent = contentFrame
     
     local keyContainerCorner = Instance.new("UICorner")
@@ -304,6 +349,7 @@ return function()
     keyInput.TextSize = 14
     keyInput.TextXAlignment = Enum.TextXAlignment.Left
     keyInput.ClearTextOnFocus = false
+    keyInput.ZIndex = 1003
     keyInput.Parent = keyContainer
     
     local verifyButton = Instance.new("TextButton")
@@ -317,6 +363,7 @@ return function()
     verifyButton.TextSize = 15
     verifyButton.AutoButtonColor = false
     verifyButton.ClipsDescendants = true
+    verifyButton.ZIndex = 1002
     verifyButton.Parent = contentFrame
     
     local verifyCorner = Instance.new("UICorner")
@@ -340,6 +387,7 @@ return function()
     statusText.TextColor3 = Color3.fromRGB(200, 200, 200)
     statusText.Font = Enum.Font.Gotham
     statusText.TextSize = 13
+    statusText.ZIndex = 1002
     statusText.Parent = contentFrame
     
     local notificationFrame = Instance.new("Frame")
@@ -350,6 +398,7 @@ return function()
     notificationFrame.BorderSizePixel = 0
     notificationFrame.AnchorPoint = Vector2.new(0.5, 0)
     notificationFrame.Visible = false
+    notificationFrame.ZIndex = 1100 -- Even higher ZIndex for notifications
     notificationFrame.Parent = keySystemGui
     
     local notifCorner = Instance.new("UICorner")
@@ -367,7 +416,7 @@ return function()
     notifShadow.BackgroundTransparency = 1
     notifShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
     notifShadow.Size = UDim2.new(1, 40, 1, 40)
-    notifShadow.ZIndex = 0
+    notifShadow.ZIndex = 1099
     notifShadow.Image = "rbxassetid://6014261993"
     notifShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
     notifShadow.ImageTransparency = 0.5
@@ -385,6 +434,7 @@ return function()
     notifTitle.Font = Enum.Font.GothamBold
     notifTitle.TextSize = 14
     notifTitle.TextXAlignment = Enum.TextXAlignment.Left
+    notifTitle.ZIndex = 1101
     notifTitle.Parent = notificationFrame
     
     local notifText = Instance.new("TextLabel")
@@ -397,6 +447,7 @@ return function()
     notifText.Font = Enum.Font.Gotham
     notifText.TextSize = 13
     notifText.TextXAlignment = Enum.TextXAlignment.Left
+    notifText.ZIndex = 1101
     notifText.Parent = notificationFrame
     
     local function createRipple(button)
@@ -405,7 +456,7 @@ return function()
         ripple.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         ripple.BackgroundTransparency = 0.8
         ripple.BorderSizePixel = 0
-        ripple.ZIndex = 2
+        ripple.ZIndex = button.ZIndex + 1
         ripple.Parent = button
         
         local rippleCorner = Instance.new("UICorner")
