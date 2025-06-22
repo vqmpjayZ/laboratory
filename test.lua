@@ -13,19 +13,51 @@ return function()
     local TweenService = game:GetService("TweenService")
     local HttpService = game:GetService("HttpService")
 
-    local KeySystemConfig = {
-        Title = "Key System",
-        NoteTitle = "How to get a key",
-        Note = "To access this script, you need to get a key.",
-        ActionText = "Click here to copy key link",
-        ActionLink = "",
-        Key = "Hello",
-        SaveKey = true,
-        FileName = "KeySystemSave.txt",
-        VipWhitelistUrl = "",
-        CheckVip = false
-    }
+local KeySystemConfig = {
+    Title = "Key System",
+    NoteTitle = "How to get a key",
+    Note = "To access this script, you need to get a key.",
+    ActionText = "Click here to copy key link",
+    ActionLink = "",
+    Key = "Hello",
+    SaveKey = true,
+    FileName = "KeySystemSave.txt",
+    VipWhitelistUrl = "",
+    CheckVip = false,
+    KeyApiUrl = "",
+    UseKeyApi = false
+}
+
+local function getKeyFromApi(hwid)
+    if not KeySystemConfig.UseKeyApi or KeySystemConfig.KeyApiUrl == "" then
+        return nil
+    end
     
+    local success, response = pcall(function()
+        if syn and syn.request then
+            return syn.request({
+                Url = KeySystemConfig.KeyApiUrl .. "?hwid=" .. hwid,
+                Method = "GET"
+            })
+        elseif request then
+            return request({
+                Url = KeySystemConfig.KeyApiUrl .. "?hwid=" .. hwid,
+                Method = "GET"
+            })
+        end
+    end)
+    
+    if not success or not response then return nil end
+    
+    local parseSuccess, data = pcall(function()
+        return HttpService:JSONDecode(response.Body)
+    end)
+    
+    if not parseSuccess then return nil end
+    
+    return data.key, data.expires
+end
+
     local function secureHash(input)
         if not input then return "0" end
         local hash = 0
@@ -189,7 +221,19 @@ end
         return keys
     end
     
-    local function verifyKey(inputKey)
+local function verifyKey(inputKey)
+    if KeySystemConfig.UseKeyApi then
+        local hwid = getHWID()
+        local apiKey, expires = getKeyFromApi(hwid)
+        
+        if apiKey and inputKey == apiKey then
+            if expires and os.time() > expires then
+                return false
+            end
+            return true
+        end
+        return false
+    else
         if type(KeySystemConfig.Key) == "string" then
             return inputKey == KeySystemConfig.Key
         elseif type(KeySystemConfig.Key) == "table" then
@@ -201,6 +245,7 @@ end
         end
         return false
     end
+end
     
     local function hasValidSavedKey()
         if not KeySystemConfig.SaveKey then return false end
@@ -257,6 +302,11 @@ end
             KeySystemConfig.CheckVip = true
         end
         
+        if config.KeyApiUrl then
+            KeySystemConfig.KeyApiUrl = config.KeyApiUrl
+            KeySystemConfig.UseKeyApi = true
+        end
+
         return self
     end
     
