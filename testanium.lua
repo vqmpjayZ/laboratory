@@ -5,7 +5,7 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
- QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right? 1110000
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -202,6 +202,8 @@ end
 local function verifyKey(inputKey)
     if KeySystemConfig.UseKeyApi and KeySystemConfig.KeyApiUrl ~= "" then
         local identifier = getUniqueIdentifier()
+        print("Debug - HWID:", identifier)
+        print("Debug - API URL:", KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier)
         
         local success, response = pcall(function()
             if syn and syn.request then
@@ -217,16 +219,28 @@ local function verifyKey(inputKey)
             end
         end)
         
+        print("Debug - Request success:", success)
+        if response then
+            print("Debug - Response body:", response.Body)
+        end
+        
         if not success or not response then return false end
         
         local parseSuccess, data = pcall(function()
             return HttpService:JSONDecode(response.Body)
         end)
         
+        print("Debug - Parse success:", parseSuccess)
+        if data then
+            print("Debug - Expected key:", data.key)
+            print("Debug - Input key:", inputKey)
+        end
+        
         if not parseSuccess then return false end
         
         return inputKey == data.key
     else
+        print("Debug - Not using API, using static key")
         if type(KeySystemConfig.Key) == "string" then
             return inputKey == KeySystemConfig.Key
         elseif type(KeySystemConfig.Key) == "table" then
