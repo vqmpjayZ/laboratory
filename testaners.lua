@@ -205,37 +205,24 @@ local function verifyKey(inputKey)
         print("Debug - HWID:", identifier)
         
         local success, response = pcall(function()
-            if syn and syn.request then
-                return syn.request({
-                    Url = KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier,
-                    Method = "GET"
-                })
-            elseif request then
-                return request({
-                    Url = KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier,
-                    Method = "GET"
-                })
-            end
+            return HttpService:GetAsync(KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier)
         end)
         
         print("Debug - Request success:", success)
-        if response then
-            print("Debug - Status Code:", response.StatusCode)
-            print("Debug - Response body:", response.Body)
-        else
-            print("Debug - No response received")
-            return false
-        end
+        print("Debug - Response:", response)
         
-        if not success or not response or response.StatusCode ~= 200 then 
+        if not success or not response then 
             return false 
         end
         
         local parseSuccess, data = pcall(function()
-            return HttpService:JSONDecode(response.Body)
+            return HttpService:JSONDecode(response)
         end)
         
-        if not parseSuccess or not data then return false end
+        if not parseSuccess or not data then 
+            print("Debug - Parse failed")
+            return false 
+        end
         
         print("Debug - Expected key:", data.key)
         print("Debug - Input key:", inputKey)
