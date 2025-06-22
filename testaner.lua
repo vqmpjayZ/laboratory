@@ -203,7 +203,6 @@ local function verifyKey(inputKey)
     if KeySystemConfig.UseKeyApi and KeySystemConfig.KeyApiUrl ~= "" then
         local identifier = getUniqueIdentifier()
         print("Debug - HWID:", identifier)
-        print("Debug - API URL:", KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier)
         
         local success, response = pcall(function()
             if syn and syn.request then
@@ -221,37 +220,29 @@ local function verifyKey(inputKey)
         
         print("Debug - Request success:", success)
         if response then
+            print("Debug - Status Code:", response.StatusCode)
             print("Debug - Response body:", response.Body)
+        else
+            print("Debug - No response received")
+            return false
         end
         
-        if not success or not response then return false end
+        if not success or not response or response.StatusCode ~= 200 then 
+            return false 
+        end
         
         local parseSuccess, data = pcall(function()
             return HttpService:JSONDecode(response.Body)
         end)
         
-        print("Debug - Parse success:", parseSuccess)
-        if data then
-            print("Debug - Expected key:", data.key)
-            print("Debug - Input key:", inputKey)
-        end
+        if not parseSuccess or not data then return false end
         
-        if not parseSuccess then return false end
+        print("Debug - Expected key:", data.key)
+        print("Debug - Input key:", inputKey)
         
         return inputKey == data.key
-    else
-        print("Debug - Not using API, using static key")
-        if type(KeySystemConfig.Key) == "string" then
-            return inputKey == KeySystemConfig.Key
-        elseif type(KeySystemConfig.Key) == "table" then
-            for _, validKey in ipairs(KeySystemConfig.Key) do
-                if inputKey == validKey then
-                    return true
-                end
-            end
-        end
-        return false
     end
+    return false
 end
 
     local function hasValidSavedKey()
