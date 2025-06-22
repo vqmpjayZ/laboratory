@@ -5,7 +5,7 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
- QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right? 1
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -56,6 +56,14 @@ local function getKeyFromApi(hwid)
     if not parseSuccess then return nil end
     
     return data.key, data.expires
+end
+
+local function ensureFolderExists()
+    pcall(function()
+        if not isfolder("QuantumGuard") then
+            makefolder("QuantumGuard")
+        end
+    end)
 end
 
     local function secureHash(input)
@@ -200,35 +208,39 @@ end
     end
     
 local function verifyKey(inputKey)
+    print("=== LUA KEY VERIFICATION ===")
+    
     if KeySystemConfig.UseKeyApi and KeySystemConfig.KeyApiUrl ~= "" then
         local identifier = getUniqueIdentifier()
-
+        
         local now = os.date("*t")
-        local firstDayOfYear = os.time({year = now.year, month = 1, day = 1})
-        local dayOfYear = math.floor((os.time() - firstDayOfYear) / 86400) + 1
-        local week = math.ceil((dayOfYear + os.date("*t", firstDayOfYear).wday - 1) / 7)
+        local startOfYear = os.time({year = now.year, month = 1, day = 1})
+        local days = math.floor((os.time() - startOfYear) / (24 * 60 * 60))
+        local startDayOfWeek = os.date("*t", startOfYear).wday
+        local week = math.ceil((days + startDayOfWeek) / 7)
         local weekString = week .. "-" .. now.year
         
         local secret = "vadrifts_"
         local combined = identifier .. weekString .. secret
-    
+        
+        print("LUA HWID:", identifier)
+        print("LUA Week:", weekString)
+        print("LUA Secret:", secret)
+        print("LUA Combined:", combined)
+        
         local hash = 0
         for i = 1, #combined do
             hash = (hash * 31 + string.byte(combined, i)) % 2147483647
         end
         local expectedKey = string.sub(string.format("%x", hash), 1, 12)
         
-        print("Debug - Lua HWID:", identifier)
-        print("Debug - Expected key:", expectedKey)
-        print("Debug - Input key:", inputKey)
+        print("LUA Expected key:", expectedKey)
+        print("LUA Input key:", inputKey)
+        print("=== END LUA DEBUG ===")
         
         return inputKey == expectedKey
-    else
-        if type(KeySystemConfig.Key) == "string" then
-            return inputKey == KeySystemConfig.Key
-        end
-        return false
     end
+    return false
 end
 
     local function hasValidSavedKey()
