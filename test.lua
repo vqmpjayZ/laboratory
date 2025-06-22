@@ -5,7 +5,7 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
- QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right? 1110000
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -202,15 +202,28 @@ end
 local function verifyKey(inputKey)
     if KeySystemConfig.UseKeyApi and KeySystemConfig.KeyApiUrl ~= "" then
         local identifier = getUniqueIdentifier()
-        local response = request(KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier, "GET")
         
-        if not response then return false end
+        local success, response = pcall(function()
+            if syn and syn.request then
+                return syn.request({
+                    Url = KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier,
+                    Method = "GET"
+                })
+            elseif request then
+                return request({
+                    Url = KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier,
+                    Method = "GET"
+                })
+            end
+        end)
         
-        local success, data = pcall(function()
+        if not success or not response then return false end
+        
+        local parseSuccess, data = pcall(function()
             return HttpService:JSONDecode(response.Body)
         end)
         
-        if not success then return false end
+        if not parseSuccess then return false end
         
         return inputKey == data.key
     else
@@ -226,7 +239,7 @@ local function verifyKey(inputKey)
         return false
     end
 end
-  
+
     local function hasValidSavedKey()
         if not KeySystemConfig.SaveKey then return false end
         
