@@ -5,7 +5,7 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
- QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right? 1
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -209,17 +209,16 @@ local function verifyKey(inputKey)
         local week = math.ceil((dayOfYear + os.date("*t", firstDayOfYear).wday - 1) / 7)
         local weekString = week .. "-" .. now.year
         
-        local secret = "your_secret_salt_change_this"
+        local secret = "vadrifts_"
         local combined = identifier .. weekString .. secret
-
+    
         local hash = 0
         for i = 1, #combined do
             hash = (hash * 31 + string.byte(combined, i)) % 2147483647
         end
         local expectedKey = string.sub(string.format("%x", hash), 1, 12)
         
-        print("Debug - HWID:", identifier)
-        print("Debug - Week:", weekString)
+        print("Debug - Lua HWID:", identifier)
         print("Debug - Expected key:", expectedKey)
         print("Debug - Input key:", inputKey)
         
@@ -227,12 +226,6 @@ local function verifyKey(inputKey)
     else
         if type(KeySystemConfig.Key) == "string" then
             return inputKey == KeySystemConfig.Key
-        elseif type(KeySystemConfig.Key) == "table" then
-            for _, validKey in ipairs(KeySystemConfig.Key) do
-                if inputKey == validKey then
-                    return true
-                end
-            end
         end
         return false
     end
