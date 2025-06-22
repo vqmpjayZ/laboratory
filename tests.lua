@@ -64,55 +64,53 @@ return function()
         return hwid or ""
     end
     
-    local function checkVipStatus()
-        if not KeySystemConfig.CheckVip or KeySystemConfig.VipWhitelistUrl == "" then
-            return false
-        end
-        
-        local hwid = getHWID()
-        if hwid == "" then return false end
-        
-        local success, response = pcall(function()
-            if syn and syn.request then
-                return syn.request({
-                    Url = KeySystemConfig.VipWhitelistUrl,
-                    Method = "GET"
-                })
-            elseif request then
-                return request({
-                    Url = KeySystemConfig.VipWhitelistUrl,
-                    Method = "GET"
-                })
-            end
-        end)
-        
-        if not success or not response then return false end
-        
-        local parseSuccess, data = pcall(function()
-            return HttpService:JSONDecode(response.Body)
-        end)
-        
-        if not parseSuccess then return false end
-        
-        if type(data) == "table" then
-            for _, vipId in ipairs(data) do
-                if tostring(vipId) == hwid then
-                    return true
-                end
-            end
-        end
-        
+local function checkVipStatus()
+    if not KeySystemConfig.CheckVip or KeySystemConfig.VipWhitelistUrl == "" then
         return false
     end
     
-    local function ensureFolderExists()
-        pcall(function()
-            if not isfolder("QuantumGuard") then
-                makefolder("QuantumGuard")
-            end
-        end)
+    local hwid = getHWID()
+    if hwid == "" then return false end
+    
+    local success, response = pcall(function()
+        if syn and syn.request then
+            return syn.request({
+                Url = KeySystemConfig.VipWhitelistUrl,
+                Method = "GET"
+            })
+        elseif request then
+            return request({
+                Url = KeySystemConfig.VipWhitelistUrl,
+                Method = "GET"
+            })
+        else
+            return nil
+        end
+    end)
+    
+    if not success or not response or response.StatusCode ~= 200 then 
+        return false 
     end
     
+    local parseSuccess, data = pcall(function()
+        return HttpService:JSONDecode(response.Body)
+    end)
+    
+    if not parseSuccess or not data then 
+        return false 
+    end
+    
+    if type(data) == "table" then
+        for _, vipId in ipairs(data) do
+            if tostring(vipId) == tostring(hwid) then
+                return true
+            end
+        end
+    end
+    
+    return false
+end
+
     local function saveKey(key)
         if not KeySystemConfig.SaveKey then return end
         
