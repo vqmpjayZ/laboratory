@@ -65,12 +65,20 @@ return function()
     end
     
 local function checkVipStatus()
+    print("DEBUG: CheckVip =", KeySystemConfig.CheckVip)
+    print("DEBUG: VipWhitelistUrl =", KeySystemConfig.VipWhitelistUrl)
+    
     if not KeySystemConfig.CheckVip or KeySystemConfig.VipWhitelistUrl == "" then
+        print("DEBUG: VIP check disabled or no URL")
         return false
     end
     
     local hwid = getHWID()
-    if hwid == "" then return false end
+    print("DEBUG: Current HWID =", hwid)
+    if hwid == "" then 
+        print("DEBUG: No HWID found")
+        return false 
+    end
     
     local success, response = pcall(function()
         if syn and syn.request then
@@ -88,7 +96,14 @@ local function checkVipStatus()
         end
     end)
     
+    print("DEBUG: HTTP request success =", success)
+    if success and response then
+        print("DEBUG: Response status =", response.StatusCode)
+        print("DEBUG: Response body =", response.Body)
+    end
+    
     if not success or not response or response.StatusCode ~= 200 then 
+        print("DEBUG: HTTP request failed")
         return false 
     end
     
@@ -96,18 +111,27 @@ local function checkVipStatus()
         return HttpService:JSONDecode(response.Body)
     end)
     
+    print("DEBUG: JSON parse success =", parseSuccess)
+    if parseSuccess then
+        print("DEBUG: Parsed data =", data)
+    end
+    
     if not parseSuccess or not data then 
+        print("DEBUG: JSON parse failed")
         return false 
     end
     
     if type(data) == "table" then
-        for _, vipId in ipairs(data) do
+        for i, vipId in ipairs(data) do
+            print("DEBUG: Checking VIP ID", i, "=", vipId, "against", hwid)
             if tostring(vipId) == tostring(hwid) then
+                print("DEBUG: VIP MATCH FOUND!")
                 return true
             end
         end
     end
     
+    print("DEBUG: No VIP match found")
     return false
 end
 
