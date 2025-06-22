@@ -5,7 +5,7 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
- QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right? 1
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -202,34 +202,40 @@ end
 local function verifyKey(inputKey)
     if KeySystemConfig.UseKeyApi and KeySystemConfig.KeyApiUrl ~= "" then
         local identifier = getUniqueIdentifier()
+
+        local now = os.date("*t")
+        local firstDayOfYear = os.time({year = now.year, month = 1, day = 1})
+        local dayOfYear = math.floor((os.time() - firstDayOfYear) / 86400) + 1
+        local week = math.ceil((dayOfYear + os.date("*t", firstDayOfYear).wday - 1) / 7)
+        local weekString = week .. "-" .. now.year
+        
+        local secret = "your_secret_salt_change_this"
+        local combined = identifier .. weekString .. secret
+
+        local hash = 0
+        for i = 1, #combined do
+            hash = (hash * 31 + string.byte(combined, i)) % 2147483647
+        end
+        local expectedKey = string.sub(string.format("%x", hash), 1, 12)
+        
         print("Debug - HWID:", identifier)
-        
-        local success, response = pcall(function()
-            return HttpService:GetAsync(KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier)
-        end)
-        
-        print("Debug - Request success:", success)
-        print("Debug - Response:", response)
-        
-        if not success or not response then 
-            return false 
-        end
-        
-        local parseSuccess, data = pcall(function()
-            return HttpService:JSONDecode(response)
-        end)
-        
-        if not parseSuccess or not data then 
-            print("Debug - Parse failed")
-            return false 
-        end
-        
-        print("Debug - Expected key:", data.key)
+        print("Debug - Week:", weekString)
+        print("Debug - Expected key:", expectedKey)
         print("Debug - Input key:", inputKey)
         
-        return inputKey == data.key
+        return inputKey == expectedKey
+    else
+        if type(KeySystemConfig.Key) == "string" then
+            return inputKey == KeySystemConfig.Key
+        elseif type(KeySystemConfig.Key) == "table" then
+            for _, validKey in ipairs(KeySystemConfig.Key) do
+                if inputKey == validKey then
+                    return true
+                end
+            end
+        end
+        return false
     end
-    return false
 end
 
     local function hasValidSavedKey()
