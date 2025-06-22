@@ -97,19 +97,13 @@ end
     end
     
 local function checkVipStatus()
-    print("DEBUG: CheckVip =", KeySystemConfig.CheckVip)
-    print("DEBUG: VipWhitelistUrl =", KeySystemConfig.VipWhitelistUrl)
-    
     if not KeySystemConfig.CheckVip or KeySystemConfig.VipWhitelistUrl == "" then
-        print("DEBUG: VIP check disabled or no URL")
         return false
     end
     
     local hwid = getHWID()
-    print("DEBUG: Current HWID =", hwid)
-    if hwid == "" then 
-        print("DEBUG: No HWID found")
-        return false 
+    if hwid == "" then
+        return false
     end
     
     local success, response = pcall(function()
@@ -128,42 +122,26 @@ local function checkVipStatus()
         end
     end)
     
-    print("DEBUG: HTTP request success =", success)
-    if success and response then
-        print("DEBUG: Response status =", response.StatusCode)
-        print("DEBUG: Response body =", response.Body)
-    end
-    
-    if not success or not response or response.StatusCode ~= 200 then 
-        print("DEBUG: HTTP request failed")
-        return false 
+    if not success or not response or response.StatusCode ~= 200 then
+        return false
     end
     
     local parseSuccess, data = pcall(function()
         return HttpService:JSONDecode(response.Body)
     end)
     
-    print("DEBUG: JSON parse success =", parseSuccess)
-    if parseSuccess then
-        print("DEBUG: Parsed data =", data)
-    end
-    
-    if not parseSuccess or not data then 
-        print("DEBUG: JSON parse failed")
-        return false 
+    if not parseSuccess or not data then
+        return false
     end
     
     if type(data) == "table" then
-        for i, vipId in ipairs(data) do
-            print("DEBUG: Checking VIP ID", i, "=", vipId, "against", hwid)
+        for _, vipId in ipairs(data) do
             if tostring(vipId) == tostring(hwid) then
-                print("DEBUG: VIP MATCH FOUND!")
                 return true
             end
         end
     end
     
-    print("DEBUG: No VIP match found")
     return false
 end
 
@@ -222,17 +200,19 @@ end
     end
     
 local function verifyKey(inputKey)
-    if KeySystemConfig.UseKeyApi then
-        local hwid = getHWID()
-        local apiKey, expires = getKeyFromApi(hwid)
+    if KeySystemConfig.UseKeyApi and KeySystemConfig.KeyApiUrl ~= "" then
+        local identifier = getUniqueIdentifier()
+        local response = request(KeySystemConfig.KeyApiUrl .. "?hwid=" .. identifier, "GET")
         
-        if apiKey and inputKey == apiKey then
-            if expires and os.time() > expires then
-                return false
-            end
-            return true
-        end
-        return false
+        if not response then return false end
+        
+        local success, data = pcall(function()
+            return HttpService:JSONDecode(response.Body)
+        end)
+        
+        if not success then return false end
+        
+        return inputKey == data.key
     else
         if type(KeySystemConfig.Key) == "string" then
             return inputKey == KeySystemConfig.Key
@@ -246,7 +226,7 @@ local function verifyKey(inputKey)
         return false
     end
 end
-    
+  
     local function hasValidSavedKey()
         if not KeySystemConfig.SaveKey then return false end
         
