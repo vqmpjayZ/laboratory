@@ -5,7 +5,7 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
- QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right? 1
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -75,14 +75,19 @@ end
         return tostring(hash)
     end
     
-    local function getUniqueIdentifier()
-        local hwid = ""
-        pcall(function()
-            hwid = game:GetService("RbxAnalyticsService"):GetClientId()
-        end)
-        local userId = player.UserId
-        return secureHash(hwid .. "-" .. tostring(userId))
+local function getUniqueIdentifier()
+    local userAgent = "Roblox/WinInet"
+    local language = "en-US"
+    local screenWidth = tostring(workspace.CurrentCamera.ViewportSize.X)
+    local screenHeight = tostring(workspace.CurrentCamera.ViewportSize.Y)
+
+    local fingerprint = userAgent .. language .. screenWidth .. screenHeight
+    local hash = 0
+    for i = 1, #fingerprint do
+        hash = ((hash * 31) + string.byte(fingerprint, i)) % 2147483647
     end
+    return tostring(hash)
+end
     
     local function getHWID()
         local hwid = ""
@@ -113,7 +118,7 @@ local function checkVipStatus()
     if hwid == "" then
         return false
     end
-    
+                          
     local success, response = pcall(function()
         if syn and syn.request then
             return syn.request({
