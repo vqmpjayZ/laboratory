@@ -83,7 +83,6 @@ local screenWidth = "1920"
 local screenHeight = "1017"
 
 local fingerprint = userAgent .. language .. screenWidth .. screenHeight
-print("Lua Fingerprint:", fingerprint)
 
     local hash = 0
     for i = 1, #fingerprint do
@@ -113,6 +112,9 @@ end
         return hwid or ""
     end
     
+local KeySystemAPI = {}
+local vipCheckCompleted = false  -- Add this flag
+
 local function checkVipStatus()
     if not KeySystemConfig.CheckVip or KeySystemConfig.VipWhitelistUrl == "" then
         return false
@@ -326,30 +328,41 @@ end
         return self
     end
     
-    function KeySystemAPI:SkipIfVip()
-        if checkVipStatus() then
-            successCallback()
-            return true
-        end
-        return false
+function KeySystemAPI:SkipIfVip()
+    if vipCheckCompleted then
+        return false 
     end
     
-    function KeySystemAPI:CheckVipAndSkip()
-        if checkVipStatus() then
-            print("VIP user detected! Skipping key system.")
-            successCallback()
-            return true
-        end
-        
-        local validKey = hasValidSavedKey()
-        if validKey and KeySystemConfig.SaveKey then
-            print("Valid saved key found! Skipping key system.")
-            successCallback()
-            return true
-        end
-        
-        return false
+    if checkVipStatus() then
+        vipCheckCompleted = true
+        print("VIP user detected! Skipping key system.")
+        successCallback()
+        return true
     end
+    return false
+end
+
+function KeySystemAPI:CheckVipAndSkip()
+    if vipCheckCompleted then
+        return false  -- Don't check again
+    end
+    
+    if checkVipStatus() then
+        vipCheckCompleted = true
+        print("VIP user detected! Skipping key system.")
+        successCallback()
+        return true
+    end
+    
+    local validKey = hasValidSavedKey()
+    if validKey and KeySystemConfig.SaveKey then
+        print("Valid saved key found! Skipping key system.")
+        successCallback()
+        return true
+    end
+    
+    return false
+end
     
     function KeySystemAPI:Initialize()
         if self:CheckVipAndSkip() then
