@@ -5,7 +5,7 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
- QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right? 1
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -216,8 +216,6 @@ end
     end
     
 local function verifyKey(inputKey)
-    print("=== LUA KEY VERIFICATION ===")
-    
     if KeySystemConfig.UseKeyApi and KeySystemConfig.KeyApiUrl ~= "" then
         local identifier = getUniqueIdentifier()
         
@@ -230,22 +228,11 @@ local function verifyKey(inputKey)
         
         local secret = "vadrifts_"
         local combined = identifier .. weekString .. secret
-        print("LUA HWID (should match site):", getUniqueIdentifier())
-        print("LUA HWID:", identifier)
-        print("LUA Week:", weekString)
-        print("LUA Secret:", secret)
-        print("LUA Combined:", combined)
-        
         local hash = 0
         for i = 1, #combined do
             hash = (hash * 31 + string.byte(combined, i)) % 2147483647
         end
         local expectedKey = string.sub(string.format("%x", hash), 1, 12)
-        
-        print("LUA Expected key:", expectedKey)
-        print("LUA Input key:", inputKey)
-        print("=== END LUA DEBUG ===")
-        
         return inputKey == expectedKey
     end
     return false
