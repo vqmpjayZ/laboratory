@@ -5,7 +5,7 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
- QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right? 1111111
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -76,12 +76,12 @@ end
     end
     
 local function getUniqueIdentifier()
-print("userAgent: Roblox/WinInet")
-print("language: en-US")
-print("screenWidth:", workspace.CurrentCamera.ViewportSize.X)
-print("screenHeight:", workspace.CurrentCamera.ViewportSize.Y)
+local userAgent = "Roblox/WinInet"
+local language = "en-US"
+local screenWidth = tostring(workspace.CurrentCamera.ViewportSize.X)
+local screenHeight = tostring(workspace.CurrentCamera.ViewportSize.Y)
 
-local fingerprint = "Roblox/WinInet" .. "en-US" .. tostring(workspace.CurrentCamera.ViewportSize.X) .. tostring(workspace.CurrentCamera.ViewportSize.Y)
+local fingerprint = userAgent .. language .. screenWidth .. screenHeight
 print("Lua Fingerprint:", fingerprint)
 
     local hash = 0
