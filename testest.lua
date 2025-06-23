@@ -6,6 +6,7 @@
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
  QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
+    Version: 8.2AB
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -161,26 +162,26 @@ local function checkVipStatus()
     return false
 end
 
-    local function saveKey(key)
-        if not KeySystemConfig.SaveKey then return end
-        
-        ensureFolderExists()
-        
-        local identifier = getUniqueIdentifier()
-        local data = {
-            key = key,
-            identifier = identifier,
-            hash = secureHash(key .. identifier .. KeySystemConfig.Title),
-            scriptName = KeySystemConfig.Title,
-            saveTime = os.time()
-        }
-        
-        local fileName = "QuantumGuard/" .. KeySystemConfig.Title .. " Key.txt"
-        
-        pcall(function()
-            writefile(fileName, HttpService:JSONEncode(data))
-        end)
-    end
+local function saveKey(key)
+    if not KeySystemConfig.SaveKey then return end
+    
+    ensureFolderExists()
+    
+    local identifier = getUniqueIdentifier()
+    local data = {
+        key = key,
+        identifier = identifier,
+        hash = secureHash(key .. identifier .. KeySystemConfig.Title),
+        scriptName = KeySystemConfig.Title,
+        saveTime = os.time()
+    }
+
+    local fileName = "QuantumGuard/" .. (KeySystemConfig.FileName or (KeySystemConfig.Title .. " Key.txt"))
+    
+    pcall(function()
+        writefile(fileName, HttpService:JSONEncode(data))
+    end)
+end
     
     local function getSavedKeys()
         local keys = {}
@@ -216,6 +217,19 @@ end
     end
     
 local function verifyKey(inputKey)
+    if not KeySystemConfig.UseKeyApi then
+        if type(KeySystemConfig.Key) == "string" then
+            return inputKey == KeySystemConfig.Key
+        elseif type(KeySystemConfig.Key) == "table" then
+            for _, validKey in ipairs(KeySystemConfig.Key) do
+                if inputKey == validKey then
+                    return true
+                end
+            end
+        end
+        return false
+    end
+
     if KeySystemConfig.UseKeyApi and KeySystemConfig.KeyApiUrl ~= "" then
         local identifier = getUniqueIdentifier()
         
@@ -288,15 +302,19 @@ end
             KeySystemConfig.FileName = config.FileName
         end
         
+        if config.UseKeyApi ~= nil then
+            KeySystemConfig.UseKeyApi = config.UseKeyApi
+        end
+
         if config.VipWhitelistUrl then
             KeySystemConfig.VipWhitelistUrl = config.VipWhitelistUrl
             KeySystemConfig.CheckVip = true
         end
         
-        if config.KeyApiUrl then
-            KeySystemConfig.KeyApiUrl = config.KeyApiUrl
-            KeySystemConfig.UseKeyApi = true
-        end
+    if config.KeyApiUrl and config.UseKeyApi ~= false then
+        KeySystemConfig.KeyApiUrl = config.KeyApiUrl
+        KeySystemConfig.UseKeyApi = true
+    end
 
         return self
     end
