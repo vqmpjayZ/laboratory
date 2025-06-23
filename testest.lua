@@ -5,7 +5,7 @@
  \ \__|    \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_\  \ \_\      \ \_\  \/\_____\ 
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
- QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
+ QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right? 1
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -78,8 +78,8 @@ end
 local function getUniqueIdentifier()
 local userAgent = "Roblox/WinInet"
 local language = "en-US"
-local screenWidth = tostring(workspace.CurrentCamera.ViewportSize.X)
-local screenHeight = tostring(workspace.CurrentCamera.ViewportSize.Y)
+local screenWidth = "1920"
+local screenHeight = "1017"
 
 local fingerprint = userAgent .. language .. screenWidth .. screenHeight
 print("Lua Fingerprint:", fingerprint)
