@@ -6,7 +6,7 @@
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
  QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
-    Version: 8.2AB
+    Version: 8.3AB
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -113,7 +113,7 @@ end
     end
     
 local KeySystemAPI = {}
-local vipCheckCompleted = false  -- Add this flag
+local vipCheckCompleted = false
 
 local function checkVipStatus()
     if not KeySystemConfig.CheckVip or KeySystemConfig.VipWhitelistUrl == "" then
@@ -344,7 +344,7 @@ end
 
 function KeySystemAPI:CheckVipAndSkip()
     if vipCheckCompleted then
-        return false  -- Don't check again
+        return false
     end
     
     if checkVipStatus() then
