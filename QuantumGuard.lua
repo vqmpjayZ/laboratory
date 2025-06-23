@@ -6,6 +6,7 @@
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
  QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
+    Version: 8.2AB
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -13,19 +14,59 @@ return function()
     local TweenService = game:GetService("TweenService")
     local HttpService = game:GetService("HttpService")
 
-    local KeySystemConfig = {
-        Title = "Key System",
-        NoteTitle = "How to get a key",
-        Note = "To access this script, you need to get a key.",
-        ActionText = "Click here to copy key link",
-        ActionLink = "",
-        Key = "Hello",
-        SaveKey = true,
-        FileName = "KeySystemSave.txt",
-        VipWhitelistUrl = "",
-        CheckVip = false
-    }
+local KeySystemConfig = {
+    Title = "Key System",
+    NoteTitle = "How to get a key",
+    Note = "To access this script, you need to get a key.",
+    ActionText = "Click here to copy key link",
+    ActionLink = "",
+    Key = "Hello",
+    SaveKey = true,
+    FileName = "KeySystemSave.txt",
+    VipWhitelistUrl = "",
+    CheckVip = false,
+    KeyApiUrl = "",
+    UseKeyApi = false
+}
+
+local function getKeyFromApi(hwid)
+    if not KeySystemConfig.UseKeyApi or KeySystemConfig.KeyApiUrl == "" then
+        return nil
+    end
     
+    local success, response = pcall(function()
+        if syn and syn.request then
+            return syn.request({
+                Url = KeySystemConfig.KeyApiUrl .. "?hwid=" .. hwid,
+                Method = "GET"
+            })
+        elseif request then
+            return request({
+                Url = KeySystemConfig.KeyApiUrl .. "?hwid=" .. hwid,
+                Method = "GET"
+            })
+        end
+    end)
+    
+    if not success or not response then return nil end
+    
+    local parseSuccess, data = pcall(function()
+        return HttpService:JSONDecode(response.Body)
+    end)
+    
+    if not parseSuccess then return nil end
+    
+    return data.key, data.expires
+end
+
+local function ensureFolderExists()
+    pcall(function()
+        if not isfolder("QuantumGuard") then
+            makefolder("QuantumGuard")
+        end
+    end)
+end
+
     local function secureHash(input)
         if not input then return "0" end
         local hash = 0
@@ -35,15 +76,22 @@ return function()
         return tostring(hash)
     end
     
-    local function getUniqueIdentifier()
-        local hwid = ""
-        pcall(function()
-            hwid = game:GetService("RbxAnalyticsService"):GetClientId()
-        end)
-        local userId = player.UserId
-        return secureHash(hwid .. "-" .. tostring(userId))
+local function getUniqueIdentifier()
+local userAgent = "Roblox/WinInet"
+local language = "en-US"
+local screenWidth = "1920"
+local screenHeight = "1017"
+
+local fingerprint = userAgent .. language .. screenWidth .. screenHeight
+
+    local hash = 0
+    for i = 1, #fingerprint do
+        hash = ((hash * 31) + string.byte(fingerprint, i)) % 2147483647
     end
-    
+
+    return tostring(hash)
+end
+ 
     local function getHWID()
         local hwid = ""
         if syn and syn.request then
@@ -64,75 +112,75 @@ return function()
         return hwid or ""
     end
     
-    local function checkVipStatus()
-        if not KeySystemConfig.CheckVip or KeySystemConfig.VipWhitelistUrl == "" then
-            return false
-        end
-        
-        local hwid = getHWID()
-        if hwid == "" then return false end
-        
-        local success, response = pcall(function()
-            if syn and syn.request then
-                return syn.request({
-                    Url = KeySystemConfig.VipWhitelistUrl,
-                    Method = "GET"
-                })
-            elseif request then
-                return request({
-                    Url = KeySystemConfig.VipWhitelistUrl,
-                    Method = "GET"
-                })
-            end
-        end)
-        
-        if not success or not response then return false end
-        
-        local parseSuccess, data = pcall(function()
-            return HttpService:JSONDecode(response.Body)
-        end)
-        
-        if not parseSuccess then return false end
-        
-        if type(data) == "table" then
-            for _, vipId in ipairs(data) do
-                if tostring(vipId) == hwid then
-                    return true
-                end
-            end
-        end
-        
+local function checkVipStatus()
+    if not KeySystemConfig.CheckVip or KeySystemConfig.VipWhitelistUrl == "" then
         return false
     end
     
-    local function ensureFolderExists()
-        pcall(function()
-            if not isfolder("QuantumGuard") then
-                makefolder("QuantumGuard")
-            end
-        end)
+    local hwid = getHWID()
+    if hwid == "" then
+        return false
+    end
+                          
+    local success, response = pcall(function()
+        if syn and syn.request then
+            return syn.request({
+                Url = KeySystemConfig.VipWhitelistUrl,
+                Method = "GET"
+            })
+        elseif request then
+            return request({
+                Url = KeySystemConfig.VipWhitelistUrl,
+                Method = "GET"
+            })
+        else
+            return nil
+        end
+    end)
+    
+    if not success or not response or response.StatusCode ~= 200 then
+        return false
     end
     
-    local function saveKey(key)
-        if not KeySystemConfig.SaveKey then return end
-        
-        ensureFolderExists()
-        
-        local identifier = getUniqueIdentifier()
-        local data = {
-            key = key,
-            identifier = identifier,
-            hash = secureHash(key .. identifier .. KeySystemConfig.Title),
-            scriptName = KeySystemConfig.Title,
-            saveTime = os.time()
-        }
-        
-        local fileName = "QuantumGuard/" .. KeySystemConfig.Title .. " Key.txt"
-        
-        pcall(function()
-            writefile(fileName, HttpService:JSONEncode(data))
-        end)
+    local parseSuccess, data = pcall(function()
+        return HttpService:JSONDecode(response.Body)
+    end)
+    
+    if not parseSuccess or not data then
+        return false
     end
+    
+    if type(data) == "table" then
+        for _, vipId in ipairs(data) do
+            if tostring(vipId) == tostring(hwid) then
+                return true
+            end
+        end
+    end
+    
+    return false
+end
+
+local function saveKey(key)
+    if not KeySystemConfig.SaveKey then return end
+    
+    ensureFolderExists()
+    
+    local identifier = getUniqueIdentifier()
+    local data = {
+        key = key,
+        identifier = identifier,
+        hash = secureHash(key .. identifier .. KeySystemConfig.Title),
+        scriptName = KeySystemConfig.Title,
+        saveTime = os.time()
+    }
+
+    local fileName = "QuantumGuard/" .. (KeySystemConfig.FileName or (KeySystemConfig.Title .. " Key.txt"))
+    
+    pcall(function()
+        writefile(fileName, HttpService:JSONEncode(data))
+    end)
+end
     
     local function getSavedKeys()
         local keys = {}
@@ -167,7 +215,8 @@ return function()
         return keys
     end
     
-    local function verifyKey(inputKey)
+local function verifyKey(inputKey)
+    if not KeySystemConfig.UseKeyApi then
         if type(KeySystemConfig.Key) == "string" then
             return inputKey == KeySystemConfig.Key
         elseif type(KeySystemConfig.Key) == "table" then
@@ -179,7 +228,29 @@ return function()
         end
         return false
     end
-    
+
+    if KeySystemConfig.UseKeyApi and KeySystemConfig.KeyApiUrl ~= "" then
+        local identifier = getUniqueIdentifier()
+        
+        local now = os.date("*t")
+        local startOfYear = os.time({year = now.year, month = 1, day = 1})
+        local days = math.floor((os.time() - startOfYear) / (24 * 60 * 60))
+        local startDayOfWeek = os.date("*t", startOfYear).wday
+        local week = math.ceil((days + startDayOfWeek) / 7)
+        local weekString = week .. "-" .. now.year
+        
+        local secret = "vadrifts_"
+        local combined = identifier .. weekString .. secret
+        local hash = 0
+        for i = 1, #combined do
+            hash = (hash * 31 + string.byte(combined, i)) % 2147483647
+        end
+        local expectedKey = string.sub(string.format("%x", hash), 1, 12)
+        return inputKey == expectedKey
+    end
+    return false
+end
+
     local function hasValidSavedKey()
         if not KeySystemConfig.SaveKey then return false end
         
@@ -230,11 +301,20 @@ return function()
             KeySystemConfig.FileName = config.FileName
         end
         
+        if config.UseKeyApi ~= nil then
+            KeySystemConfig.UseKeyApi = config.UseKeyApi
+        end
+
         if config.VipWhitelistUrl then
             KeySystemConfig.VipWhitelistUrl = config.VipWhitelistUrl
             KeySystemConfig.CheckVip = true
         end
         
+    if config.KeyApiUrl and config.UseKeyApi ~= false then
+        KeySystemConfig.KeyApiUrl = config.KeyApiUrl
+        KeySystemConfig.UseKeyApi = true
+    end
+
         return self
     end
     
