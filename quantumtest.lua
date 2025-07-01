@@ -6,7 +6,7 @@
   \/_/      \/_/\/_/   \/____/   \/_/ /_/   \/_/   \/_/       \/_/   \/_____/ 
 
  QuantumGuard Key System by Vadrifts 100% uncrackable and 25ms will be so nice that they wont crack it (somehow), right?
-    Version: 8.3AB
+    Version: 8.3ABc
 ]]
 return function()
     local player = game.Players.LocalPlayer
@@ -75,7 +75,6 @@ local function secureHash(input)
     end
     return tostring(hash)
 end
-
 local HttpService = game:GetService("HttpService")
 
 local function getHWID()
@@ -90,7 +89,7 @@ local hwid = getHWID()
 local token
 
 local success, response = pcall(function()
-    return HttpService:GetAsync("https://server2-78hd.onrender.com/generate?json=1&hwid=" .. hwid)
+    return HttpService:GetAsync("https://yourserver.com/generate?json=1&hwid=" .. hwid)
 end)
 
 if success then
@@ -102,7 +101,7 @@ end
 
 local key
 local success2, keyResponse = pcall(function()
-    return HttpService:GetAsync("https://server2-78hd.onrender.com/getkey?token=" .. token .. "&hwid=" .. hwid)
+    return HttpService:GetAsync("https://yourserver.com/getkey?token=" .. token .. "&hwid=" .. hwid)
 end)
 
 if success2 then
