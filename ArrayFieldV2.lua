@@ -26,6 +26,7 @@ Change Logs:
 - Fixed Sidetab having a chance of duplicating once minimized
 - Added Mobile toggle button
 - Switch unhide UI keybind to K instead of RightShift
+- Removed Discord RPC since it no longer works (doing so added support to bad executors such as Delta)
 
 ]]
 
