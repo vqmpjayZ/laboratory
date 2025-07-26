@@ -48,7 +48,7 @@ local function loadWithTimeout(url: string, timeout: number?): ...any
 		-- If the request fails the content can be empty, even if fetchSuccess is true
 		if not fetchSuccess or #fetchResult == 0 then
 			if #fetchResult == 0 then
-				fetchResult = "Empty response" -- Set the error message
+				fetchResult = "Empty response" -- You can Set the error message
 			end
 			success, result = false, fetchResult
 			requestCompleted = true
