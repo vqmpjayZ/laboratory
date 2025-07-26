@@ -37,54 +37,6 @@ local ConfigurationFolder = ArrayFieldFolder.."/Configurations"
 local ConfigurationExtension = ".rfld"
 local ArrayFieldQuality = {}
 
-local function loadWithTimeout(url: string, timeout: number?): ...any
-	assert(type(url) == "string", "Expected string, got " .. type(url))
-	timeout = timeout or 5
-	local requestCompleted = false
-	local success, result = false, nil
-
-	local requestThread = task.spawn(function()
-		local fetchSuccess, fetchResult = pcall(game.HttpGet, game, url) -- game:HttpGet(url)
-		-- If the request fails the content can be empty, even if fetchSuccess is true
-		if not fetchSuccess or #fetchResult == 0 then
-			if #fetchResult == 0 then
-				fetchResult = "Empty response" -- You can Set the error message
-			end
-			success, result = false, fetchResult
-			requestCompleted = true
-			return
-		end
-		local content = fetchResult -- Fetched content
-		local execSuccess, execResult = pcall(function()
-			return loadstring(content)()
-		end)
-		success, result = execSuccess, execResult
-		requestCompleted = true
-	end)
-
-	local timeoutThread = task.delay(timeout, function()
-		if not requestCompleted then
-			warn("failed")
-			task.cancel(requestThread)
-			result = "Request timed out"
-			requestCompleted = true
-		end
-	end)
-
-	-- Wait for completion or timeout
-	while not requestCompleted do
-		task.wait()
-	end
-	-- Cancel timeout thread if still running when request completes
-	if coroutine.status(timeoutThread) ~= "dead" then
-		task.cancel(timeoutThread)
-	end
-	if not success then
-		warn("failed")
-	end
-	return if success then result else nil
-end
-
 local ArrayFieldLibrary = {
 	Flags = {},
 	Theme = {
@@ -170,6 +122,8 @@ local ArrayFieldLibrary = {
 	}
 }
 
+
+
 -- Services
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -254,10 +208,7 @@ local Notifications = ArrayField.Notifications
 
 local SelectedTheme = ArrayFieldLibrary.Theme.Default
 
-local Icons = useStudio and require(script.Parent.icons) or loadWithTimeout(
-    "https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua", 
-    5
-) or {}
+local Icons = useStudio and require(script.Parent.icons) or loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
 
 function ChangeTheme(ThemeName)
 	SelectedTheme = ArrayField.Theme[ThemeName]
