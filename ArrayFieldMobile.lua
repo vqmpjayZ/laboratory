@@ -10,7 +10,7 @@ Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
 ]]
-
+--TEST
 --[[
 
 Change Logs:
@@ -1762,9 +1762,13 @@ if Settings.Discord then
 		makefolder(ArrayFieldFolder.."/Discord Invites")
 	end
 
-	if not isfile(ArrayFieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension) then
+	local inviteFilePath = ArrayFieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension
+
+	if not isfile(inviteFilePath) then
+		local success = false
+
 		if request then
-			pcall(function()
+			success = pcall(function()
 				request({
 					Url = 'http://127.0.0.1:6463/rpc?v=1',
 					Method = 'POST',
@@ -1781,11 +1785,8 @@ if Settings.Discord then
 			end)
 		end
 
-		if Settings.Discord.RememberJoins then
-			writefile(
-				ArrayFieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension,
-				"ArrayField RememberJoins is true for this invite, this invite will not ask you to join again"
-			)
+		if success and Settings.Discord.RememberJoins then
+			writefile(inviteFilePath, "ArrayField RememberJoins is true for this invite, this invite will not ask you to join again")
 		end
 	end
 end
