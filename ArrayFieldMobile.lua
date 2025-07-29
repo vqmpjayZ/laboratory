@@ -1756,39 +1756,39 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 		else
 
 		end
+
+if Settings.Discord then
+	if not isfolder(ArrayFieldFolder.."/Discord Invites") then
+		makefolder(ArrayFieldFolder.."/Discord Invites")
 	end
 
-	if Settings.KeySystem then
-		if not Settings.KeySettings then
-			Passthrough = true
-			return
+	if not isfile(ArrayFieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension) then
+		if request then
+			pcall(function()
+				request({
+					Url = 'http://127.0.0.1:6463/rpc?v=1',
+					Method = 'POST',
+					Headers = {
+						['Content-Type'] = 'application/json',
+						Origin = 'https://discord.com'
+					},
+					Body = HttpService:JSONEncode({
+						cmd = 'INVITE_BROWSER',
+						nonce = HttpService:GenerateGUID(false),
+						args = {code = Settings.Discord.Invite}
+					})
+				})
+			end)
 		end
 
-		if not isfolder(ArrayFieldFolder.."/Key System") then
-			makefolder(ArrayFieldFolder.."/Key System")
+		if Settings.Discord.RememberJoins then
+			writefile(
+				ArrayFieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension,
+				"ArrayField RememberJoins is true for this invite, this invite will not ask you to join again"
+			)
 		end
-
-		if Settings.KeySettings.GrabKeyFromSite then
-			for i, Key in ipairs(Settings.KeySettings.Key) do
-				local Success, Response = pcall(function()
-					Settings.KeySettings.Key[i] = tostring(game:HttpGet(Key):gsub("[\n\r]", " "))
-					Settings.KeySettings.Key[i] = string.gsub(Settings.KeySettings.Key[i], " ", "")
-				end)
-				if not Success then
-					print("ArrayField | "..Key.." Error " ..tostring(Response))
-				end
-			end
-		end
-
-		if not Settings.KeySettings.FileName then
-			Settings.KeySettings.FileName = "No file name specified"
-		end
-
-		if isfile(ArrayFieldFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension) then
-			if readfile(ArrayFieldFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension) == Settings.KeySettings.Key then
-				Passthrough = true
-			end
-		end
+	end
+end
 
 		if not Passthrough then
 			local AttemptsRemaining = math.random(2,6)
