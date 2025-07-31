@@ -18,6 +18,7 @@ vqmpjay | Designing + Programming + New Features
 - Added TextWrapping to labels
 - Added Icon support to labels
 - Added Descriptions for Buttons and Toggles
+- Fixed Issue with the sidebar opening when minimized after minimizing too quickly
 
 let me know what other stuff i can add
 ]]
@@ -891,20 +892,19 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
 end
 
 function CloseSideBar()
-
-Debounce = true
+	Debounce = true
 	SideBarClosed = true
 	for _,tabbtn in pairs(SideList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-			TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
+			TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
 		end
 	end
-	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
-	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
-	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
+	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
+	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
+	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
 	wait(.4)
-	Main.SideTabList.Visible = true
+	Main.SideTabList.Visible = false
 	wait(0.2)
 	Debounce = false
 end
@@ -1222,12 +1222,13 @@ end)
 
 function Hide()
 	MobileToggle:Show()
-    if not SideBarClosed then
-        spawn(CloseSideBar)
-        TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
-        TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
-        TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-        Main.SideTabList.Visible = false
+	-- Check if UI is already minimized, don't show sidebar if it is
+	if not Minimised and not SideBarClosed then
+		spawn(CloseSideBar)
+		TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
+		TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
+		TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+		Main.SideTabList.Visible = false
 	end
 
 	spawn(function()
@@ -1297,8 +1298,9 @@ end
 
 function Unhide()
 	MobileToggle:Hide()
-    if SideBarClosed then
-        wait(.1)
+	-- Only show sidebar if UI wasn't minimized before hiding
+	if not Minimised and SideBarClosed then
+		wait(.1)
 		spawn(OpenSideBar)
 	end
 
@@ -1478,8 +1480,8 @@ SearchBar.Clear.TouchTap:Connect(function()
 end)
 
 function Maximise()
-
-    if SideBarClosed then
+	-- Only show sidebar if it was closed during minimization
+	if SideBarClosed then
 		wait(.1)
 		spawn(OpenSideBar)
 	end
@@ -1564,6 +1566,7 @@ function Maximise()
 	wait(0.5)
 	Debounce = false
 end
+
 function OpenSideBar()
 	Debounce = true
 	Main.SideTabList.Visible = true 
@@ -1584,7 +1587,7 @@ function OpenSideBar()
 	SideBarClosed = false
     Topbar.Type.Active = false
     Topbar.Type.AutoButtonColor = false    
-    TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
+	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
 	wait(.4)
@@ -1598,6 +1601,7 @@ function Minimise()
 	if not SearchHided then
 		spawn(CloseSearch)
 	end
+	-- Close sidebar when minimizing
 	if not SideBarClosed then
 		wait(.1)
         spawn(CloseSideBar)
