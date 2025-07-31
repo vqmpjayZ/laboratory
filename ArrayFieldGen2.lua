@@ -13,20 +13,13 @@ vqmpjay | Designing + Programming + New Features
 
 --[[
 
-Change Logs:
-- Added Mobile Support (Dragging Functionality + Input Accessibility)
-- Added Lucide icons support to Tabs and Notifications
-- Added rich text support to Paragraphs and Labels
-- Fixed Paragraphs not appearing when not parented to sections
-- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
-- Fixed Search not being able to search for elements parented to sections
-- Fixed Sidetab not loading (Added pcall)
-- Removed Themes Button (pointless)
-- Revamped Design
-- Fixed Sidetab having a chance of duplicating once minimized
-- Added Mobile toggle button
-- Switch unhide UI keybind to K instead of RightShift
+// DD/MM/YY //
+[ -1.8.25- ]
+- Added TextWrapping to labels
+- Added Icon support to labels
+- Added Descriptions for Buttons and Toggles
 
+let me know what other stuff i can add
 ]]
 
 local Release = "Release 2D"
@@ -3988,6 +3981,7 @@ end
 			return ColorPickerSettings
 		end
 
+		-- Slider
 		function Tab:CreateSlider(SliderSettings)
 			local Dragging = false
 			local Slider = Elements.Template.Slider:Clone()
@@ -4439,8 +4433,9 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
 end
 
 Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
--- return ArrayFieldLibrary
-
+--[[-- ]]return ArrayFieldLibrary
+--[[
+-- template
 local Window = ArrayFieldLibrary:CreateWindow({
         Name = "ArrayField Example Window",
         LoadingTitle = "ArrayField Interface Suite",
@@ -4675,4 +4670,4 @@ local Window = ArrayFieldLibrary:CreateWindow({
 
         end,
     })
-		
+		]]
