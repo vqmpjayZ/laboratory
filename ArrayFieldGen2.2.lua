@@ -2190,6 +2190,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 		SideTabButton.Interact.MouseButton1Click:Connect(Pick)
 
 -- Button
+
 function Tab:CreateButton(ButtonSettings)
     local ButtonValue = {Locked = false}
 
@@ -2248,15 +2249,16 @@ function Tab:CreateButton(ButtonSettings)
         
         local DescriptionLabel = Instance.new("TextLabel")
         DescriptionLabel.Name = "DescriptionText"
-        DescriptionLabel.Size = UDim2.new(1, -8, 1, -4)
-        DescriptionLabel.Position = UDim2.new(0, 4, 0, 2)
+        DescriptionLabel.Size = UDim2.new(1, -16, 1, -8)
+        DescriptionLabel.Position = UDim2.new(0, 8, 0, 4)
         DescriptionLabel.BackgroundTransparency = 1
         DescriptionLabel.Text = ButtonSettings.Description
-        DescriptionLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+        DescriptionLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
         DescriptionLabel.TextSize = 12
         DescriptionLabel.Font = Enum.Font.Gotham
         DescriptionLabel.TextXAlignment = Enum.TextXAlignment.Left
         DescriptionLabel.TextYAlignment = Enum.TextYAlignment.Center
+        DescriptionLabel.TextWrapped = true
         DescriptionLabel.Parent = DescriptionFrame
         
         -- Adjust frame size based on text
@@ -2307,10 +2309,7 @@ function Tab:CreateButton(ButtonSettings)
             DescriptionFrame.BackgroundTransparency = 1
             DescriptionFrame.DescriptionText.TextTransparency = 1
             
-            -- Move title up slightly (but keep it centered)
-            TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-                Position = UDim2.new(0, 10, 0, 5)
-            }):Play()
+            -- Just increase button size, don't move title at all
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Size = UDim2.new(0, 465, 0, Button.AbsoluteSize.Y + DescriptionFrame.AbsoluteSize.Y + 10)
             }):Play()
@@ -2329,10 +2328,7 @@ function Tab:CreateButton(ButtonSettings)
         if ButtonSettings.Description and DescriptionFrame and DescriptionVisible then
             DescriptionVisible = false
             
-            -- Move title back to original position (centered vertically)
-            TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-                Position = UDim2.new(0, 10, 0.5, -8)
-            }):Play()
+            -- Don't touch the title position at all, it should stay where it was originally
             
             -- Animate description disappearance
             TweenService:Create(DescriptionFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
@@ -2403,6 +2399,7 @@ function Tab:CreateButton(ButtonSettings)
 
     return ButtonValue
 end
+
 		-- Section
 		function Tab:CreateSection(SectionName,Display)
 
