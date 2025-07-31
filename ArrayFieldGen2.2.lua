@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming + New Features
+vqmpjay | Designing + Programming + New Features 222222222222222222222
 
 ]]
 
@@ -2224,6 +2224,7 @@ function Tab:CreateButton(ButtonSettings)
     -- Description hover functionality
     local DescriptionFrame = nil
     local DescriptionVisible = false
+    local OriginalTitlePosition = Button.Title.Position -- Store the original position!
     
     local function CreateDescriptionFrame()
         if not ButtonSettings.Description then return end
@@ -2256,7 +2257,7 @@ function Tab:CreateButton(ButtonSettings)
         DescriptionLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
         DescriptionLabel.TextSize = 12
         DescriptionLabel.Font = Enum.Font.Gotham
-        DescriptionLabel.TextXAlignment = Enum.TextXAlignment.Left
+        DescriptionLabel.TextXAlignment = Enum.TextXAlignment.Center
         DescriptionLabel.TextYAlignment = Enum.TextYAlignment.Center
         DescriptionLabel.TextWrapped = true
         DescriptionLabel.Parent = DescriptionFrame
@@ -2305,11 +2306,23 @@ function Tab:CreateButton(ButtonSettings)
         if ButtonSettings.Description and DescriptionFrame and not DescriptionVisible then
             DescriptionVisible = true
             DescriptionFrame.Visible = true
-            DescriptionFrame.Position = UDim2.new(0, 10, 1, 5)
+            
+            -- Position description in the middle of button, below the new title position
+            local NewTitleY = OriginalTitlePosition.Y.Scale
+            local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 5
+            local DescriptionY = NewTitleY
+            local DescriptionYOffset = NewTitleYOffset + 5
+            
+            DescriptionFrame.Position = UDim2.new(0.5, -100, DescriptionY, DescriptionYOffset)
             DescriptionFrame.BackgroundTransparency = 1
             DescriptionFrame.DescriptionText.TextTransparency = 1
             
-            -- Just increase button size, don't move title at all
+            -- Move title up by 5 pixels from original position
+            TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Position = UDim2.new(OriginalTitlePosition.X.Scale, OriginalTitlePosition.X.Offset, NewTitleY, NewTitleYOffset)
+            }):Play()
+            
+            -- Increase button height
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Size = UDim2.new(0, 465, 0, Button.AbsoluteSize.Y + DescriptionFrame.AbsoluteSize.Y + 10)
             }):Play()
@@ -2328,7 +2341,10 @@ function Tab:CreateButton(ButtonSettings)
         if ButtonSettings.Description and DescriptionFrame and DescriptionVisible then
             DescriptionVisible = false
             
-            -- Don't touch the title position at all, it should stay where it was originally
+            -- Move title back to original position
+            TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Position = OriginalTitlePosition
+            }):Play()
             
             -- Animate description disappearance
             TweenService:Create(DescriptionFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
