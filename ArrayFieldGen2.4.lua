@@ -2248,7 +2248,7 @@ function Tab:CreateButton(ButtonSettings)
         
         -- Position description in middle-left area, below the title
         DescriptionLabel.Size = UDim2.new(0, math.min(textSize.X + 20, 420), 0, math.max(textSize.Y + 4, 20))
-        DescriptionLabel.Position = UDim2.new(0, 25, 0.65, 0) -- Left aligned with some padding
+        DescriptionLabel.Position = UDim2.new(0, 30, 0.65, 0) -- Left aligned with some padding
     end
     
     if ButtonSettings.Description then
@@ -2291,7 +2291,7 @@ function Tab:CreateButton(ButtonSettings)
             
             -- Move title further up when showing description
             local NewTitleY = OriginalTitlePosition.Y.Scale
-            local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 12 -- Move title further up
+            local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 15 -- Move title further up
             
             TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Position = UDim2.new(OriginalTitlePosition.X.Scale, OriginalTitlePosition.X.Offset, NewTitleY, NewTitleYOffset)
