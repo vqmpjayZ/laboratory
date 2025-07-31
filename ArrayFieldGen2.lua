@@ -14,18 +14,7 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 Change Logs:
-- Added Mobile Support (Dragging Functionality + Input Accessibility)
-- Added Lucide icons support to Tabs and Notifications
-- Added rich text support to Paragraphs and Labels
-- Fixed Paragraphs not appearing when not parented to sections
-- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
-- Fixed Search not being able to search for elements parented to sections
-- Fixed Sidetab not loading (Added pcall)
-- Removed Themes Button (pointless)
-- Revamped Design
-- Fixed Sidetab having a chance of duplicating once minimized
-- Added Mobile toggle button
-- Switch unhide UI keybind to K instead of RightShift
+- Descriptions test
 
 ]]
 
@@ -2190,6 +2179,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 		SideTabButton.Interact.MouseButton1Click:Connect(Pick)
 
 		-- Button
+-- Enhanced Button function with Description support
+-- Replace your existing Tab:CreateButton function with this one
+
 function Tab:CreateButton(ButtonSettings)
     local ButtonValue = {Locked = false}
 
@@ -2200,12 +2192,6 @@ function Tab:CreateButton(ButtonSettings)
         section = ButtonSettings.SectionParent,
         element = Button
     }
-    
-    -- Initialize description settings
-    ButtonSettings.Info = ButtonSettings.Info or {}
-    ButtonSettings.Info.Description = ButtonSettings.Description or ButtonSettings.Info.Description
-    
-    AddInfos(Button, ButtonSettings.Info, 'button')
 
     Button.Name = ButtonSettings.Name
     Button.Title.Text = ButtonSettings.Name
@@ -2235,10 +2221,10 @@ function Tab:CreateButton(ButtonSettings)
         
         DescriptionFrame = Instance.new("Frame")
         DescriptionFrame.Name = "DescriptionTooltip"
-        DescriptionFrame.Size = UDim2.new(0, 200, 0, 30)
-        DescriptionFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        DescriptionFrame.Size = UDim2.new(0, 200, 0, 25)
+        DescriptionFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         DescriptionFrame.BorderSizePixel = 0
-        DescriptionFrame.BackgroundTransparency = 0.1
+        DescriptionFrame.BackgroundTransparency = 0
         DescriptionFrame.ZIndex = 1000
         DescriptionFrame.Visible = false
         DescriptionFrame.Parent = Button
@@ -2248,7 +2234,7 @@ function Tab:CreateButton(ButtonSettings)
         DescriptionCorner.Parent = DescriptionFrame
         
         local DescriptionStroke = Instance.new("UIStroke")
-        DescriptionStroke.Color = Color3.fromRGB(55, 55, 55)
+        DescriptionStroke.Color = Color3.fromRGB(70, 70, 70)
         DescriptionStroke.Thickness = 1
         DescriptionStroke.Parent = DescriptionFrame
         
@@ -2258,14 +2244,17 @@ function Tab:CreateButton(ButtonSettings)
         DescriptionLabel.Position = UDim2.new(0, 4, 0, 2)
         DescriptionLabel.BackgroundTransparency = 1
         DescriptionLabel.Text = ButtonSettings.Description
-        DescriptionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-        DescriptionLabel.TextScaled = true
+        DescriptionLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+        DescriptionLabel.TextSize = 12
         DescriptionLabel.Font = Enum.Font.Gotham
+        DescriptionLabel.TextXAlignment = Enum.TextXAlignment.Left
+        DescriptionLabel.TextYAlignment = Enum.TextYAlignment.Center
         DescriptionLabel.Parent = DescriptionFrame
         
         -- Adjust frame size based on text
-        local textBounds = DescriptionLabel.TextBounds
-        DescriptionFrame.Size = UDim2.new(0, math.max(textBounds.X + 16, 100), 0, math.max(textBounds.Y + 8, 25))
+        local textService = game:GetService("TextService")
+        local textSize = textService:GetTextSize(ButtonSettings.Description, 12, Enum.Font.Gotham, Vector2.new(400, math.huge))
+        DescriptionFrame.Size = UDim2.new(0, math.max(textSize.X + 16, 120), 0, math.max(textSize.Y + 8, 25))
     end
     
     if ButtonSettings.Description then
@@ -2306,17 +2295,20 @@ function Tab:CreateButton(ButtonSettings)
         if ButtonSettings.Description and DescriptionFrame and not DescriptionVisible then
             DescriptionVisible = true
             DescriptionFrame.Visible = true
-            DescriptionFrame.Position = UDim2.new(0, 0, 1, 5)
+            DescriptionFrame.Position = UDim2.new(0, 5, 1, 5)
             DescriptionFrame.BackgroundTransparency = 1
             DescriptionFrame.DescriptionText.TextTransparency = 1
             
-            -- Animate button size increase
+            -- Move title up slightly and animate button size increase
+            TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Position = UDim2.new(0, 10, 0, 2)
+            }):Play()
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Size = UDim2.new(0, 465, 0, Button.AbsoluteSize.Y + DescriptionFrame.AbsoluteSize.Y + 10)
             }):Play()
             
             -- Animate description appearance
-            TweenService:Create(DescriptionFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
+            TweenService:Create(DescriptionFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
             TweenService:Create(DescriptionFrame.DescriptionText, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         end
     end)
@@ -2328,6 +2320,11 @@ function Tab:CreateButton(ButtonSettings)
         -- Hide description on mouse leave
         if ButtonSettings.Description and DescriptionFrame and DescriptionVisible then
             DescriptionVisible = false
+            
+            -- Move title back to original position
+            TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Position = UDim2.new(0, 10, 0.5, 0)
+            }):Play()
             
             -- Animate description disappearance
             TweenService:Create(DescriptionFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
@@ -2356,8 +2353,9 @@ function Tab:CreateButton(ButtonSettings)
         if DescriptionFrame then
             DescriptionFrame.DescriptionText.Text = NewDescription
             -- Recalculate frame size
-            local textBounds = DescriptionFrame.DescriptionText.TextBounds
-            DescriptionFrame.Size = UDim2.new(0, math.max(textBounds.X + 16, 100), 0, math.max(textBounds.Y + 8, 25))
+            local textService = game:GetService("TextService")
+            local textSize = textService:GetTextSize(NewDescription, 12, Enum.Font.Gotham, Vector2.new(400, math.huge))
+            DescriptionFrame.Size = UDim2.new(0, math.max(textSize.X + 16, 120), 0, math.max(textSize.Y + 8, 25))
         elseif NewDescription then
             CreateDescriptionFrame()
         end
