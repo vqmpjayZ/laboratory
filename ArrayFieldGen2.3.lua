@@ -7,7 +7,7 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming + New Features 222222222222222222222
+vqmpjay | Designing + Programming + New Features
 
 ]]
 
@@ -2221,55 +2221,38 @@ function Tab:CreateButton(ButtonSettings)
     TweenService:Create(Button.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
     TweenService:Create(Button.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()    
 
-    -- Description hover functionality
-    local DescriptionFrame = nil
+    local DescriptionLabel = nil
     local DescriptionVisible = false
-    local OriginalTitlePosition = Button.Title.Position -- Store the original position!
+    local OriginalTitlePosition = Button.Title.Position
     
-    local function CreateDescriptionFrame()
+    local function CreateDescriptionLabel()
         if not ButtonSettings.Description then return end
         
-        DescriptionFrame = Instance.new("Frame")
-        DescriptionFrame.Name = "DescriptionTooltip"
-        DescriptionFrame.Size = UDim2.new(0, 200, 0, 25)
-        DescriptionFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        DescriptionFrame.BorderSizePixel = 0
-        DescriptionFrame.BackgroundTransparency = 0
-        DescriptionFrame.ZIndex = 1000
-        DescriptionFrame.Visible = false
-        DescriptionFrame.Parent = Button
-        
-        local DescriptionCorner = Instance.new("UICorner")
-        DescriptionCorner.CornerRadius = UDim.new(0, 4)
-        DescriptionCorner.Parent = DescriptionFrame
-        
-        local DescriptionStroke = Instance.new("UIStroke")
-        DescriptionStroke.Color = Color3.fromRGB(70, 70, 70)
-        DescriptionStroke.Thickness = 1
-        DescriptionStroke.Parent = DescriptionFrame
-        
-        local DescriptionLabel = Instance.new("TextLabel")
+        DescriptionLabel = Instance.new("TextLabel")
         DescriptionLabel.Name = "DescriptionText"
-        DescriptionLabel.Size = UDim2.new(1, -16, 1, -8)
-        DescriptionLabel.Position = UDim2.new(0, 8, 0, 4)
         DescriptionLabel.BackgroundTransparency = 1
         DescriptionLabel.Text = ButtonSettings.Description
-        DescriptionLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
-        DescriptionLabel.TextSize = 12
+        DescriptionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+        DescriptionLabel.TextSize = 13
         DescriptionLabel.Font = Enum.Font.Gotham
-        DescriptionLabel.TextXAlignment = Enum.TextXAlignment.Center
+        DescriptionLabel.TextXAlignment = Enum.TextXAlignment.Left
         DescriptionLabel.TextYAlignment = Enum.TextYAlignment.Center
         DescriptionLabel.TextWrapped = true
-        DescriptionLabel.Parent = DescriptionFrame
+        DescriptionLabel.TextTransparency = 1
+        DescriptionLabel.Visible = false
+        DescriptionLabel.Parent = Button
         
-        -- Adjust frame size based on text
+        -- Calculate text size and position description properly
         local textService = game:GetService("TextService")
-        local textSize = textService:GetTextSize(ButtonSettings.Description, 12, Enum.Font.Gotham, Vector2.new(400, math.huge))
-        DescriptionFrame.Size = UDim2.new(0, math.max(textSize.X + 16, 120), 0, math.max(textSize.Y + 8, 25))
+        local textSize = textService:GetTextSize(ButtonSettings.Description, 13, Enum.Font.Gotham, Vector2.new(400, math.huge))
+        
+        -- Position description in middle-left area, below the title
+        DescriptionLabel.Size = UDim2.new(0, math.min(textSize.X + 20, 420), 0, math.max(textSize.Y + 4, 20))
+        DescriptionLabel.Position = UDim2.new(0, 25, 0.65, 0) -- Left aligned with some padding
     end
     
     if ButtonSettings.Description then
-        CreateDescriptionFrame()
+        CreateDescriptionLabel()
     end
 
     Button.Interact.MouseButton1Click:Connect(function()
@@ -2302,34 +2285,26 @@ function Tab:CreateButton(ButtonSettings)
         TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
         TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.7}):Play()
         
-        -- Show description on hover
-        if ButtonSettings.Description and DescriptionFrame and not DescriptionVisible then
+        if ButtonSettings.Description and DescriptionLabel and not DescriptionVisible then
             DescriptionVisible = true
-            DescriptionFrame.Visible = true
+            DescriptionLabel.Visible = true
             
-            -- Position description in the middle of button, below the new title position
+            -- Move title further up when showing description
             local NewTitleY = OriginalTitlePosition.Y.Scale
-            local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 5
-            local DescriptionY = NewTitleY
-            local DescriptionYOffset = NewTitleYOffset + 5
+            local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 12 -- Move title further up
             
-            DescriptionFrame.Position = UDim2.new(0.5, -100, DescriptionY, DescriptionYOffset)
-            DescriptionFrame.BackgroundTransparency = 1
-            DescriptionFrame.DescriptionText.TextTransparency = 1
-            
-            -- Move title up by 5 pixels from original position
             TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Position = UDim2.new(OriginalTitlePosition.X.Scale, OriginalTitlePosition.X.Offset, NewTitleY, NewTitleYOffset)
             }):Play()
             
-            -- Increase button height
+            -- Expand button to accommodate description
+            local newHeight = 40 + DescriptionLabel.AbsoluteSize.Y + 15 -- Add padding
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-                Size = UDim2.new(0, 465, 0, Button.AbsoluteSize.Y + DescriptionFrame.AbsoluteSize.Y + 10)
+                Size = UDim2.new(0, 465, 0, newHeight)
             }):Play()
             
-            -- Animate description appearance
-            TweenService:Create(DescriptionFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(DescriptionFrame.DescriptionText, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            -- Fade in description text
+            TweenService:Create(DescriptionLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         end
     end)
 
@@ -2337,8 +2312,7 @@ function Tab:CreateButton(ButtonSettings)
         TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
         TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
         
-        -- Hide description on mouse leave
-        if ButtonSettings.Description and DescriptionFrame and DescriptionVisible then
+        if ButtonSettings.Description and DescriptionLabel and DescriptionVisible then
             DescriptionVisible = false
             
             -- Move title back to original position
@@ -2346,18 +2320,17 @@ function Tab:CreateButton(ButtonSettings)
                 Position = OriginalTitlePosition
             }):Play()
             
-            -- Animate description disappearance
-            TweenService:Create(DescriptionFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(DescriptionFrame.DescriptionText, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            -- Fade out description text
+            TweenService:Create(DescriptionLabel, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
             
-            -- Animate button size back to normal
+            -- Shrink button back to original size
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Size = UDim2.new(0, 465, 0, 40)
             }):Play()
             
             wait(0.3)
             if not DescriptionVisible then
-                DescriptionFrame.Visible = false
+                DescriptionLabel.Visible = false
             end
         end
     end)
@@ -2370,20 +2343,19 @@ function Tab:CreateButton(ButtonSettings)
     
     function ButtonValue:SetDescription(NewDescription)
         ButtonSettings.Description = NewDescription
-        if DescriptionFrame then
-            DescriptionFrame.DescriptionText.Text = NewDescription
-            -- Recalculate frame size
+        if DescriptionLabel then
+            DescriptionLabel.Text = NewDescription
             local textService = game:GetService("TextService")
-            local textSize = textService:GetTextSize(NewDescription, 12, Enum.Font.Gotham, Vector2.new(400, math.huge))
-            DescriptionFrame.Size = UDim2.new(0, math.max(textSize.X + 16, 120), 0, math.max(textSize.Y + 8, 25))
+            local textSize = textService:GetTextSize(NewDescription, 13, Enum.Font.Gotham, Vector2.new(400, math.huge))
+            DescriptionLabel.Size = UDim2.new(0, math.min(textSize.X + 20, 420), 0, math.max(textSize.Y + 4, 20))
         elseif NewDescription then
-            CreateDescriptionFrame()
+            CreateDescriptionLabel()
         end
     end
     
     function ButtonValue:Destroy()
-        if DescriptionFrame then
-            DescriptionFrame:Destroy()
+        if DescriptionLabel then
+            DescriptionLabel:Destroy()
         end
         Button:Destroy()
     end
@@ -2395,7 +2367,7 @@ function Tab:CreateButton(ButtonSettings)
         TweenService:Create(Button.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
         TweenService:Create(Button.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
         wait(0.2)
-        if not ButtonValue.Locked then return end --no icon bug
+        if not ButtonValue.Locked then return end
         TweenService:Create(Button.Lock.Reason.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
     end
     
@@ -2404,7 +2376,7 @@ function Tab:CreateButton(ButtonSettings)
         ButtonValue.Locked = false
         wait(0.2)
         TweenService:Create(Button.Lock.Reason.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 1}):Play()
-        if ButtonValue.Locked then return end --no icon bug
+        if ButtonValue.Locked then return end
         TweenService:Create(Button.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
         TweenService:Create(Button.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
     end
