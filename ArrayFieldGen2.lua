@@ -13,8 +13,19 @@ vqmpjay | Designing + Programming + New Features
 
 --[[
 
-Change Logs: [BETA]
-- Added Descriptions to buttons
+Change Logs:
+- Added Mobile Support (Dragging Functionality + Input Accessibility)
+- Added Lucide icons support to Tabs and Notifications
+- Added rich text support to Paragraphs and Labels
+- Fixed Paragraphs not appearing when not parented to sections
+- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
+- Fixed Search not being able to search for elements parented to sections
+- Fixed Sidetab not loading (Added pcall)
+- Removed Themes Button (pointless)
+- Revamped Design
+- Fixed Sidetab having a chance of duplicating once minimized
+- Added Mobile toggle button
+- Switch unhide UI keybind to K instead of RightShift
 
 ]]
 
@@ -2287,7 +2298,7 @@ function Tab:CreateButton(ButtonSettings)
             }):Play()
             
             -- Expand button to accommodate description
-            local newHeight = 40 + DescriptionLabel.AbsoluteSize.Y + 15 -- Add padding
+            local newHeight = 40 + DescriptionLabel.AbsoluteSize.Y + 12 -- Add padding
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Size = UDim2.new(0, 465, 0, newHeight)
             }):Play()
@@ -2508,46 +2519,152 @@ end
 		end
 
 		-- Label
-        function Tab:CreateLabel(LabelText, SectionParent)
-            local LabelValue = {}
+function Tab:CreateLabel(LabelSettings, SectionParent)
+    local LabelValue = {}
+    
+    local labelText, iconName
+    if typeof(LabelSettings) == "table" then
+        labelText = LabelSettings[1] or ""
+        iconName = LabelSettings[2]
+    else
+        labelText = LabelSettings or ""
+    end
+
+    local Label = Elements.Template.Label:Clone()
+    Label.Title.Text = labelText
+    
+    Label.Title.RichText = true
+    Label.Title.TextWrapped = true
+    Label.Title.TextScaled = false
+    
+    Label.Visible = true
+    
+    local iconLabel = nil
+    if iconName then
+        iconLabel = Instance.new("ImageLabel")
+        iconLabel.Name = "LabelIcon"
+        iconLabel.Size = UDim2.new(0, 20, 0, 20)
+        iconLabel.Position = UDim2.new(0, 20, 0.5, -10)
+        iconLabel.BackgroundTransparency = 1
+        iconLabel.ImageColor3 = SelectedTheme.TextColor
+        iconLabel.Parent = Label
         
-            local Label = Elements.Template.Label:Clone()
-            Label.Title.Text = LabelText
-            
-            Label.Title.RichText = true
-            
-            Label.Visible = true
-            
-            Tab.Elements[LabelText] = {
-                type = 'label',
-                section = SectionParent,
-                element = Label
-            }
-            
-            if SectionParent then
-                Label.Parent = SectionParent.Holder
+        if typeof(iconName) == "string" and not tonumber(iconName) then
+            local success, asset = pcall(getIcon, iconName)
+            if success then
+                iconLabel.Image = "rbxassetid://" .. asset.id
+                iconLabel.ImageRectOffset = asset.imageRectOffset
+                iconLabel.ImageRectSize = asset.imageRectSize
             else
-                Label.Parent = TabPage
+                iconLabel.Image = "rbxassetid://3944680095"
             end
-        
-            Label.BackgroundTransparency = 1
-            Label.UIStroke.Transparency = 1
-            Label.Title.TextTransparency = 1
-        
-            Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-            Label.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-        
-            TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-        
-            function LabelValue:Set(NewLabel)
-                Label.Title.Text = NewLabel
-            end
-        
-            return LabelValue
+        else
+            iconLabel.Image = "rbxassetid://" .. tostring(iconName)
+            iconLabel.ImageRectOffset = Vector2.new(0, 0)
+            iconLabel.ImageRectSize = Vector2.new(0, 0)
         end
         
+        -- Only adjust the left padding when there's an icon
+        Label.Title.TextXAlignment = Enum.TextXAlignment.Left
+        local padding = Instance.new("UIPadding")
+        padding.PaddingLeft = UDim.new(0, 38)
+        padding.Parent = Label.Title
+    end
+    
+    Tab.Elements[labelText] = {
+        type = 'label',
+        section = SectionParent,
+        element = Label
+    }
+    
+    if SectionParent then
+        Label.Parent = SectionParent.Holder
+    else
+        Label.Parent = TabPage
+    end
+
+    Label.BackgroundTransparency = 1
+    Label.UIStroke.Transparency = 1
+    Label.Title.TextTransparency = 1
+
+    Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+    Label.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+
+    local function UpdateLabelSize()
+        wait()
+        local textHeight = Label.Title.TextBounds.Y
+        local finalHeight = math.max(textHeight + 20, 40)
+        
+        if SectionParent then
+            Label.Size = UDim2.new(1, -10, 0, finalHeight)
+        else
+            Label.Size = UDim2.new(0, 465, 0, finalHeight)
+        end
+    end
+
+    UpdateLabelSize()
+
+    TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+    TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+    TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+    function LabelValue:Set(NewLabelSettings)
+        local newText, newIcon
+        if typeof(NewLabelSettings) == "table" then
+            newText = NewLabelSettings[1] or ""
+            newIcon = NewLabelSettings[2]
+        else
+            newText = NewLabelSettings or ""
+        end
+        
+        Label.Title.Text = newText
+        
+        if newIcon and not iconLabel then
+            iconLabel = Instance.new("ImageLabel")
+            iconLabel.Name = "LabelIcon"
+            iconLabel.Size = UDim2.new(0, 20, 0, 20)
+            iconLabel.Position = UDim2.new(0, 12, 0.5, -10)
+            iconLabel.BackgroundTransparency = 1
+            iconLabel.ImageColor3 = SelectedTheme.TextColor
+            iconLabel.Parent = Label
+            
+            Label.Title.TextXAlignment = Enum.TextXAlignment.Left
+            if not Label.Title:FindFirstChild("UIPadding") then
+                local padding = Instance.new("UIPadding")
+                padding.Parent = Label.Title
+            end
+            Label.Title.UIPadding.PaddingLeft = UDim.new(0, 38)
+        elseif not newIcon and iconLabel then
+            iconLabel:Destroy()
+            iconLabel = nil
+            if Label.Title:FindFirstChild("UIPadding") then
+                Label.Title.UIPadding.PaddingLeft = UDim.new(0, 0)
+            end
+        end
+        
+        if iconLabel and newIcon then
+            if typeof(newIcon) == "string" and not tonumber(newIcon) then
+                local success, asset = pcall(getIcon, newIcon)
+                if success then
+                    iconLabel.Image = "rbxassetid://" .. asset.id
+                    iconLabel.ImageRectOffset = asset.imageRectOffset
+                    iconLabel.ImageRectSize = asset.imageRectSize
+                else
+                    iconLabel.Image = "rbxassetid://3944680095"
+                end
+            else
+                iconLabel.Image = "rbxassetid://" .. tostring(newIcon)
+                iconLabel.ImageRectOffset = Vector2.new(0, 0)
+                iconLabel.ImageRectSize = Vector2.new(0, 0)
+            end
+        end
+        
+        UpdateLabelSize()
+    end
+
+    return LabelValue
+end
+
     -- Paragraph
 function Tab:CreateParagraph(ParagraphSettings, SectionParent)
     local ParagraphValue = {}
@@ -4233,4 +4350,239 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
 end
 
 Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-return ArrayFieldLibrary
+--[[-- ]]return ArrayFieldLibrary
+--[[
+local Window = ArrayFieldLibrary:CreateWindow({
+        Name = "ArrayField Example Window",
+        LoadingTitle = "ArrayField Interface Suite",
+        LoadingSubtitle = "by Arrays",
+        ConfigurationSaving = { -- Don't use configurations saving if you want to support executors such as Delta
+            Enabled = true,
+            FolderName = nil, -- Create a custom folder for your hub/game
+            FileName = "ArrayField"
+        },
+        Discord = {
+            Enabled = false,
+            Invite = "sirius", -- The Discord invite code, do not include discord.gg/
+            RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+        },
+        KeySystem = false, -- Set this to true to use our key system
+        KeySettings = {
+            Title = "ArrayField",
+            Subtitle = "Key System",
+            Note = "Join the discord (discord.gg/sirius)",
+            FileName = "ArrayFieldsKeys",
+            SaveKey = false,
+            GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like ArrayField to get the key from
+            Key = {"Hello",'Bye'},
+            Actions = {
+                [1] = {
+                    Text = 'Click here to copy the key link',
+                    OnPress = function()
+
+                    end,
+                }
+            },
+        }
+    })
+    local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
+    local Tab2 = Window:CreateTab("Tab Example 2") -- Title, Image
+    local Section = Tab:CreateSection("Section Example",false) -- The 2nd argument is to tell if its only a Title and doesnt contain element
+    Tab:CreateSpacing(nil,10)
+    local Button = Tab:CreateButton({
+        Name = "Button Example",
+        Info = {
+            Title = 'This is a Button',
+            Description = 'This is a description for the button you know.',
+        },
+        Interact = 'Changable',
+        Callback = function()
+            print('Pressed')
+        end,
+    })
+    Tab:CreateSpacing(nil,10)
+    local Toggle = Tab:CreateToggle({
+        Name = "Toggle Example",
+        Info = {
+            Title = 'Slider template',
+            Image = '12735851647',
+            Description = 'Just a slider for stuff',
+        },
+        CurrentValue = false,
+        Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+        Callback = function(Value)
+            print(Value)
+        end,
+    })
+    Tab:CreateSpacing(nil,10)
+    local ColorPicker = Tab:CreateColorPicker({
+        Name = "Color Picker",
+        Color = Color3.fromRGB(2,255,255),
+        Flag = "ColorPicker1",
+        Callback = function(Value)
+            print(Value)
+        end
+    })
+    Tab:CreateSpacing(nil,10)
+    local Slider = Tab:CreateSlider({
+        Name = "Slider Example",
+        Range = {0, 100},
+        Increment = 10,
+        Suffix = "Bananas",
+        CurrentValue = 10,
+        Flag = "Slider1",
+        Callback = function(Value)
+            print(Value)
+        end,
+    })
+    Tab:CreateSpacing(nil,10)
+    local Keybind = Tab:CreateKeybind({
+        Name = "Keybind Example",
+        CurrentKeybind = "Q",
+        HoldToInteract = false,
+        Flag = "Keybind1",
+        Callback = function(Keybind)
+
+        end,
+    })
+    Tab:CreateSpacing(nil,10)
+    local Section2 = Tab:CreateSection("Inputs Examples",true)
+    Tab:CreateInput({
+        Name = "Numbers Only",
+        PlaceholderText = "Amount",
+        NumbersOnly = true,
+        OnEnter = true,
+        RemoveTextAfterFocusLost = true,
+        Callback = function(Text)
+            print(Text)
+        end,
+    })
+    Tab:CreateInput({
+        Name = "11 Characters Limit",
+        PlaceholderText = "Text",
+        CharacterLimit = 11,
+        RemoveTextAfterFocusLost = true,
+        Callback = function(Text)
+            print(Text)
+        end,
+    })
+    Tab:CreateInput({
+        Name = "No RemoveTextAfterFocusLost",
+        PlaceholderText = "Input",
+        RemoveTextAfterFocusLost = false,
+        Callback = function(Text)
+            print(Text)
+        end,
+    })
+    local Section3= Tab:CreateSection("Dropdown Examples",true)
+    local MultiSelectionDropdown = Tab:CreateDropdown({
+        Name = "Multi Selection",
+        Options = {"Option 1","Option 2",'Option 3'},
+        CurrentOption = {"Option 1","Option 3"} ,
+        MultiSelection = true,
+        Flag = "Dropdown1",
+        Callback = function(Option)
+            print(Option)
+        end,
+    })
+    local SingleSelection = Tab:CreateDropdown({
+        Name = "Single Selection",
+        Options = {"Option 1","Option 2"},
+        CurrentOption = "Option 1",
+        MultiSelection = false,
+        Flag = "Dropdown2",
+        Callback = function(Option)
+            print(Option)
+        end,
+    })
+    local Label = Tab:CreateLabel({"Thanks for using Arrayfield, there were alot of issues but here we are! also if you want to have sex hmu what the hell what the hell what the hell what the hell", "heart"}, Section)
+    local Paragraph = Tab:CreateParagraph({Title = "Paragraph Example", Content = "Paragraph Example"},Section)
+    local Sets = Tab:CreateSection('Set Functions',false)
+    local SButton
+    SButton = Tab:CreateButton({
+        Name = "Button Example",
+        Interact = 'Interact',
+		Description = "the",
+        SectionParent = Sets,
+        Callback = function()
+            SButton:Set(nil,'New Interaction')
+			SButton:SetDescription("sex")
+        end
+    })
+    Tab:CreateButton({
+        Name = "Dropdown Set",
+        Interact = 'Interact',
+        SectionParent = Sets,
+        Callback = function()
+            SingleSelection:Set('Option 1')
+        end
+    })
+
+    local LockTesting = Tab:CreateSection('Lockdown Section',false)
+    local ToLock = {}
+    Tab:CreateToggle({
+        Name = "Lockdown",
+        SectionParent = LockTesting,
+        CurrentValue = false,
+        Callback = function(Value)
+            if Value then
+                for _,v in ToLock do
+                    v:Lock('Locked')
+                end
+            else
+                for _,v in ToLock do
+                    v:Unlock('Locked')
+                end
+            end
+        end,
+    })
+    Tab:CreateSpacing(LockTesting)
+    ToLock.Button = Tab:CreateButton({
+        SectionParent = LockTesting,
+        Name = "Button Example",
+        Interact = 'Interact',
+        Callback = function()
+            print('Pressed')
+        end,
+    })
+    ToLock.Toggle = Tab:CreateToggle({
+        SectionParent = LockTesting,
+        Name = "Toggle Example",
+        CurrentValue = false,
+        Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+        Callback = function(Value)
+            print(Value)
+        end,
+    })
+    ToLock.ColorPicker = Tab:CreateColorPicker({
+        Name = "Color Picker",
+        SectionParent = LockTesting,
+        Color = Color3.fromRGB(2,255,255),
+        Flag = "ColorPicker2",
+        Callback = function(Value)
+            print(Value)
+        end
+    })
+    ToLock.Slider = Tab:CreateSlider({
+        SectionParent = LockTesting,
+        Name = "Slider Example",
+        Range = {0, 100},
+        Increment = 10,
+        Suffix = "Bananas",
+        CurrentValue = 10,
+        Flag = "Slider2",
+        Callback = function(Value)
+            print(Value)
+        end,
+    })
+    ToLock.Keybind = Tab:CreateKeybind({
+        Name = "Keybind Example",
+        CurrentKeybind = "Q",
+        HoldToInteract = false,
+        SectionParent = LockTesting,
+        Flag = "Keybind2",
+        Callback = function(Keybind)
+
+        end,
+    })
+		]]
