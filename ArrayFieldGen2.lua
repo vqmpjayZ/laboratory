@@ -9,21 +9,33 @@ Original by Sirius
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
-Arrays had so many issues its actually insane, dw tho we got awesome vqmpjay that fixed them all tho!!!
+Arrays had so many issues its actually insane
 ]]
 
 --[[
 
 // DD/MM/YY //
--- Everything included from ArrayField Mobile, the first thing i modified from ArrayField
--- Mostly adding new features now
+[- 3.3.25 -]
+- Added Mobile Support (Dragging Functionality + Input Accessibility)
+- Added Lucide icons support to Tabs and Notifications
+- Added rich text support to Paragraphs and Labels
+- Fixed Paragraphs not appearing when not parented to sections
+- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
+- Fixed Search not being able to search for elements parented to sections
+- Fixed Sidetab not loading (Added pcall)
+- Removed Themes Button (pointless)
+- Revamped Design
+- Fixed Sidetab having a chance of duplicating once minimized
+- Added Mobile toggle button
+- Switch unhide UI keybind to K instead of RightShift
+
 [ -1.8.25- ]
 - Added TextWrapping to labels
 - Added Icon support to labels
 - Added Descriptions for Buttons and Toggles
 - Fixed Issue with the sidebar opening when minimized after minimizing too quickly
 - Added Themes
-- Added more Themes
+- Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
 
 let me know what other stuff i can add
 ]]
@@ -289,6 +301,258 @@ local ArrayFieldLibrary = {
 			InputBackground = Color3.fromRGB(40, 25, 25),
 			InputStroke = Color3.fromRGB(80, 50, 50),
 			PlaceholderColor = Color3.fromRGB(200, 150, 150)
+		},
+		Synapse = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(200, 200, 200),
+
+			Background = Color3.fromRGB(26, 26, 30),
+			Topbar = Color3.fromRGB(30, 30, 35),
+			Shadow = Color3.fromRGB(20, 20, 25),
+
+			NotificationBackground = Color3.fromRGB(28, 28, 32),
+			NotificationActionsBackground = Color3.fromRGB(0, 170, 255),
+
+			TabBackground = Color3.fromRGB(35, 35, 40),
+			TabStroke = Color3.fromRGB(45, 45, 50),
+			TabBackgroundSelected = Color3.fromRGB(0, 170, 255),
+			TabTextColor = Color3.fromRGB(200, 200, 200),
+			SelectedTabTextColor = Color3.fromRGB(20, 20, 25),
+
+			ElementBackground = Color3.fromRGB(32, 32, 36),
+			ElementBackgroundHover = Color3.fromRGB(38, 38, 44),
+			SecondaryElementBackground = Color3.fromRGB(26, 26, 30),
+			ElementStroke = Color3.fromRGB(50, 50, 55),
+			SecondaryElementStroke = Color3.fromRGB(40, 40, 45),
+
+			SectionTitleBackground = Color3.fromRGB(26, 26, 30),
+			SidebarBackground = Color3.fromRGB(40, 40, 45),
+
+			SliderBackground = Color3.fromRGB(0, 100, 170),
+			SliderProgress = Color3.fromRGB(0, 170, 255),
+			SliderStroke = Color3.fromRGB(0, 190, 255),
+
+			ToggleBackground = Color3.fromRGB(30, 30, 35),
+			ToggleEnabled = Color3.fromRGB(0, 170, 255),
+			ToggleDisabled = Color3.fromRGB(90, 90, 95),
+			ToggleEnabledStroke = Color3.fromRGB(0, 200, 255),
+			ToggleDisabledStroke = Color3.fromRGB(120, 120, 130),
+			ToggleEnabledOuterStroke = Color3.fromRGB(60, 120, 180),
+			ToggleDisabledOuterStroke = Color3.fromRGB(60, 60, 70),
+
+			InputBackground = Color3.fromRGB(30, 30, 35),
+			InputStroke = Color3.fromRGB(60, 60, 70),
+			PlaceholderColor = Color3.fromRGB(150, 150, 160)
+		},
+		AmberGlow = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(255, 245, 230),
+
+			Background = Color3.fromRGB(45, 30, 20),
+			Topbar = Color3.fromRGB(55, 40, 25),
+			Shadow = Color3.fromRGB(35, 25, 15),
+
+			NotificationBackground = Color3.fromRGB(50, 35, 25),
+			NotificationActionsBackground = Color3.fromRGB(245, 230, 215),
+
+			TabBackground = Color3.fromRGB(75, 50, 35),
+			TabStroke = Color3.fromRGB(90, 60, 45),
+			TabBackgroundSelected = Color3.fromRGB(230, 180, 100),
+			TabTextColor = Color3.fromRGB(250, 220, 200),
+			SelectedTabTextColor = Color3.fromRGB(50, 30, 10),
+
+			ElementBackground = Color3.fromRGB(60, 45, 35),
+			ElementBackgroundHover = Color3.fromRGB(70, 50, 40),
+			SecondaryElementBackground = Color3.fromRGB(55, 40, 30),
+			ElementStroke = Color3.fromRGB(85, 60, 45),
+			SecondaryElementStroke = Color3.fromRGB(75, 50, 35),
+
+			SectionTitleBackground = Color3.fromRGB(45, 30, 20),
+			SidebarBackground = Color3.fromRGB(75, 50, 35),
+
+			SliderBackground = Color3.fromRGB(220, 130, 60),
+			SliderProgress = Color3.fromRGB(250, 150, 75),
+			SliderStroke = Color3.fromRGB(255, 170, 85),
+
+			ToggleBackground = Color3.fromRGB(55, 40, 30),
+			ToggleEnabled = Color3.fromRGB(240, 130, 30),
+			ToggleDisabled = Color3.fromRGB(90, 70, 60),
+			ToggleEnabledStroke = Color3.fromRGB(255, 160, 50),
+			ToggleDisabledStroke = Color3.fromRGB(110, 85, 75),
+			ToggleEnabledOuterStroke = Color3.fromRGB(200, 100, 50),
+			ToggleDisabledOuterStroke = Color3.fromRGB(75, 60, 55),
+
+			InputBackground = Color3.fromRGB(60, 45, 35),
+			InputStroke = Color3.fromRGB(90, 65, 50),
+			PlaceholderColor = Color3.fromRGB(190, 150, 130)
+		},
+		Amethyst = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(240, 240, 240),
+
+			Background = Color3.fromRGB(30, 20, 40),
+			Topbar = Color3.fromRGB(40, 25, 50),
+			Shadow = Color3.fromRGB(20, 15, 30),
+
+			NotificationBackground = Color3.fromRGB(35, 20, 40),
+			NotificationActionsBackground = Color3.fromRGB(240, 240, 250),
+
+			TabBackground = Color3.fromRGB(60, 40, 80),
+			TabStroke = Color3.fromRGB(70, 45, 90),
+			TabBackgroundSelected = Color3.fromRGB(180, 140, 200),
+			TabTextColor = Color3.fromRGB(230, 230, 240),
+			SelectedTabTextColor = Color3.fromRGB(50, 20, 50),
+
+			ElementBackground = Color3.fromRGB(45, 30, 60),
+			ElementBackgroundHover = Color3.fromRGB(50, 35, 70),
+			SecondaryElementBackground = Color3.fromRGB(40, 30, 55),
+			ElementStroke = Color3.fromRGB(70, 50, 85),
+			SecondaryElementStroke = Color3.fromRGB(65, 45, 80),
+
+			SectionTitleBackground = Color3.fromRGB(30, 20, 40),
+			SidebarBackground = Color3.fromRGB(60, 40, 80),
+
+			SliderBackground = Color3.fromRGB(100, 60, 150),
+			SliderProgress = Color3.fromRGB(130, 80, 180),
+			SliderStroke = Color3.fromRGB(150, 100, 200),
+
+			ToggleBackground = Color3.fromRGB(45, 30, 55),
+			ToggleEnabled = Color3.fromRGB(120, 60, 150),
+			ToggleDisabled = Color3.fromRGB(94, 47, 117),
+			ToggleEnabledStroke = Color3.fromRGB(140, 80, 170),
+			ToggleDisabledStroke = Color3.fromRGB(124, 71, 150),
+			ToggleEnabledOuterStroke = Color3.fromRGB(90, 40, 120),
+			ToggleDisabledOuterStroke = Color3.fromRGB(80, 50, 110),
+
+			InputBackground = Color3.fromRGB(45, 30, 60),
+			InputStroke = Color3.fromRGB(80, 50, 110),
+			PlaceholderColor = Color3.fromRGB(178, 150, 200)
+		},
+		Bloom = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(60, 40, 50),
+
+			Background = Color3.fromRGB(255, 240, 245),
+			Topbar = Color3.fromRGB(250, 220, 225),
+			Shadow = Color3.fromRGB(230, 190, 195),
+
+			NotificationBackground = Color3.fromRGB(255, 235, 240),
+			NotificationActionsBackground = Color3.fromRGB(245, 215, 225),
+
+			TabBackground = Color3.fromRGB(240, 210, 220),
+			TabStroke = Color3.fromRGB(230, 200, 210),
+			TabBackgroundSelected = Color3.fromRGB(255, 225, 235),
+			TabTextColor = Color3.fromRGB(80, 40, 60),
+			SelectedTabTextColor = Color3.fromRGB(50, 30, 50),
+
+			ElementBackground = Color3.fromRGB(255, 235, 240),
+			ElementBackgroundHover = Color3.fromRGB(245, 220, 230),
+			SecondaryElementBackground = Color3.fromRGB(255, 235, 240),
+			ElementStroke = Color3.fromRGB(230, 200, 210),
+			SecondaryElementStroke = Color3.fromRGB(230, 200, 210),
+
+			SectionTitleBackground = Color3.fromRGB(255, 240, 245),
+			SidebarBackground = Color3.fromRGB(240, 210, 220),
+
+			SliderBackground = Color3.fromRGB(240, 130, 160),
+			SliderProgress = Color3.fromRGB(250, 160, 180),
+			SliderStroke = Color3.fromRGB(255, 180, 200),
+
+			ToggleBackground = Color3.fromRGB(240, 210, 220),
+			ToggleEnabled = Color3.fromRGB(255, 140, 170),
+			ToggleDisabled = Color3.fromRGB(200, 180, 185),
+			ToggleEnabledStroke = Color3.fromRGB(250, 160, 190),
+			ToggleDisabledStroke = Color3.fromRGB(210, 180, 190),
+			ToggleEnabledOuterStroke = Color3.fromRGB(220, 160, 180),
+			ToggleDisabledOuterStroke = Color3.fromRGB(190, 170, 180),
+
+			InputBackground = Color3.fromRGB(255, 235, 240),
+			InputStroke = Color3.fromRGB(220, 190, 200),
+			PlaceholderColor = Color3.fromRGB(170, 130, 140)
+		},
+		DarkBlue = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(230, 230, 230),
+
+			Background = Color3.fromRGB(20, 25, 30),
+			Topbar = Color3.fromRGB(30, 35, 40),
+			Shadow = Color3.fromRGB(15, 20, 25),
+
+			NotificationBackground = Color3.fromRGB(25, 30, 35),
+			NotificationActionsBackground = Color3.fromRGB(45, 50, 55),
+
+			TabBackground = Color3.fromRGB(35, 40, 45),
+			TabStroke = Color3.fromRGB(45, 50, 60),
+			TabBackgroundSelected = Color3.fromRGB(40, 70, 100),
+			TabTextColor = Color3.fromRGB(200, 200, 200),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
+
+			ElementBackground = Color3.fromRGB(30, 35, 40),
+			ElementBackgroundHover = Color3.fromRGB(40, 45, 50),
+			SecondaryElementBackground = Color3.fromRGB(35, 40, 45),
+			ElementStroke = Color3.fromRGB(45, 50, 60),
+			SecondaryElementStroke = Color3.fromRGB(40, 45, 55),
+
+			SectionTitleBackground = Color3.fromRGB(20, 25, 30),
+			SidebarBackground = Color3.fromRGB(35, 40, 45),
+
+			SliderBackground = Color3.fromRGB(0, 90, 180),
+			SliderProgress = Color3.fromRGB(0, 120, 210),
+			SliderStroke = Color3.fromRGB(0, 150, 240),
+
+			ToggleBackground = Color3.fromRGB(35, 40, 45),
+			ToggleEnabled = Color3.fromRGB(0, 120, 210),
+			ToggleDisabled = Color3.fromRGB(70, 70, 80),
+			ToggleEnabledStroke = Color3.fromRGB(0, 150, 240),
+			ToggleDisabledStroke = Color3.fromRGB(75, 75, 85),
+			ToggleEnabledOuterStroke = Color3.fromRGB(20, 100, 180),
+			ToggleDisabledOuterStroke = Color3.fromRGB(55, 55, 65),
+
+			InputBackground = Color3.fromRGB(25, 30, 35),
+			InputStroke = Color3.fromRGB(45, 50, 60),
+			PlaceholderColor = Color3.fromRGB(150, 150, 160)
+		},
+		Serenity = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(50, 55, 60),
+
+			Background = Color3.fromRGB(240, 245, 250),
+			Topbar = Color3.fromRGB(215, 225, 235),
+			Shadow = Color3.fromRGB(200, 210, 220),
+
+			NotificationBackground = Color3.fromRGB(210, 220, 230),
+			NotificationActionsBackground = Color3.fromRGB(225, 230, 240),
+
+			TabBackground = Color3.fromRGB(200, 210, 220),
+			TabStroke = Color3.fromRGB(180, 190, 200),
+			TabBackgroundSelected = Color3.fromRGB(175, 185, 200),
+			TabTextColor = Color3.fromRGB(50, 55, 60),
+			SelectedTabTextColor = Color3.fromRGB(30, 35, 40),
+
+			ElementBackground = Color3.fromRGB(210, 220, 230),
+			ElementBackgroundHover = Color3.fromRGB(220, 230, 240),
+			SecondaryElementBackground = Color3.fromRGB(200, 210, 220),
+			ElementStroke = Color3.fromRGB(190, 200, 210),
+			SecondaryElementStroke = Color3.fromRGB(180, 190, 200),
+
+			SectionTitleBackground = Color3.fromRGB(240, 245, 250),
+			SidebarBackground = Color3.fromRGB(200, 210, 220),
+
+			SliderBackground = Color3.fromRGB(200, 220, 235),
+			SliderProgress = Color3.fromRGB(70, 130, 180),
+			SliderStroke = Color3.fromRGB(150, 180, 220),
+
+			ToggleBackground = Color3.fromRGB(210, 220, 230),
+			ToggleEnabled = Color3.fromRGB(70, 160, 210),
+			ToggleDisabled = Color3.fromRGB(180, 180, 180),
+			ToggleEnabledStroke = Color3.fromRGB(60, 150, 200),
+			ToggleDisabledStroke = Color3.fromRGB(140, 140, 140),
+			ToggleEnabledOuterStroke = Color3.fromRGB(100, 120, 140),
+			ToggleDisabledOuterStroke = Color3.fromRGB(120, 120, 130),
+
+			InputBackground = Color3.fromRGB(220, 230, 240),
+			InputStroke = Color3.fromRGB(180, 190, 200),
+			PlaceholderColor = Color3.fromRGB(150, 150, 150)
 		}
 	}
 }
@@ -818,6 +1082,7 @@ local neon = (function()  --Open sourced neon module
 	return module
 
 end)()
+
 function CloseNPrompt()
 	local Infos= TweenInfo.new(.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
 	TweenService:Create(NotePrompt,Infos,{BackgroundTransparency = 1,Size = UDim2.fromOffset(436,92),Position = UDim2.fromScale(0.5,0.19)}):Play()
@@ -1477,7 +1742,15 @@ function Unhide()
 		wait(.1)
 		spawn(OpenSideBar)
 	end
+	task.spawn(function()
+    task.wait(0.2)
 
+    for _, Descendant in ipairs(Elements:GetDescendants()) do
+        if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
+            Descendant.BackgroundColor3 = SelectedTheme.Background
+        end
+    end
+end)
 	Debounce = true
 	Main.Position = UDim2.new(0.5, 0, 0.5, 0)
 	Main.Visible = true
@@ -1658,6 +1931,15 @@ function Maximise()
 		wait(.1)
 		spawn(OpenSideBar)
 	end
+task.spawn(function()
+    task.wait(0.2)
+
+    for _, Descendant in ipairs(Elements:GetDescendants()) do
+        if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
+            Descendant.BackgroundColor3 = SelectedTheme.Background
+        end
+    end
+end)
 
 	Debounce = true
 	Topbar.ChangeSize.Image = "rbxassetid://"..10137941941
@@ -1712,7 +1994,6 @@ function Maximise()
 			end
 		end
 	end
-
 
 	wait(0.1)
 
@@ -1869,7 +2150,7 @@ function ApplyTheme()
 
     for _, Descendant in ipairs(Elements:GetDescendants()) do
         if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
-            Descendant.BackgroundColor3 = SelectedTheme.SectionTitleBackground
+            Descendant.BackgroundColor3 = SelectedTheme.TabBackground
         end
     end
 
@@ -2634,6 +2915,11 @@ end
 			Section.Title.Text = SectionName
 			Section.Visible = true
 			Section.Parent = TabPage
+
+			Section.BackgroundTransparency = 1
+			if Section:FindFirstChild("UIStroke") then
+   				Section.UIStroke.Transparency = 1
+			end
 
 			Tab.Elements[SectionName] = {
 				type = 'section',
@@ -4642,32 +4928,6 @@ else
 end
 
 local Sections = ArrayField.Main:GetChildren()
-for _, section in pairs(Sections) do
-    if section:IsA("Frame") then
-        if section:FindFirstChild("Minimize") then
-            section.Minimize.Visible = false
-        end
-        
-        if section:FindFirstChild("Border") then
-            section.Border.Visible = false
-        end
-        
-        section.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    end
-end
-
-for _, section in pairs(Sections) do
-    if section:IsA("Frame") then
-        if section:FindFirstChild("Minimize") then
-            section.Minimize.Visible = false
-        end
-        if section:FindFirstChild("Border") then
-            section.Border.Visible = false
-        end
-        section.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    end
-end
-
 local PromptButtons = ArrayField.Main.Prompt.Prompt.Buttons
 PromptButtons.Size = UDim2.new(0, 335, 0, 40)
 
@@ -4675,21 +4935,14 @@ local Elements = ArrayField.Main.Elements
 Elements.Position = UDim2.new(0.5, 80, 0.55, 0)
 Elements.Size = UDim2.new(1, -180, 0, 295)
 
-for _, Descendant in ipairs(Elements:GetDescendants()) do
-    if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
-        Descendant.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    end
-end
-
-Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
---[[-- ]] return ArrayFieldLibrary
+--[[-- ]]return ArrayFieldLibrary
 --[[
 -- template
 local Window = ArrayFieldLibrary:CreateWindow({
         Name = "ArrayField Example Window",
         LoadingTitle = "ArrayField Interface Suite",
         LoadingSubtitle = "by Arrays",
-		Theme = "Green",
+		Theme = "Bloom",
         ConfigurationSaving = { -- Don't use configurations saving if you want to support executors such as Delta
             Enabled = true,
             FolderName = nil, -- Create a custom folder for your hub/game
@@ -4725,10 +4978,7 @@ local Window = ArrayFieldLibrary:CreateWindow({
     Tab:CreateSpacing(nil,10)
     local Button = Tab:CreateButton({
         Name = "Button Example",
-        Info = {
-            Title = 'This is a Button',
-            Description = 'This is a description for the button you know.',
-        },
+		Description = "start diggin in yo butt twin",
         Interact = 'Changable',
         Callback = function()
             print('Pressed')
