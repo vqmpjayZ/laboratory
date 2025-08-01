@@ -9,16 +9,21 @@ Original by Sirius
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
+Arrays had so many issues its actually insane, dw tho we got awesome vqmpjay that fixed them all tho!!!
 ]]
 
 --[[
 
 // DD/MM/YY //
+-- Everything included from ArrayField Mobile, the first thing i modified from ArrayField
+-- Mostly adding new features now
 [ -1.8.25- ]
 - Added TextWrapping to labels
 - Added Icon support to labels
 - Added Descriptions for Buttons and Toggles
 - Fixed Issue with the sidebar opening when minimized after minimizing too quickly
+- Added Themes
+- Added more Themes
 
 let me know what other stuff i can add
 ]]
@@ -34,7 +39,7 @@ local ArrayFieldLibrary = {
 	Flags = {},
 	Theme = {
 		Default = {
-			TextFont = "Default", -- Default will use the various font faces used across ArrayField
+			TextFont = "Default",
 			TextColor = Color3.fromRGB(240, 240, 240),
 
 			Background = Color3.fromRGB(25, 25, 25),
@@ -52,9 +57,12 @@ local ArrayFieldLibrary = {
 
 			ElementBackground = Color3.fromRGB(35, 35, 35),
 			ElementBackgroundHover = Color3.fromRGB(40, 40, 40),
-			SecondaryElementBackground = Color3.fromRGB(25, 25, 25), -- For labels and paragraphs
+			SecondaryElementBackground = Color3.fromRGB(25, 25, 25),
 			ElementStroke = Color3.fromRGB(50, 50, 50),
-			SecondaryElementStroke = Color3.fromRGB(40, 40, 40), -- For labels and paragraphs
+			SecondaryElementStroke = Color3.fromRGB(40, 40, 40),
+
+			SectionTitleBackground = Color3.fromRGB(25, 25, 25),
+			SidebarBackground = Color3.fromRGB(50, 50, 50),
 
 			SliderBackground = Color3.fromRGB(43, 105, 159),
 			SliderProgress = Color3.fromRGB(43, 105, 159),
@@ -73,8 +81,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(178, 178, 178)
 		},
 		Light = {
-			TextFont = "Gotham",  -- Default will use the various font faces used across ArrayField
-			TextColor = Color3.fromRGB(50, 50, 50), -- i need to make all text 240, 240, 240 and base gray on transparency not color to do this
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(50, 50, 50),
 
 			Background = Color3.fromRGB(255, 255, 255),
 			Topbar = Color3.fromRGB(217, 217, 217),
@@ -91,9 +99,12 @@ local ArrayFieldLibrary = {
 
 			ElementBackground = Color3.fromRGB(198, 198, 198),
 			ElementBackgroundHover = Color3.fromRGB(230, 230, 230),
-			SecondaryElementBackground = Color3.fromRGB(136, 136, 136), -- For labels and paragraphs
+			SecondaryElementBackground = Color3.fromRGB(136, 136, 136),
 			ElementStroke = Color3.fromRGB(180, 199, 97),
-			SecondaryElementStroke = Color3.fromRGB(40, 40, 40),  --For labels and paragraphs
+			SecondaryElementStroke = Color3.fromRGB(40, 40, 40),
+
+			SectionTitleBackground = Color3.fromRGB(255, 255, 255),
+			SidebarBackground = Color3.fromRGB(200, 200, 200),
 
 			SliderBackground = Color3.fromRGB(31, 159, 71),
 			SliderProgress = Color3.fromRGB(31, 159, 71),
@@ -111,11 +122,176 @@ local ArrayFieldLibrary = {
 			InputStroke = Color3.fromRGB(19, 65, 31),
 			PlaceholderColor = Color3.fromRGB(178, 178, 178)
 		},
+		Ocean = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(200, 230, 255),
 
+			Background = Color3.fromRGB(15, 25, 35),
+			Topbar = Color3.fromRGB(20, 35, 50),
+			Shadow = Color3.fromRGB(10, 20, 30),
+
+			NotificationBackground = Color3.fromRGB(15, 25, 35),
+			NotificationActionsBackground = Color3.fromRGB(100, 150, 200),
+
+			TabBackground = Color3.fromRGB(30, 50, 70),
+			TabStroke = Color3.fromRGB(50, 80, 110),
+			TabBackgroundSelected = Color3.fromRGB(40, 120, 180),
+			TabTextColor = Color3.fromRGB(200, 230, 255),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
+
+			ElementBackground = Color3.fromRGB(25, 40, 55),
+			ElementBackgroundHover = Color3.fromRGB(30, 50, 70),
+			SecondaryElementBackground = Color3.fromRGB(20, 35, 50),
+			ElementStroke = Color3.fromRGB(40, 70, 100),
+			SecondaryElementStroke = Color3.fromRGB(35, 60, 85),
+
+			SectionTitleBackground = Color3.fromRGB(15, 25, 35),
+			SidebarBackground = Color3.fromRGB(35, 55, 75),
+
+			SliderBackground = Color3.fromRGB(30, 100, 150),
+			SliderProgress = Color3.fromRGB(50, 150, 220),
+			SliderStroke = Color3.fromRGB(70, 170, 240),
+
+			ToggleBackground = Color3.fromRGB(20, 35, 50),
+			ToggleEnabled = Color3.fromRGB(40, 150, 220),
+			ToggleDisabled = Color3.fromRGB(80, 100, 120),
+			ToggleEnabledStroke = Color3.fromRGB(60, 180, 255),
+			ToggleDisabledStroke = Color3.fromRGB(100, 120, 140),
+			ToggleEnabledOuterStroke = Color3.fromRGB(50, 120, 180),
+			ToggleDisabledOuterStroke = Color3.fromRGB(60, 80, 100),
+
+			InputBackground = Color3.fromRGB(20, 35, 50),
+			InputStroke = Color3.fromRGB(40, 70, 100),
+			PlaceholderColor = Color3.fromRGB(150, 180, 210)
+		},
+		Purple = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(220, 200, 255),
+
+			Background = Color3.fromRGB(20, 15, 35),
+			Topbar = Color3.fromRGB(35, 25, 55),
+			Shadow = Color3.fromRGB(15, 10, 30),
+
+			NotificationBackground = Color3.fromRGB(20, 15, 35),
+			NotificationActionsBackground = Color3.fromRGB(150, 100, 200),
+
+			TabBackground = Color3.fromRGB(50, 30, 80),
+			TabStroke = Color3.fromRGB(80, 50, 120),
+			TabBackgroundSelected = Color3.fromRGB(120, 80, 180),
+			TabTextColor = Color3.fromRGB(220, 200, 255),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
+
+			ElementBackground = Color3.fromRGB(40, 25, 65),
+			ElementBackgroundHover = Color3.fromRGB(50, 35, 80),
+			SecondaryElementBackground = Color3.fromRGB(35, 20, 60),
+			ElementStroke = Color3.fromRGB(70, 40, 110),
+			SecondaryElementStroke = Color3.fromRGB(60, 35, 95),
+
+			SectionTitleBackground = Color3.fromRGB(20, 15, 35),
+			SidebarBackground = Color3.fromRGB(55, 35, 85),
+
+			SliderBackground = Color3.fromRGB(80, 50, 140),
+			SliderProgress = Color3.fromRGB(120, 80, 200),
+			SliderStroke = Color3.fromRGB(150, 100, 230),
+
+			ToggleBackground = Color3.fromRGB(35, 20, 60),
+			ToggleEnabled = Color3.fromRGB(140, 80, 220),
+			ToggleDisabled = Color3.fromRGB(100, 80, 120),
+			ToggleEnabledStroke = Color3.fromRGB(180, 120, 255),
+			ToggleDisabledStroke = Color3.fromRGB(120, 100, 140),
+			ToggleEnabledOuterStroke = Color3.fromRGB(120, 70, 180),
+			ToggleDisabledOuterStroke = Color3.fromRGB(80, 60, 100),
+
+			InputBackground = Color3.fromRGB(35, 20, 60),
+			InputStroke = Color3.fromRGB(70, 40, 110),
+			PlaceholderColor = Color3.fromRGB(180, 150, 210)
+		},
+		Green = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(200, 255, 200),
+
+			Background = Color3.fromRGB(15, 25, 15),
+			Topbar = Color3.fromRGB(25, 40, 25),
+			Shadow = Color3.fromRGB(10, 20, 10),
+
+			NotificationBackground = Color3.fromRGB(15, 25, 15),
+			NotificationActionsBackground = Color3.fromRGB(100, 200, 100),
+
+			TabBackground = Color3.fromRGB(40, 60, 40),
+			TabStroke = Color3.fromRGB(60, 90, 60),
+			TabBackgroundSelected = Color3.fromRGB(80, 160, 80),
+			TabTextColor = Color3.fromRGB(200, 255, 200),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
+
+			ElementBackground = Color3.fromRGB(30, 45, 30),
+			ElementBackgroundHover = Color3.fromRGB(40, 60, 40),
+			SecondaryElementBackground = Color3.fromRGB(25, 40, 25),
+			ElementStroke = Color3.fromRGB(50, 80, 50),
+			SecondaryElementStroke = Color3.fromRGB(45, 70, 45),
+
+			SectionTitleBackground = Color3.fromRGB(15, 25, 15),
+			SidebarBackground = Color3.fromRGB(45, 70, 45),
+
+			SliderBackground = Color3.fromRGB(60, 120, 60),
+			SliderProgress = Color3.fromRGB(80, 180, 80),
+			SliderStroke = Color3.fromRGB(100, 200, 100),
+
+			ToggleBackground = Color3.fromRGB(25, 40, 25),
+			ToggleEnabled = Color3.fromRGB(80, 200, 80),
+			ToggleDisabled = Color3.fromRGB(80, 100, 80),
+			ToggleEnabledStroke = Color3.fromRGB(120, 255, 120),
+			ToggleDisabledStroke = Color3.fromRGB(100, 120, 100),
+			ToggleEnabledOuterStroke = Color3.fromRGB(60, 150, 60),
+			ToggleDisabledOuterStroke = Color3.fromRGB(60, 80, 60),
+
+			InputBackground = Color3.fromRGB(25, 40, 25),
+			InputStroke = Color3.fromRGB(50, 80, 50),
+			PlaceholderColor = Color3.fromRGB(150, 200, 150)
+		},
+		Red = {
+			TextFont = "Gotham",
+			TextColor = Color3.fromRGB(255, 200, 200),
+
+			Background = Color3.fromRGB(25, 15, 15),
+			Topbar = Color3.fromRGB(40, 25, 25),
+			Shadow = Color3.fromRGB(20, 10, 10),
+
+			NotificationBackground = Color3.fromRGB(25, 15, 15),
+			NotificationActionsBackground = Color3.fromRGB(200, 100, 100),
+
+			TabBackground = Color3.fromRGB(60, 40, 40),
+			TabStroke = Color3.fromRGB(90, 60, 60),
+			TabBackgroundSelected = Color3.fromRGB(160, 80, 80),
+			TabTextColor = Color3.fromRGB(255, 200, 200),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
+
+			ElementBackground = Color3.fromRGB(45, 30, 30),
+			ElementBackgroundHover = Color3.fromRGB(60, 40, 40),
+			SecondaryElementBackground = Color3.fromRGB(40, 25, 25),
+			ElementStroke = Color3.fromRGB(80, 50, 50),
+			SecondaryElementStroke = Color3.fromRGB(70, 45, 45),
+
+			SectionTitleBackground = Color3.fromRGB(25, 15, 15),
+			SidebarBackground = Color3.fromRGB(70, 45, 45),
+
+			SliderBackground = Color3.fromRGB(120, 60, 60),
+			SliderProgress = Color3.fromRGB(180, 80, 80),
+			SliderStroke = Color3.fromRGB(200, 100, 100),
+
+			ToggleBackground = Color3.fromRGB(40, 25, 25),
+			ToggleEnabled = Color3.fromRGB(200, 80, 80),
+			ToggleDisabled = Color3.fromRGB(100, 80, 80),
+			ToggleEnabledStroke = Color3.fromRGB(255, 120, 120),
+			ToggleDisabledStroke = Color3.fromRGB(120, 100, 100),
+			ToggleEnabledOuterStroke = Color3.fromRGB(150, 60, 60),
+			ToggleDisabledOuterStroke = Color3.fromRGB(80, 60, 60),
+
+			InputBackground = Color3.fromRGB(40, 25, 25),
+			InputStroke = Color3.fromRGB(80, 50, 50),
+			PlaceholderColor = Color3.fromRGB(200, 150, 150)
+		}
 	}
 }
-
-
 
 -- Services
 local UserInputService = game:GetService("UserInputService")
@@ -1222,7 +1398,6 @@ end)
 
 function Hide()
 	MobileToggle:Show()
-	-- Check if UI is already minimized, don't show sidebar if it is
 	if not Minimised and not SideBarClosed then
 		spawn(CloseSideBar)
 		TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
@@ -1298,7 +1473,6 @@ end
 
 function Unhide()
 	MobileToggle:Hide()
-	-- Only show sidebar if UI wasn't minimized before hiding
 	if not Minimised and SideBarClosed then
 		wait(.1)
 		spawn(OpenSideBar)
@@ -1480,7 +1654,6 @@ SearchBar.Clear.TouchTap:Connect(function()
 end)
 
 function Maximise()
-	-- Only show sidebar if it was closed during minimization
 	if SideBarClosed then
 		wait(.1)
 		spawn(OpenSideBar)
@@ -1601,7 +1774,6 @@ function Minimise()
 	if not SearchHided then
 		spawn(CloseSearch)
 	end
-	-- Close sidebar when minimizing
 	if not SideBarClosed then
 		wait(.1)
         spawn(CloseSideBar)
@@ -1666,30 +1838,99 @@ function Minimise()
 	Debounce = false
 end
 
+function ApplyTheme()
+    ArrayField.Main.BackgroundColor3 = SelectedTheme.Background
+    ArrayField.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
+    ArrayField.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
+    ArrayField.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
+
+    ArrayField.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
+    ArrayField.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
+    if ArrayField.Main.Topbar:FindFirstChild("Search") then
+        ArrayField.Main.Topbar.Search.ImageColor3 = SelectedTheme.TextColor
+    end
+
+    ArrayField.Main.SideTabList.BackgroundColor3 = SelectedTheme.SidebarBackground
+
+    local Sections = ArrayField.Main:GetChildren()
+    for _, section in pairs(Sections) do
+        if section:IsA("Frame") then
+            if section:FindFirstChild("Minimize") then
+                section.Minimize.Visible = false
+            end
+            
+            if section:FindFirstChild("Border") then
+                section.Border.Visible = false
+            end
+            
+            section.BackgroundColor3 = SelectedTheme.SidebarBackground
+        end
+    end
+
+    for _, Descendant in ipairs(Elements:GetDescendants()) do
+        if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
+            Descendant.BackgroundColor3 = SelectedTheme.SectionTitleBackground
+        end
+    end
+
+    for _, obj in ipairs(ArrayField:GetDescendants()) do
+        if obj.ClassName == "TextLabel" or obj.ClassName == "TextBox" or obj.ClassName == "TextButton" then
+            if SelectedTheme.TextFont ~= "Default" then 
+                obj.TextColor3 = SelectedTheme.TextColor
+                obj.Font = SelectedTheme.TextFont
+            end
+        end
+    end
+
+    for _, TabPage in ipairs(Elements:GetChildren()) do
+        for _, Element in ipairs(TabPage:GetChildren()) do
+            if Element.ClassName == "Frame" and Element.Name ~= "Placeholder" and Element.Name ~= "SectionSpacing" and Element.Name ~= "" then
+                Element.BackgroundColor3 = SelectedTheme.ElementBackground
+                if Element:FindFirstChild("UIStroke") then
+                    Element.UIStroke.Color = SelectedTheme.ElementStroke
+                end
+            end
+        end
+    end
+end
+
 function ArrayFieldLibrary:CreateWindow(Settings)
     Topbar.Type.Active = false
     Topbar.Type.AutoButtonColor = false
 
+    if Settings.Theme then
+        if ArrayFieldLibrary.Theme[Settings.Theme] then
+            SelectedTheme = ArrayFieldLibrary.Theme[Settings.Theme]
+        else
+            warn("ArrayField: Theme '" .. Settings.Theme .. "' not found, using Default theme")
+            SelectedTheme = ArrayFieldLibrary.Theme.Default
+        end
+    else
+        SelectedTheme = ArrayFieldLibrary.Theme.Default
+    end
+
     local OriginalTopbarSize = Topbar.Size
-	ArrayField.Enabled = false
-	local Passthrough = false
-	Topbar.Title.Text = Settings.Name
-	Main.Size = UDim2.new(0, 250, 0, 260)
-	Main.Visible = true
-	Main.BackgroundTransparency = 1
-	LoadingFrame.Title.TextTransparency = 1
-	LoadingFrame.Subtitle.TextTransparency = 1
-	Main.Shadow.Image.ImageTransparency = 1
-	LoadingFrame.Version.TextTransparency = 1
+    ArrayField.Enabled = false
+    local Passthrough = false
+    Topbar.Title.Text = Settings.Name
+    Main.Size = UDim2.new(0, 250, 0, 260)
+    Main.Visible = true
+    Main.BackgroundTransparency = 1
+    LoadingFrame.Title.TextTransparency = 1
+    LoadingFrame.Subtitle.TextTransparency = 1
+    Main.Shadow.Image.ImageTransparency = 1
+    LoadingFrame.Version.TextTransparency = 1
     LoadingFrame.Version.Position = UDim2.new(0, 100, 0, 230)
-	LoadingFrame.Title.Text = Settings.LoadingTitle or "Arrayfield Interface Suite"
-	LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta"
-	if Settings.LoadingTitle ~= "Arrayfield Interface Suite" then
-		LoadingFrame.Version.Text = "ArrayField UI"
-	end
-	Topbar.Visible = false
-	Elements.Visible = false
-	LoadingFrame.Visible = true
+    LoadingFrame.Title.Text = Settings.LoadingTitle or "Arrayfield Interface Suite"
+    LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta"
+    if Settings.LoadingTitle ~= "Arrayfield Interface Suite" then
+        LoadingFrame.Version.Text = "ArrayField UI"
+    end
+    Topbar.Visible = false
+    Elements.Visible = false
+    LoadingFrame.Visible = true
+
+    ApplyTheme()
 
 	pcall(function()
 		if not Settings.ConfigurationSaving.FileName then
@@ -2187,7 +2428,6 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 		SideTabButton.Interact.MouseButton1Click:Connect(Pick)
 
 -- Button
-
 function Tab:CreateButton(ButtonSettings)
     local ButtonValue = {Locked = false}
 
@@ -2242,9 +2482,8 @@ function Tab:CreateButton(ButtonSettings)
         local textService = game:GetService("TextService")
         local textSize = textService:GetTextSize(ButtonSettings.Description, 13, Enum.Font.Gotham, Vector2.new(400, math.huge))
         
-        -- Position description in middle-left area, below the title
         DescriptionLabel.Size = UDim2.new(0, math.min(textSize.X + 20, 420), 0, math.max(textSize.Y + 4, 20))
-        DescriptionLabel.Position = UDim2.new(0, 15, 0.46, 0) -- Left aligned with some padding
+        DescriptionLabel.Position = UDim2.new(0, 15, 0.46, 0)
     end
     
     if ButtonSettings.Description then
@@ -2287,7 +2526,7 @@ function Tab:CreateButton(ButtonSettings)
             
             -- Move title further up when showing description
             local NewTitleY = OriginalTitlePosition.Y.Scale
-            local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 15 -- Move title further up
+            local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 15
             
             TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Position = UDim2.new(OriginalTitlePosition.X.Scale, OriginalTitlePosition.X.Offset, NewTitleY, NewTitleYOffset)
@@ -2299,7 +2538,6 @@ function Tab:CreateButton(ButtonSettings)
                 Size = UDim2.new(0, 465, 0, newHeight)
             }):Play()
             
-            -- Fade in description text
             TweenService:Create(DescriptionLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         end
     end)
@@ -2316,10 +2554,9 @@ function Tab:CreateButton(ButtonSettings)
                 Position = OriginalTitlePosition
             }):Play()
             
-            -- Fade out description text
             TweenService:Create(DescriptionLabel, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
             
-            -- Shrink button back to original size
+            -- Shrink
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Size = UDim2.new(0, 465, 0, 40)
             }):Play()
@@ -2560,7 +2797,6 @@ function Tab:CreateLabel(LabelSettings, SectionParent)
             iconLabel.ImageRectSize = Vector2.new(0, 0)
         end
         
-        -- Only adjust the left padding when there's an icon
         Label.Title.TextXAlignment = Enum.TextXAlignment.Left
         local padding = Instance.new("UIPadding")
         padding.PaddingLeft = UDim.new(0, 38)
@@ -4137,7 +4373,7 @@ end
 				TweenService:Create(Slider.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
 				TweenService:Create(Slider.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
 				wait(0.2)
-				if not SliderSettings.Locked then return end --no icon bug
+				if not SliderSettings.Locked then return end
 				TweenService:Create(Slider.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
 			end
 			function SliderSettings:Unlock()
@@ -4145,7 +4381,7 @@ end
 				SliderSettings.Locked = false
 				wait(0.2)
 				TweenService:Create(Slider.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
-				if SliderSettings.Locked then return end --no icon bug
+				if SliderSettings.Locked then return end
 				TweenService:Create(Slider.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
 				TweenService:Create(Slider.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
 			end
@@ -4163,6 +4399,15 @@ end
 
 		return Tab
 	end
+
+	function ArrayFieldLibrary:SetTheme(ThemeName)
+    if ArrayFieldLibrary.Theme[ThemeName] then
+        SelectedTheme = ArrayFieldLibrary.Theme[ThemeName]
+        ApplyTheme()
+    else
+        warn("ArrayField: Theme '" .. ThemeName .. "' not found")
+    end
+end
 
 	Elements.Visible = true
 
@@ -4437,13 +4682,14 @@ for _, Descendant in ipairs(Elements:GetDescendants()) do
 end
 
 Main.SideTabList.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
---[[-- ]]return ArrayFieldLibrary
+--[[-- ]] return ArrayFieldLibrary
 --[[
 -- template
 local Window = ArrayFieldLibrary:CreateWindow({
         Name = "ArrayField Example Window",
         LoadingTitle = "ArrayField Interface Suite",
         LoadingSubtitle = "by Arrays",
+		Theme = "Green",
         ConfigurationSaving = { -- Don't use configurations saving if you want to support executors such as Delta
             Enabled = true,
             FolderName = nil, -- Create a custom folder for your hub/game
