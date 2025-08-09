@@ -15,7 +15,7 @@ Arrays had so many issues its actually insane
 --[[
 
 // DD/MM/YY //
-[- 3.3.25 -]
+[ -3.3.25- ]
 - Added Mobile Support (Dragging Functionality + Input Accessibility)
 - Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
@@ -32,7 +32,7 @@ Arrays had so many issues its actually insane
 [ -1.8.25- ]
 - Added TextWrapping to labels
 - Added Icon support to labels
-- Added Descriptions for Buttons and Toggles
+- Added Descriptions for Buttons, Toggles, Sliders and Inputs
 - Fixed Issue with the sidebar opening when minimized after minimizing too quickly
 - Added Themes
 - Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
@@ -3235,155 +3235,225 @@ function Tab:CreateParagraph(ParagraphSettings, SectionParent)
     end
     
     return ParagraphValue
-end       
-        -- Input
-        function Tab:CreateInput(InputSettings)
-            local Input = Elements.Template.Input:Clone()
-            Input.Name = InputSettings.Name
+end      
+
+     -- Input
+function Tab:CreateInput(InputSettings)
+    local Input = Elements.Template.Input:Clone()
+    Input.Name = InputSettings.Name
+    Input.Title.Text = InputSettings.Name
+    Input.Visible = true
+    InputSettings.Locked = false
+    
+    Tab.Elements[InputSettings.Name] = {
+        type = 'input',
+        section = InputSettings.SectionParent,
+        element = Input
+    }
+    
+    if InputSettings.SectionParent then
+        Input.Parent = InputSettings.SectionParent.Holder
+    else
+        Input.Parent = TabPage
+    end
+    
+    AddInfos(Input, InputSettings.Info, 'input')
+    
+    Input.BackgroundTransparency = 1
+    Input.UIStroke.Transparency = 1
+    Input.Title.TextTransparency = 1
+    Input.InputFrame.BackgroundColor3 = SelectedTheme.InputBackground
+    Input.InputFrame.UIStroke.Color = SelectedTheme.InputStroke
+    
+    local DescriptionLabel = nil
+    local DescriptionVisible = false
+    local OriginalTitlePosition = Input.Title.Position
+    
+    local function CreateDescriptionLabel()
+        if not InputSettings.Description then return end
+        
+        DescriptionLabel = Instance.new("TextLabel")
+        DescriptionLabel.Name = "DescriptionText"
+        DescriptionLabel.BackgroundTransparency = 1
+        DescriptionLabel.Text = InputSettings.Description
+        DescriptionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+        DescriptionLabel.TextSize = 13
+        DescriptionLabel.Font = Enum.Font.Gotham
+        DescriptionLabel.TextXAlignment = Enum.TextXAlignment.Left
+        DescriptionLabel.TextYAlignment = Enum.TextYAlignment.Center
+        DescriptionLabel.TextWrapped = true
+        DescriptionLabel.TextTransparency = 1
+        DescriptionLabel.Visible = false
+        DescriptionLabel.Parent = Input
+        
+        local textService = game:GetService("TextService")
+        local textSize = textService:GetTextSize(InputSettings.Description, 13, Enum.Font.Gotham, Vector2.new(400, math.huge))
+        
+        DescriptionLabel.Size = UDim2.new(0, math.min(textSize.X + 20, 420), 0, math.max(textSize.Y + 4, 20))
+        DescriptionLabel.Position = UDim2.new(0, 15, 0.46, 0)
+    end
+    
+    if InputSettings.Description then
+        CreateDescriptionLabel()
+    end
+    
+    TweenService:Create(Input, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+    TweenService:Create(Input.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+    TweenService:Create(Input.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+    
+    Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
+    Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
+
+    local InputButton = Instance.new("TextButton")
+    InputButton.Name = "InputButton"
+    InputButton.BackgroundTransparency = 1
+    InputButton.Size = UDim2.new(1, 0, 1, 0)
+    InputButton.Text = ""
+    InputButton.ZIndex = 10
+    InputButton.Parent = Main.Elements
+
+    InputButton.MouseButton1Click:Connect(function()
+        if not InputSettings.Locked then
+            Input.InputFrame.InputBox:CaptureFocus()
+        end
+    end)
+    
+    InputButton.TouchTap:Connect(function()
+        if not InputSettings.Locked then
+            Input.InputFrame.InputBox:CaptureFocus()
+        end
+    end)
+    
+    if InputSettings.NumbersOnly or InputSettings.CharacterLimit then
+        Input.InputFrame.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
+            if Input.InputFrame.InputBox.Text == '' then return end
+            if InputSettings.CharacterLimit then
+                Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1, InputSettings.CharacterLimit)
+            end
+            if InputSettings.NumbersOnly then
+                Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub('%D+', '')
+            end
+        end)
+    end
+    
+    Input.InputFrame.InputBox.FocusLost:Connect(function(enter)
+        if InputSettings.OnEnter and not enter then
+            if InputSettings.RemoveTextAfterFocusLost then
+                Input.InputFrame.InputBox.Text = ""
+            end
+            return
+        end
+        
+        local Success, Response = pcall(function()
+            InputSettings.Callback(Input.InputFrame.InputBox.Text)
+        end)
+        
+        if not Success then
+            TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+            TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+            Input.Title.Text = "Callback Error"
+            print("ArrayField | "..InputSettings.Name.." Callback Error " ..tostring(Response))
+            wait(0.5)
             Input.Title.Text = InputSettings.Name
-            Input.Visible = true
-            InputSettings.Locked = false
+            TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+            TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+        end
+        
+        if InputSettings.RemoveTextAfterFocusLost then
+            Input.InputFrame.InputBox.Text = ""
+        end
+        
+        SaveConfiguration()
+    end)
+    
+    Input.MouseEnter:Connect(function()
+        TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+        
+        if InputSettings.Description and DescriptionLabel and not DescriptionVisible then
+            DescriptionVisible = true
+            DescriptionLabel.Visible = true
             
-            Tab.Elements[InputSettings.Name] = {
-                type = 'input',
-                section = InputSettings.SectionParent,
-                element = Input
-            }
+            local NewTitleY = OriginalTitlePosition.Y.Scale
+            local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 15
             
-            if InputSettings.SectionParent then
-                Input.Parent = InputSettings.SectionParent.Holder
-            else
-                Input.Parent = TabPage
+            TweenService:Create(Input.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Position = UDim2.new(OriginalTitlePosition.X.Scale, OriginalTitlePosition.X.Offset, NewTitleY, NewTitleYOffset)
+            }):Play()
+            
+            local newHeight = 40 + DescriptionLabel.AbsoluteSize.Y + 12
+            TweenService:Create(Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Size = UDim2.new(0, 465, 0, newHeight)
+            }):Play()
+            
+            TweenService:Create(DescriptionLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        end
+    end)
+    
+    Input.MouseLeave:Connect(function()
+        TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+        
+        if InputSettings.Description and DescriptionLabel and DescriptionVisible then
+            DescriptionVisible = false
+            
+            TweenService:Create(Input.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Position = OriginalTitlePosition
+            }):Play()
+            
+            TweenService:Create(DescriptionLabel, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            
+            TweenService:Create(Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Size = UDim2.new(0, 465, 0, 40)
+            }):Play()
+            
+            wait(0.3)
+            if not DescriptionVisible then
+                DescriptionLabel.Visible = false
             end
-            
-            AddInfos(Input, InputSettings.Info, 'input')
-            
-            Input.BackgroundTransparency = 1
-            Input.UIStroke.Transparency = 1
-            Input.Title.TextTransparency = 1
-            Input.InputFrame.BackgroundColor3 = SelectedTheme.InputBackground
-            Input.InputFrame.UIStroke.Color = SelectedTheme.InputStroke
-            
-            TweenService:Create(Input, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Input.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Input.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            
-            Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
-            Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
-
-            local InputButton = Instance.new("TextButton")
-            InputButton.Name = "InputButton"
-            InputButton.BackgroundTransparency = 1
-            InputButton.Size = UDim2.new(1, 0, 1, 0)
-            InputButton.Text = ""
-            InputButton.ZIndex = 10
-            InputButton.Parent = Main.Elements
-
-            InputButton.MouseButton1Click:Connect(function()
-                if not InputSettings.Locked then
-                    Input.InputFrame.InputBox:CaptureFocus()
-                end
-            end)
-            
-            InputButton.TouchTap:Connect(function()
-                if not InputSettings.Locked then
-                    Input.InputFrame.InputBox:CaptureFocus()
-                end
-            end)
-            
-            if InputSettings.NumbersOnly or InputSettings.CharacterLimit then
-                Input.InputFrame.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
-                    if Input.InputFrame.InputBox.Text == '' then return end
-                    if InputSettings.CharacterLimit then
-                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1, InputSettings.CharacterLimit)
-                    end
-                    if InputSettings.NumbersOnly then
-                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub('%D+', '')
-                    end
-                end)
-            end
-            
-            Input.InputFrame.InputBox.FocusLost:Connect(function(enter)
-                if InputSettings.OnEnter and not enter then
-                    if InputSettings.RemoveTextAfterFocusLost then
-                        Input.InputFrame.InputBox.Text = ""
-                    end
-                    return
-                end
-                
-                local Success, Response = pcall(function()
-                    InputSettings.Callback(Input.InputFrame.InputBox.Text)
-                end)
-                
-                if not Success then
-                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    Input.Title.Text = "Callback Error"
-                    print("ArrayField | "..InputSettings.Name.." Callback Error " ..tostring(Response))
-                    wait(0.5)
-                    Input.Title.Text = InputSettings.Name
-                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                end
-                
-                if InputSettings.RemoveTextAfterFocusLost then
-                    Input.InputFrame.InputBox.Text = ""
-                end
-                
-                SaveConfiguration()
-            end)
-            
-            Input.MouseEnter:Connect(function()
-                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-            end)
-            
-            Input.MouseLeave:Connect(function()
-                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-            end)
-            
-            Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
-                TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
-            end)
-            
-            Input.InputFrame.InputBox.Focused:Connect(function()
-                if InputSettings.Locked then
-                    Input.InputFrame.InputBox:ReleaseFocus()
-                    return
-                end
-            end)
-            
-            function InputSettings:Destroy()
-                Input:Destroy()
-            end
-            
-            function InputSettings:Lock(Reason)
-                if InputSettings.Locked then return end
-                InputSettings.Locked = true
-                Input.Lock.Reason.Text = Reason or 'Locked'
-                TweenService:Create(Input.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
-                TweenService:Create(Input.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
-                wait(0.2)
-                if not InputSettings.Locked then return end --no icon bug
-                TweenService:Create(Input.Lock.Reason.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
-            end
-            
-            function InputSettings:Unlock()
-                if not InputSettings.Locked then return end
-                InputSettings.Locked = false
-                wait(0.2)
-                TweenService:Create(Input.Lock.Reason.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 1}):Play()
-                if InputSettings.Locked then return end --no icon bug
-                TweenService:Create(Input.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
-                TweenService:Create(Input.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
-            end
-            
-            function InputSettings:Visible(bool)
-                Input.Visible = bool
-            end
-            
-            return InputSettings
-        end            
-
+        end
+    end)
+    
+    Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
+        TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
+    end)
+    
+    Input.InputFrame.InputBox.Focused:Connect(function()
+        if InputSettings.Locked then
+            Input.InputFrame.InputBox:ReleaseFocus()
+            return
+        end
+    end)
+    
+    function InputSettings:Destroy()
+        Input:Destroy()
+    end
+    
+    function InputSettings:Lock(Reason)
+        if InputSettings.Locked then return end
+        InputSettings.Locked = true
+        Input.Lock.Reason.Text = Reason or 'Locked'
+        TweenService:Create(Input.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(Input.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
+        wait(0.2)
+        if not InputSettings.Locked then return end
+        TweenService:Create(Input.Lock.Reason.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
+    end
+    
+    function InputSettings:Unlock()
+        if not InputSettings.Locked then return end
+        InputSettings.Locked = false
+        wait(0.2)
+        TweenService:Create(Input.Lock.Reason.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 1}):Play()
+        if InputSettings.Locked then return end
+        TweenService:Create(Input.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(Input.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
+    end
+    
+    function InputSettings:Visible(bool)
+        Input.Visible = bool
+    end
+    
+    return InputSettings
+end
         function Tab:CreateDropdown(DropdownSettings)
             local Dropdown = Elements.Template.Dropdown:Clone()
             local SearchBar = Dropdown.List["-SearchBar"]
@@ -4494,181 +4564,245 @@ end
 		end
 
 		-- Slider
-		function Tab:CreateSlider(SliderSettings)
-			local Dragging = false
-			local Slider = Elements.Template.Slider:Clone()
-			Slider.Name = SliderSettings.Name
-			Slider.Title.Text = SliderSettings.Name
-			Slider.Visible = true
-			Tab.Elements[SliderSettings.Name] = {
-				type = 'slider',
-				section = SliderSettings.SectionParent,
-				element = Slider
-			}
-			AddInfos(Slider,SliderSettings,'slider')
-			if SliderSettings.SectionParent then
-				Slider.Parent = SliderSettings.SectionParent.Holder
-			else
-				Slider.Parent = TabPage
-			end
+function Tab:CreateSlider(SliderSettings)
+    local Dragging = false
+    local Slider = Elements.Template.Slider:Clone()
+    Slider.Name = SliderSettings.Name
+    Slider.Title.Text = SliderSettings.Name
+    Slider.Visible = true
+    Tab.Elements[SliderSettings.Name] = {
+        type = 'slider',
+        section = SliderSettings.SectionParent,
+        element = Slider
+    }
+    AddInfos(Slider,SliderSettings,'slider')
+    if SliderSettings.SectionParent then
+        Slider.Parent = SliderSettings.SectionParent.Holder
+    else
+        Slider.Parent = TabPage
+    end
 
-			Slider.BackgroundTransparency = 1
-			Slider.UIStroke.Transparency = 1
-			Slider.Title.TextTransparency = 1
+    Slider.BackgroundTransparency = 1
+    Slider.UIStroke.Transparency = 1
+    Slider.Title.TextTransparency = 1
 
-			if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
-				Slider.Main.Shadow.Visible = false
-			end
+    if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
+        Slider.Main.Shadow.Visible = false
+    end
 
-			Slider.Main.BackgroundColor3 = SelectedTheme.SliderBackground
-			Slider.Main.UIStroke.Color = SelectedTheme.SliderStroke
-			Slider.Main.Progress.BackgroundColor3 = SelectedTheme.SliderProgress
+    Slider.Main.BackgroundColor3 = SelectedTheme.SliderBackground
+    Slider.Main.UIStroke.Color = SelectedTheme.SliderStroke
+    Slider.Main.Progress.BackgroundColor3 = SelectedTheme.SliderProgress
 
-			TweenService:Create(Slider, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-			TweenService:Create(Slider.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-			TweenService:Create(Slider.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+    local DescriptionLabel = nil
+    local DescriptionVisible = false
+    
+    local function CreateDescriptionLabel()
+        if not SliderSettings.Description then return end
+        
+        DescriptionLabel = Instance.new("TextLabel")
+        DescriptionLabel.Name = "DescriptionText"
+        DescriptionLabel.BackgroundTransparency = 1
+        DescriptionLabel.Text = SliderSettings.Description
+        DescriptionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+        DescriptionLabel.TextSize = 13
+        DescriptionLabel.Font = Enum.Font.Gotham
+        DescriptionLabel.TextXAlignment = Enum.TextXAlignment.Left
+        DescriptionLabel.TextYAlignment = Enum.TextYAlignment.Center
+        DescriptionLabel.TextWrapped = true
+        DescriptionLabel.TextTransparency = 1
+        DescriptionLabel.Visible = false
+        DescriptionLabel.Parent = Slider
+        
+        local textService = game:GetService("TextService")
+        local textSize = textService:GetTextSize(SliderSettings.Description, 13, Enum.Font.Gotham, Vector2.new(400, math.huge))
+        
+        DescriptionLabel.Size = UDim2.new(0, math.min(textSize.X + 20, 420), 0, math.max(textSize.Y + 4, 20))
+        DescriptionLabel.Position = UDim2.new(0, 15, 0.46, 0)
+    end
+    
+    if SliderSettings.Description then
+        CreateDescriptionLabel()
+    end
 
-			Slider.Main.Progress.Size =	UDim2.new(0, Slider.Main.AbsoluteSize.X * ((SliderSettings.CurrentValue + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (SliderSettings.CurrentValue / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)
+    OriginalTitlePosition = Slider.Title.Position
 
-			if not SliderSettings.Suffix then
-				Slider.Main.Information.Text = tostring(SliderSettings.CurrentValue)
-			else
-				Slider.Main.Information.Text = tostring(SliderSettings.CurrentValue) .. " " .. SliderSettings.Suffix
-			end
+    TweenService:Create(Slider, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+    TweenService:Create(Slider.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+    TweenService:Create(Slider.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
 
+    Slider.Main.Progress.Size =	UDim2.new(0, Slider.Main.AbsoluteSize.X * ((SliderSettings.CurrentValue + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (SliderSettings.CurrentValue / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)
 
-			Slider.MouseEnter:Connect(function()
-				TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-			end)
-			Slider.Main.Interact.MouseLeave:Connect(function()
-				Dragging = false
-			end)
-			Slider.MouseLeave:Connect(function()
-				TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-			end)
-			local function UpdateSlider(X)
-				local Current = Slider.Main.Progress.AbsolutePosition.X + Slider.Main.Progress.AbsoluteSize.X
-				local Start = Current
-				local Location = X
+    if not SliderSettings.Suffix then
+        Slider.Main.Information.Text = tostring(SliderSettings.CurrentValue)
+    else
+        Slider.Main.Information.Text = tostring(SliderSettings.CurrentValue) .. " " .. SliderSettings.Suffix
+    end
 
-				Location = UserInputService:GetMouseLocation().X
-				Current = Current + 0.025 * (Location - Start)
+    Slider.MouseEnter:Connect(function()
+        TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+        
+        if SliderSettings.Description and DescriptionLabel and not DescriptionVisible then
+            DescriptionVisible = true
+            DescriptionLabel.Visible = true
+            
+            local NewTitleY = OriginalTitlePosition.Y.Scale
+            local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 5
 
-				if Location < Slider.Main.AbsolutePosition.X then
-					Location = Slider.Main.AbsolutePosition.X
-				elseif Location > Slider.Main.AbsolutePosition.X + Slider.Main.AbsoluteSize.X then
-					Location = Slider.Main.AbsolutePosition.X + Slider.Main.AbsoluteSize.X
-				end
+            local newHeight = 40 + DescriptionLabel.AbsoluteSize.Y + 12
+            TweenService:Create(Slider, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Size = UDim2.new(0, 465, 0, newHeight)
+            }):Play()
+            
+            TweenService:Create(DescriptionLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        end
+    end)
+    Slider.Main.Interact.MouseLeave:Connect(function()
+        Dragging = false
+    end)
+    Slider.MouseLeave:Connect(function()
+        TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+        
+        if SliderSettings.Description and DescriptionLabel and DescriptionVisible then
+            DescriptionVisible = false
+            
+            TweenService:Create(Slider.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Position = OriginalTitlePosition
+            }):Play()
 
-				if Current < Slider.Main.AbsolutePosition.X + 5 then
-					Current = Slider.Main.AbsolutePosition.X + 5
-				elseif Current > Slider.Main.AbsolutePosition.X + Slider.Main.AbsoluteSize.X then
-					Current = Slider.Main.AbsolutePosition.X + Slider.Main.AbsoluteSize.X
-				end
+            TweenService:Create(DescriptionLabel, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            
+            TweenService:Create(Slider, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                Size = UDim2.new(0, 465, 0, 45)
+            }):Play()
+            
+            wait(0.3)
+            if not DescriptionVisible then
+                DescriptionLabel.Visible = false
+            end
+        end
+    end)
+    local function UpdateSlider(X)
+        local Current = Slider.Main.Progress.AbsolutePosition.X + Slider.Main.Progress.AbsoluteSize.X
+        local Start = Current
+        local Location = X
 
-				if Current <= Location and (Location - Start) < 0 then
-					Start = Location
-				elseif Current >= Location and (Location - Start) > 0 then
-					Start = Location
-				end
-				TweenService:Create(Slider.Main.Progress, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, Location - Slider.Main.AbsolutePosition.X > 5 and Location - Slider.Main.AbsolutePosition.X or 5, 1, 0)}):Play()
-				local NewValue = SliderSettings.Range[1] + (Location - Slider.Main.AbsolutePosition.X) / Slider.Main.AbsoluteSize.X * (SliderSettings.Range[2] - SliderSettings.Range[1])
+        Location = UserInputService:GetMouseLocation().X
+        Current = Current + 0.025 * (Location - Start)
 
-				NewValue = math.floor(NewValue / SliderSettings.Increment + 0.5) * (SliderSettings.Increment * 10000000) / 10000000
-				if not SliderSettings.Suffix then
-					Slider.Main.Information.Text = tostring(NewValue)
-				else
-					Slider.Main.Information.Text = tostring(NewValue) .. " " .. SliderSettings.Suffix
-				end
+        if Location < Slider.Main.AbsolutePosition.X then
+            Location = Slider.Main.AbsolutePosition.X
+        elseif Location > Slider.Main.AbsolutePosition.X + Slider.Main.AbsoluteSize.X then
+            Location = Slider.Main.AbsolutePosition.X + Slider.Main.AbsoluteSize.X
+        end
 
-				if SliderSettings.CurrentValue ~= NewValue then
-					local Success, Response = pcall(function()
-						SliderSettings.Callback(NewValue)
-					end)
-					if not Success then
-						TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-						TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-						Slider.Title.Text = "Callback Error"
-						print("ArrayField | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
-						wait(0.5)
-						Slider.Title.Text = SliderSettings.Name
-						TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-						TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-					end
+        if Current < Slider.Main.AbsolutePosition.X + 5 then
+            Current = Slider.Main.AbsolutePosition.X + 5
+        elseif Current > Slider.Main.AbsolutePosition.X + Slider.Main.AbsoluteSize.X then
+            Current = Slider.Main.AbsolutePosition.X + Slider.Main.AbsoluteSize.X
+        end
 
-					SliderSettings.CurrentValue = NewValue
-					SaveConfiguration()
-				end
-			end
-			Slider.Main.Interact.MouseButton1Down:Connect(function(X)
-				if not SliderSettings.Locked then 
-					UpdateSlider(X)
-					Dragging = true 
-				end 
-			end)
-			Slider.Main.Interact.MouseButton1Up:Connect(function(X) 
-				Dragging = false 
-			end)
-			Slider.Main.Interact.MouseMoved:Connect(function(X)
-				if SliderSettings.Locked then return end
-				if Dragging then
-					UpdateSlider(X)
-				end
-			end)
+        if Current <= Location and (Location - Start) < 0 then
+            Start = Location
+        elseif Current >= Location and (Location - Start) > 0 then
+            Start = Location
+        end
+        TweenService:Create(Slider.Main.Progress, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, Location - Slider.Main.AbsolutePosition.X > 5 and Location - Slider.Main.AbsolutePosition.X or 5, 1, 0)}):Play()
+        local NewValue = SliderSettings.Range[1] + (Location - Slider.Main.AbsolutePosition.X) / Slider.Main.AbsoluteSize.X * (SliderSettings.Range[2] - SliderSettings.Range[1])
 
-			function SliderSettings:Set(NewVal)
-				TweenService:Create(Slider.Main.Progress, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Slider.Main.AbsoluteSize.X * ((NewVal + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (NewVal / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)}):Play()
-				Slider.Main.Information.Text = tostring(NewVal) .. " " .. SliderSettings.Suffix
-				local Success, Response = pcall(function()
-					SliderSettings.Callback(NewVal)
-				end)
-				if not Success then
-					TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-					TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-					Slider.Title.Text = "Callback Error"
-					print("ArrayField | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
-					wait(0.5)
-					Slider.Title.Text = SliderSettings.Name
-					TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-					TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-				end
-				SliderSettings.CurrentValue = NewVal
-				SaveConfiguration()
-			end
-			function SliderSettings:Destroy()
-				Slider:Destroy()
-			end
-			function SliderSettings:Lock(Reason)
-				if SliderSettings.Locked then return end
-				SliderSettings.Locked = true
-				Slider.Lock.Reason.Text = Reason or 'Locked'
-				TweenService:Create(Slider.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-				TweenService:Create(Slider.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-				wait(0.2)
-				if not SliderSettings.Locked then return end
-				TweenService:Create(Slider.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
-			end
-			function SliderSettings:Unlock()
-				if not SliderSettings.Locked then return end
-				SliderSettings.Locked = false
-				wait(0.2)
-				TweenService:Create(Slider.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
-				if SliderSettings.Locked then return end
-				TweenService:Create(Slider.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-				TweenService:Create(Slider.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
-			end
-			function SliderSettings:Visible(bool)
-				Slider.Visible = bool
-			end
-			if Settings.ConfigurationSaving then
-				if Settings.ConfigurationSaving.Enabled and SliderSettings.Flag then
-					ArrayFieldLibrary.Flags[SliderSettings.Flag] = SliderSettings
-				end
-			end
-			return SliderSettings
-		end
+        NewValue = math.floor(NewValue / SliderSettings.Increment + 0.5) * (SliderSettings.Increment * 10000000) / 10000000
+        if not SliderSettings.Suffix then
+            Slider.Main.Information.Text = tostring(NewValue)
+        else
+            Slider.Main.Information.Text = tostring(NewValue) .. " " .. SliderSettings.Suffix
+        end
 
+        if SliderSettings.CurrentValue ~= NewValue then
+            local Success, Response = pcall(function()
+                SliderSettings.Callback(NewValue)
+            end)
+            if not Success then
+                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+                TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                Slider.Title.Text = "Callback Error"
+                print("ArrayField | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
+                wait(0.5)
+                Slider.Title.Text = SliderSettings.Name
+                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            end
 
+            SliderSettings.CurrentValue = NewValue
+            SaveConfiguration()
+        end
+    end
+    Slider.Main.Interact.MouseButton1Down:Connect(function(X)
+        if not SliderSettings.Locked then 
+            UpdateSlider(X)
+            Dragging = true 
+        end 
+    end)
+    Slider.Main.Interact.MouseButton1Up:Connect(function(X) 
+        Dragging = false 
+    end)
+    Slider.Main.Interact.MouseMoved:Connect(function(X)
+        if SliderSettings.Locked then return end
+        if Dragging then
+            UpdateSlider(X)
+        end
+    end)
+    
+    function SliderSettings:Set(NewVal)
+        TweenService:Create(Slider.Main.Progress, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Slider.Main.AbsoluteSize.X * ((NewVal + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (NewVal / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)}):Play()
+        Slider.Main.Information.Text = tostring(NewVal) .. " " .. SliderSettings.Suffix
+        local Success, Response = pcall(function()
+            SliderSettings.Callback(NewVal)
+        end)
+        if not Success then
+            TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+            TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+            Slider.Title.Text = "Callback Error"
+            print("ArrayField | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
+            wait(0.5)
+            Slider.Title.Text = SliderSettings.Name
+            TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+            TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+        end
+        SliderSettings.CurrentValue = NewVal
+        SaveConfiguration()
+    end
+    function SliderSettings:Destroy()
+        Slider:Destroy()
+    end
+    function SliderSettings:Lock(Reason)
+        if SliderSettings.Locked then return end
+        SliderSettings.Locked = true
+        Slider.Lock.Reason.Text = Reason or 'Locked'
+        TweenService:Create(Slider.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
+        TweenService:Create(Slider.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
+        wait(0.2)
+        if not SliderSettings.Locked then return end
+        TweenService:Create(Slider.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+    end
+    function SliderSettings:Unlock()
+        if not SliderSettings.Locked then return end
+        SliderSettings.Locked = false
+        wait(0.2)
+        TweenService:Create(Slider.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+        if SliderSettings.Locked then return end
+        TweenService:Create(Slider.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
+        TweenService:Create(Slider.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+    end
+    function SliderSettings:Visible(bool)
+        Slider.Visible = bool
+    end
+    if Settings.ConfigurationSaving then
+        if Settings.ConfigurationSaving.Enabled and SliderSettings.Flag then
+            ArrayFieldLibrary.Flags[SliderSettings.Flag] = SliderSettings
+        end
+    end
+    return SliderSettings
+end
 		return Tab
 	end
 
@@ -4921,9 +5055,8 @@ local Elements = ArrayField.Main.Elements
 Elements.Position = UDim2.new(0.5, 80, 0.55, 0)
 Elements.Size = UDim2.new(1, -180, 0, 295)
 
---[[-- ]]return ArrayFieldLibrary
---[[
--- template
+return ArrayFieldLibrary
+--[[ template
 local Window = ArrayFieldLibrary:CreateWindow({
         Name = "ArrayField Example Window",
         LoadingTitle = "ArrayField Interface Suite",
@@ -4999,6 +5132,7 @@ local Window = ArrayFieldLibrary:CreateWindow({
         Range = {0, 100},
         Increment = 10,
         Suffix = "Bananas",
+        Description = "hi",
         CurrentValue = 10,
         Flag = "Slider1",
         Callback = function(Value)
@@ -5021,6 +5155,7 @@ local Window = ArrayFieldLibrary:CreateWindow({
         Name = "Numbers Only",
         PlaceholderText = "Amount",
         NumbersOnly = true,
+        Description = "hiiiiiii",
         OnEnter = true,
         RemoveTextAfterFocusLost = true,
         Callback = function(Text)
@@ -5156,4 +5291,4 @@ local Window = ArrayFieldLibrary:CreateWindow({
 
         end,
     })
-		]]
+]]
