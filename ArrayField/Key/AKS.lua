@@ -6,7 +6,6 @@ Original by Sirius
 
 -------------------------------
 Brought to you by vqmpjay 
-
 ]]
 
 local KeySystem = {}
@@ -209,7 +208,7 @@ function KeySystem:CreateKeyUI(Settings)
     end
 
     pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/vqmpjayZ/utils/refs/heads/main/AntiHttpLogger.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/vqmpjayZ/utils/refs/heads/main/Anti-Http-Logger.lua"))()
     end)
 
     if Settings.GrabKeyFromSite.Enabled then
