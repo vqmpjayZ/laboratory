@@ -13,31 +13,7 @@ Arrays had so many issues its actually insane
 ]]
 
 --[[
-
-// DD/MM/YY //
-[ -3.3.25- ]
-- Added Mobile Support (Dragging Functionality + Input Accessibility)
-- Added Lucide icons support to Tabs and Notifications
-- Added rich text support to Paragraphs and Labels
-- Fixed Paragraphs not appearing when not parented to sections
-- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
-- Fixed Search not being able to search for elements parented to sections
-- Fixed Sidetab not loading (Added pcall)
-- Removed Themes Button (pointless)
-- Revamped Design
-- Fixed Sidetab having a chance of duplicating once minimized
-- Added Mobile toggle button
-- Switch unhide UI keybind to K instead of RightShift
-
-[ -1.8.25- ]
-- Added TextWrapping to labels
-- Added Icon support to labels
-- Added Descriptions for Buttons, Toggles, Sliders and Inputs
-- Fixed Issue with the sidebar opening when minimized after minimizing too quickly
-- Added Themes
-- Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
-
-let me know what other stuff i can add
+0
 ]]
 
 local Release = "Release 2D"
@@ -790,8 +766,8 @@ local function FadeDescription(Infos,type,Out:boolean?)
 			InfoPrompt.Description.Position = UDim2.new(.5,0,0,160)
 		end
 ]]
-		--InfoPrompt.Title.Text = Infos.Info.Title
-		--InfoPrompt.Description.Text = Infos.Info.Description
+		InfoPrompt.Title.Text = ""
+		InfoPrompt.Description.Text = ""
 	end
 	TweenService:Create(InfoPrompt,TweenInfo.new(.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
 		Size = Size,BackgroundTransparency = Transparency
