@@ -12,34 +12,6 @@ vqmpjay | Designing + Programming + New Features
 Arrays had so many issues its actually insane
 ]]
 
---[[
-
-// DD/MM/YY //
-[ -3.3.25- ]
-- Added Mobile Support (Dragging Functionality + Input Accessibility)
-- Added Lucide icons support to Tabs and Notifications
-- Added rich text support to Paragraphs and Labels
-- Fixed Paragraphs not appearing when not parented to sections
-- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
-- Fixed Search not being able to search for elements parented to sections
-- Fixed Sidetab not loading (Added pcall)
-- Removed Themes Button (pointless)
-- Revamped Design
-- Fixed Sidetab having a chance of duplicating once minimized
-- Added Mobile toggle button
-- Switch unhide UI keybind to K instead of RightShift
-
-[ -1.8.25- ]
-- Added TextWrapping to labels
-- Added Icon support to labels
-- Added Descriptions for Buttons, Toggles, Sliders and Inputs
-- Fixed Issue with the sidebar opening when minimized after minimizing too quickly
-- Added Themes
-- Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
-
-let me know what other stuff i can add
-]]
-
 local Release = "Release 2D"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
@@ -759,6 +731,8 @@ function BoolToText(Bool)
 end
 
 local function FadeDescription(Infos,type,Out:boolean?)
+	if not InfoPrompt or not InfoPrompt.Parent then return end
+	
 	local Size = UDim2.fromOffset(230,275)
 	local Transparency = 0
 	local WaitTime = .05
@@ -768,46 +742,61 @@ local function FadeDescription(Infos,type,Out:boolean?)
 		WaitTime = nil
 	end
 	if not Out then
-		-- Set the Status
-		if type == 'slider' then
-			InfoPrompt.Status.Text = Infos.CurrentValue
-		elseif type == 'button' then
-			InfoPrompt.Status.Text = 'Clickable'
-		elseif type == 'toggle' then
-			InfoPrompt.Status.Text,InfoPrompt.Status.TextColor3 = BoolToText(Infos.CurrentValue)
-		elseif type == 'dropdown' then
-			--=| Do this |=--
-		elseif type == 'colorpicker' then
-			InfoPrompt.Status.Text = Infos.Color.R..Infos.Color.G..Infos.Color.B
+		if InfoPrompt:FindFirstChild("Status") then
+			if type == 'slider' then
+				InfoPrompt.Status.Text = Infos.CurrentValue
+			elseif type == 'button' then
+				InfoPrompt.Status.Text = 'Clickable'
+			elseif type == 'toggle' then
+				InfoPrompt.Status.Text,InfoPrompt.Status.TextColor3 = BoolToText(Infos.CurrentValue)
+			elseif type == 'dropdown' then
+				--=| Do this |=--
+			elseif type == 'colorpicker' then
+				InfoPrompt.Status.Text = Infos.Color.R..Infos.Color.G..Infos.Color.B
+			end
 		end
 --[[
 		if not Infos.Info.Image then
-			InfoPrompt.ImageLabel.Visible = false
-			InfoPrompt.Description.Position = InfoPrompt.ImageLabel.Position
+			if InfoPrompt:FindFirstChild("ImageLabel") then
+				InfoPrompt.ImageLabel.Visible = false
+			end
+			if InfoPrompt:FindFirstChild("Description") and InfoPrompt:FindFirstChild("ImageLabel") then
+				InfoPrompt.Description.Position = InfoPrompt.ImageLabel.Position
+			end
 		else
-			InfoPrompt.ImageLabel.Visible = true
-			InfoPrompt.ImageLabel.Image = 'rbxassetid://'..Infos.Info.Image
-			InfoPrompt.Description.Position = UDim2.new(.5,0,0,160)
+			if InfoPrompt:FindFirstChild("ImageLabel") then
+				InfoPrompt.ImageLabel.Visible = true
+				InfoPrompt.ImageLabel.Image = 'rbxassetid://'..Infos.Info.Image
+			end
+			if InfoPrompt:FindFirstChild("Description") then
+				InfoPrompt.Description.Position = UDim2.new(.5,0,0,160)
+			end
 		end
 ]]
-		--InfoPrompt.Title.Text = Infos.Info.Title
-		--InfoPrompt.Description.Text = Infos.Info.Description
 	end
 	TweenService:Create(InfoPrompt,TweenInfo.new(.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
 		Size = Size,BackgroundTransparency = Transparency
 	}):Play()
-	TweenService:Create(InfoPrompt.ImageLabel,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-		ImageTransparency = Transparency
-	}):Play()
-	TweenService:Create(InfoPrompt.Description,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-		TextTransparency = Transparency
-	}):Play()
-	TweenService:Create(InfoPrompt.Status,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-		TextTransparency = Transparency
-	}):Play()
-	TweenService:Create(InfoPrompt.Title,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-		TextTransparency = Transparency
-	}):Play()
+	if InfoPrompt:FindFirstChild("ImageLabel") then
+		TweenService:Create(InfoPrompt.ImageLabel,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+			ImageTransparency = Transparency
+		}):Play()
+	end
+	if InfoPrompt:FindFirstChild("Description") then
+		TweenService:Create(InfoPrompt.Description,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+			TextTransparency = Transparency
+		}):Play()
+	end
+	if InfoPrompt:FindFirstChild("Status") then
+		TweenService:Create(InfoPrompt.Status,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+			TextTransparency = Transparency
+		}):Play()
+	end
+	if InfoPrompt:FindFirstChild("Title") then
+		TweenService:Create(InfoPrompt.Title,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+			TextTransparency = Transparency
+		}):Play()
+	end
 end
 
 function AddInfos(Object:Frame,Settings,type)
@@ -1173,8 +1162,79 @@ function ClosePrompt()
 	wait(.5)
 	Prompt.Visible = false
 end
+local function FadeDescription(Infos,type,Out:boolean?)
+	if not InfoPrompt or not InfoPrompt.Parent then return end
+	
+	local Size = UDim2.fromOffset(230,275)
+	local Transparency = 0
+	local WaitTime = .05
+	if Out then
+		Size = UDim2.fromOffset(212,254)
+		Transparency = 1
+		WaitTime = nil
+	end
+	if not Out then
+		if InfoPrompt:FindFirstChild("Status") then
+			if type == 'slider' then
+				InfoPrompt.Status.Text = Infos.CurrentValue
+			elseif type == 'button' then
+				InfoPrompt.Status.Text = 'Clickable'
+			elseif type == 'toggle' then
+				InfoPrompt.Status.Text,InfoPrompt.Status.TextColor3 = BoolToText(Infos.CurrentValue)
+			elseif type == 'dropdown' then
+				--=| Do this |=--
+			elseif type == 'colorpicker' then
+				InfoPrompt.Status.Text = Infos.Color.R..Infos.Color.G..Infos.Color.B
+			end
+		end
+--[[
+		if not Infos.Info.Image then
+			if InfoPrompt:FindFirstChild("ImageLabel") then
+				InfoPrompt.ImageLabel.Visible = false
+			end
+			if InfoPrompt:FindFirstChild("Description") and InfoPrompt:FindFirstChild("ImageLabel") then
+				InfoPrompt.Description.Position = InfoPrompt.ImageLabel.Position
+			end
+		else
+			if InfoPrompt:FindFirstChild("ImageLabel") then
+				InfoPrompt.ImageLabel.Visible = true
+				InfoPrompt.ImageLabel.Image = 'rbxassetid://'..Infos.Info.Image
+			end
+			if InfoPrompt:FindFirstChild("Description") then
+				InfoPrompt.Description.Position = UDim2.new(.5,0,0,160)
+			end
+		end
+]]
+	end
+	TweenService:Create(InfoPrompt,TweenInfo.new(.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
+		Size = Size,BackgroundTransparency = Transparency
+	}):Play()
+	if InfoPrompt:FindFirstChild("ImageLabel") then
+		TweenService:Create(InfoPrompt.ImageLabel,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+			ImageTransparency = Transparency
+		}):Play()
+	end
+	if InfoPrompt:FindFirstChild("Description") then
+		TweenService:Create(InfoPrompt.Description,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+			TextTransparency = Transparency
+		}):Play()
+	end
+	if InfoPrompt:FindFirstChild("Status") then
+		TweenService:Create(InfoPrompt.Status,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+			TextTransparency = Transparency
+		}):Play()
+	end
+	if InfoPrompt:FindFirstChild("Title") then
+		TweenService:Create(InfoPrompt.Title,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+			TextTransparency = Transparency
+		}):Play()
+	end
+end
+
 function ArrayFieldLibrary:Notify(NotificationSettings)
     spawn(function()
+        if not Notifications or not Notifications:FindFirstChild("Template") then return end
+        
         local ActionCompleted = true
         local Notification = Notifications.Template:Clone()
         Notification.Parent = Notifications
@@ -1192,44 +1252,52 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
             game:GetService("Debris"):AddItem(script, 0)
         end
 
-        Notification.Actions.Template.Visible = false
+        if Notification:FindFirstChild("Actions") and Notification.Actions:FindFirstChild("Template") then
+            Notification.Actions.Template.Visible = false
 
-        if NotificationSettings.Actions then
-            for _, Action in pairs(NotificationSettings.Actions) do
-                ActionCompleted = false
-                local NewAction = Notification.Actions.Template:Clone()
-                NewAction.BackgroundColor3 = SelectedTheme.NotificationActionsBackground
-                if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
-                    NewAction.TextColor3 = SelectedTheme.TextColor
-                end
-                NewAction.Name = Action.Name
-                NewAction.Visible = true
-                NewAction.Parent = Notification.Actions
-                NewAction.Text = Action.Name
-                NewAction.BackgroundTransparency = 1
-                NewAction.TextTransparency = 1
-                NewAction.Size = UDim2.new(0, NewAction.TextBounds.X + 27, 0, 36)
-
-                NewAction.MouseButton1Click:Connect(function()
-                    local Success, Response = pcall(Action.Callback)
-                    if not Success then
-                        print("ArrayField | Action: "..Action.Name.." Callback Error " ..tostring(Response))
+            if NotificationSettings.Actions then
+                for _, Action in pairs(NotificationSettings.Actions) do
+                    ActionCompleted = false
+                    local NewAction = Notification.Actions.Template:Clone()
+                    NewAction.BackgroundColor3 = SelectedTheme.NotificationActionsBackground
+                    if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
+                        NewAction.TextColor3 = SelectedTheme.TextColor
                     end
-                    ActionCompleted = true
-                end)
+                    NewAction.Name = Action.Name
+                    NewAction.Visible = true
+                    NewAction.Parent = Notification.Actions
+                    NewAction.Text = Action.Name
+                    NewAction.BackgroundTransparency = 1
+                    NewAction.TextTransparency = 1
+                    NewAction.Size = UDim2.new(0, NewAction.TextBounds.X + 27, 0, 36)
+
+                    NewAction.MouseButton1Click:Connect(function()
+                        local Success, Response = pcall(Action.Callback)
+                        if not Success then
+                            print("ArrayField | Action: "..Action.Name.." Callback Error " ..tostring(Response))
+                        end
+                        ActionCompleted = true
+                    end)
+                end
             end
         end
         
         Notification.BackgroundColor3 = SelectedTheme.Background
-        Notification.Title.Text = NotificationSettings.Title or "Unknown"
-        Notification.Title.TextTransparency = 1
-        Notification.Title.TextColor3 = SelectedTheme.TextColor
-        Notification.Description.Text = NotificationSettings.Content or "Unknown"
-        Notification.Description.TextTransparency = 1
-        Notification.Description.TextColor3 = SelectedTheme.TextColor
-        Notification.Icon.ImageColor3 = SelectedTheme.TextColor
+        if Notification:FindFirstChild("Title") then
+            Notification.Title.Text = NotificationSettings.Title or "Unknown"
+            Notification.Title.TextTransparency = 1
+            Notification.Title.TextColor3 = SelectedTheme.TextColor
+        end
+        if Notification:FindFirstChild("Description") then
+            Notification.Description.Text = NotificationSettings.Content or "Unknown"
+            Notification.Description.TextTransparency = 1
+            Notification.Description.TextColor3 = SelectedTheme.TextColor
+        end
+        if Notification:FindFirstChild("Icon") then
+            Notification.Icon.ImageColor3 = SelectedTheme.TextColor
+        end
 
-        if NotificationSettings.Image then
+        if NotificationSettings.Image and Notification:FindFirstChild("Icon") then
             pcall(function()
                 if type(NotificationSettings.Image) == "string" and not tonumber(NotificationSettings.Image) then
                     local asset = getIcon(NotificationSettings.Image)
@@ -1243,12 +1311,16 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
                 end
             end)
         else
-            Notification.Icon.Image = "rbxassetid://3944680095" -- Default icon
-            Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
-            Notification.Icon.ImageRectSize = Vector2.new(0, 0)
+            if Notification:FindFirstChild("Icon") then
+                Notification.Icon.Image = "rbxassetid://3944680095"
+                Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
+                Notification.Icon.ImageRectSize = Vector2.new(0, 0)
+            end
         end
 
-        Notification.Icon.ImageTransparency = 1
+        if Notification:FindFirstChild("Icon") then
+            Notification.Icon.ImageTransparency = 1
+        end
 
         Notification.Parent = Notifications
         Notification.Size = UDim2.new(0, 260, 0, 80)
@@ -1259,12 +1331,17 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
         Notification:TweenPosition(UDim2.new(0.5,0,0.915,0),'Out','Quint',0.8,true)
 
         wait(0.3)
-        TweenService:Create(Notification.Icon, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-        TweenService:Create(Notification.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
+        if Notification:FindFirstChild("Icon") then
+            TweenService:Create(Notification.Icon, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+        end
+        if Notification:FindFirstChild("Title") then
+            TweenService:Create(Notification.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        end
+        if Notification:FindFirstChild("Description") then
+            TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
+        end
         wait(0.2)
 
-        -- Requires Graphics Level 8-10
         if false == nil then
             TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
         else
@@ -1275,7 +1352,7 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
             end
         end
 
-        if ArrayField.Name == "ArrayField" then
+        if ArrayField.Name == "ArrayField" and Notification:FindFirstChild("BlurModule") then
             neon:BindFrame(Notification.BlurModule, {
                 Transparency = 0.98;
                 BrickColor = BrickColor.new("Institutional white");
@@ -1288,47 +1365,71 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
             wait(0.8)
             TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 132)}):Play()
             wait(0.3)
-            for _, Action in ipairs(Notification.Actions:GetChildren()) do
-                if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
-                    TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
-                    TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                    wait(0.05)
+            if Notification:FindFirstChild("Actions") then
+                for _, Action in ipairs(Notification.Actions:GetChildren()) do
+                    if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
+                        TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
+                        TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                        wait(0.05)
+                    end
                 end
             end
         end
 
         repeat wait(0.001) until ActionCompleted
 
-        for _, Action in ipairs(Notification.Actions:GetChildren()) do
-            if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
-                TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        if Notification:FindFirstChild("Actions") then
+            for _, Action in ipairs(Notification.Actions:GetChildren()) do
+                if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
+                    TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                    TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                end
             end
         end
 
-        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.47, 0,0.234, 0)}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0.528, 0,0.637, 0)}):Play()
+        if Notification:FindFirstChild("Title") then
+            TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.47, 0,0.234, 0)}):Play()
+        end
+        if Notification:FindFirstChild("Description") then
+            TweenService:Create(Notification.Description, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0.528, 0,0.637, 0)}):Play()
+        end
         TweenService:Create(Notification, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 280, 0, 83)}):Play()
-        TweenService:Create(Notification.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+        if Notification:FindFirstChild("Icon") then
+            TweenService:Create(Notification.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+        end
         TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
 
         wait(0.3)
-        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
+        if Notification:FindFirstChild("Title") then
+            TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
+        end
+        if Notification:FindFirstChild("Description") then
+            TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
+        end
         wait(0.4)
         TweenService:Create(Notification, TweenInfo.new(0.9, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 260, 0, 0)}):Play()
         TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        if Notification:FindFirstChild("Title") then
+            TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        end
+        if Notification:FindFirstChild("Description") then
+            TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        end
         wait(0.2)
         
         if not false then
-            neon:UnbindFrame(Notification.BlurModule)
-            blurlight:Destroy()
+            if Notification:FindFirstChild("BlurModule") then
+                neon:UnbindFrame(Notification.BlurModule)
+            end
+            if blurlight then
+                blurlight:Destroy()
+            end
         end
         
         wait(0.9)
-        Notification:Destroy()
+        if Notification then
+            Notification:Destroy()
+        end
     end)
 end
 
