@@ -2721,7 +2721,6 @@ warn("discord rpc was removed. discord invite saving cant work")
 		repeat wait() until Passthrough
 	end
 ArrayField.Enabled = true
-task.wait()
 for _,tabbtn in pairs(SideList:GetChildren()) do
     if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
         if tabbtn:FindFirstChild("Title") and tabbtn:FindFirstChild("Image") then
@@ -2941,6 +2940,16 @@ end
 
 		TopTabButton.Interact.MouseButton1Click:Connect(Pick)
 		SideTabButton.Interact.MouseButton1Click:Connect(Pick)
+task.defer(function()
+    if FirstTab then
+        local firstPage = Elements:FindFirstChild(FirstTab)
+        if firstPage then
+            Elements.UIPageLayout.Animated = false
+            Elements.UIPageLayout:JumpTo(firstPage)
+            Elements.UIPageLayout.Animated = true
+        end
+    end
+end)
 -- Button
 function Tab:CreateButton(ButtonSettings)
     local ButtonValue = {Locked = false}
