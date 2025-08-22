@@ -1,7 +1,7 @@
 --[[
 
 ArrayField Interface Suite
-by Meta
+by vqmpjay
 
 Original by Sirius
 
@@ -2941,17 +2941,16 @@ end
 
 		TopTabButton.Interact.MouseButton1Click:Connect(Pick)
 		SideTabButton.Interact.MouseButton1Click:Connect(Pick)
-		task.defer(function()
-    		if FirstTab then
-        		local firstPage = Elements:FindFirstChild(FirstTab)
-        		if firstPage then
-            		lements.UIPageLayout.Animated = false
-            		Elements.UIPageLayout:JumpTo(firstPage) -- force select first tab, idk why or how roblox made this not work randomly
-            		Elements.UIPageLayout.Animated = true
-        		end
-    		end
-		end)
-
+task.defer(function()
+    if FirstTab then
+        local firstPage = Elements:FindFirstChild(FirstTab)
+        if firstPage then
+            Elements.UIPageLayout.Animated = false
+            Elements.UIPageLayout:JumpTo(firstPage)
+            Elements.UIPageLayout.Animated = true
+        end
+    end
+end)
 -- Button
 function Tab:CreateButton(ButtonSettings)
     local ButtonValue = {Locked = false}
