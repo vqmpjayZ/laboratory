@@ -12,34 +12,6 @@ vqmpjay | Designing + Programming + New Features
 Arrays had so many issues its actually insane
 ]]
 
---[[
-
-// DD/MM/YY //
-[ -3.3.25- ]
-- Added Mobile Support (Dragging Functionality + Input Accessibility)
-- Added Lucide icons support to Tabs and Notifications
-- Added rich text support to Paragraphs and Labels
-- Fixed Paragraphs not appearing when not parented to sections
-- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
-- Fixed Search not being able to search for elements parented to sections
-- Fixed Sidetab not loading (Added pcall)
-- Removed Themes Button (pointless)
-- Revamped Design
-- Fixed Sidetab having a chance of duplicating once minimized
-- Added Mobile toggle button
-- Switch unhide UI keybind to K instead of RightShift
-
-[ -1.8.25- ]
-- Added TextWrapping to labels
-- Added Icon support to labels
-- Added Descriptions for Buttons, Toggles, Sliders and Inputs
-- Fixed Issue with the sidebar opening when minimized after minimizing too quickly
-- Added Themes
-- Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
-
-let me know what other stuff i can add
-]]
-
 local Release = "Release 2D"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
@@ -1341,11 +1313,15 @@ function CloseSideBar()
 			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
 		end
 	end
+	if Main and SideTabList then
 	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+	end
 	wait(.4)
+	if Main and SideTabList then
 	Main.SideTabList.Visible = false
+	end
 	wait(0.2)
 	Debounce = false
 end
@@ -2762,7 +2738,7 @@ function Tab:CreateButton(ButtonSettings)
         local Success, Response = pcall(ButtonSettings.Callback)
         if not Success then
             TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-            --TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
             TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
             Button.Title.Text = "Callback Error"
             print("ArrayField | "..ButtonSettings.Name.." Callback Error " ..tostring(Response))
@@ -2770,16 +2746,16 @@ function Tab:CreateButton(ButtonSettings)
             Button.Title.Text = ButtonSettings.Name
             TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            --TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
+            TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
         else
             SaveConfiguration()
             TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-            --TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
             TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
             wait(0.2)
             TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            --TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
+            TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
         end
     end)
 
