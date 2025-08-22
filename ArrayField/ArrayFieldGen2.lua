@@ -9,7 +9,6 @@ Original by Sirius
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
-Arrays had so many issues its actually insane
 ]]
 
 --[[
