@@ -826,7 +826,7 @@ local function FadeDescription(Infos,type,Out:boolean?)
 		}):Play()
 	end
 end
-
+--[[
 function AddInfos(Object:Frame,Settings,type)
 	--local Interact = Object:FindFirstChild('Interact') or Object:FindFirstChild('Main'):FindFirstChild('Interact')
 	Object.MouseEnter:Connect(function(input)
@@ -840,7 +840,7 @@ function AddInfos(Object:Frame,Settings,type)
 		--FadeDescription(nil,nil,true)
 	end)
 end
-
+]]
 local function PackColor(Color)
 	return {R = Color.R * 255, G = Color.G * 255, B = Color.B * 255}
 end    
@@ -3489,7 +3489,7 @@ function Tab:CreateInput(InputSettings)
         Input.Parent = TabPage
     end
     
-    AddInfos(Input, InputSettings.Info, 'input')
+    --AddInfos(Input, InputSettings.Info, 'input')
     
     Input.BackgroundTransparency = 1
     Input.UIStroke.Transparency = 1
@@ -3714,7 +3714,7 @@ end
             DropdownSettings.Items = {
                 Selected = {Default = DropdownSettings.Selected or nil}
             }
-            AddInfos(Dropdown,DropdownSettings,'dropdown')
+            --AddInfos(Dropdown,DropdownSettings,'dropdown')
             DropdownSettings.Locked = false
             local Multi = DropdownSettings.MultiSelection or false
             if string.find(DropdownSettings.Name,"closed") then
@@ -4112,7 +4112,7 @@ end)
 			else
 				Keybind.Parent = TabPage
 			end
-			AddInfos(Keybind,KeybindSettings,'keybind')
+			--AddInfos(Keybind,KeybindSettings,'keybind')
 
 			Keybind.BackgroundTransparency = 1
 			Keybind.UIStroke.Transparency = 1
@@ -4260,7 +4260,7 @@ function Tab:CreateToggle(ToggleSettings)
         section = ToggleSettings.SectionParent,
         element = Toggle
     }
-    AddInfos(Toggle,ToggleSettings,'toggle')
+    --AddInfos(Toggle,ToggleSettings,'toggle')
     if ToggleSettings.SectionParent then
         Toggle.Parent = ToggleSettings.SectionParent.Holder
     else
@@ -4520,7 +4520,7 @@ end
 				section = ColorPickerSettings.SectionParent,
 				element = ColorPicker
 			}
-			AddInfos(ColorPicker,ColorPickerSettings,'colorpicker')
+			--AddInfos(ColorPicker,ColorPickerSettings,'colorpicker')
 			local Background = ColorPicker.CPBackground
 			local Display = Background.Display
 			local Main = Background.MainCP
@@ -4807,7 +4807,7 @@ function Tab:CreateSlider(SliderSettings)
         section = SliderSettings.SectionParent,
         element = Slider
     }
-    AddInfos(Slider,SliderSettings,'slider')
+    --AddInfos(Slider,SliderSettings,'slider')
     if SliderSettings.SectionParent then
         Slider.Parent = SliderSettings.SectionParent.Holder
     else
