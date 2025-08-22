@@ -9,7 +9,7 @@ Original by Sirius
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
 
-Arrays had so many issues its actually insane
+Arrays had so many issues its actually insanehiii
 ]]
 
 --[[
@@ -2853,18 +2853,16 @@ warn("discord rpc was removed. discord invite saving cant work")
 
 		if not FirstTab then
 			FirstTab = Name
-			TabPage.LayoutOrder = 0
-		else
-			TabPage.LayoutOrder = #Elements:GetChildren()
-		end
-
-		TabPage.Parent = Elements
-
-		if FirstTab == Name then
+			TabPage.LayoutOrder = 1
+			TabPage.Parent = Elements
 			Elements.UIPageLayout.Animated = false
-			Elements.UIPageLayout.CurrentPage = TabPage
-			task.wait()
+			RunService.Heartbeat:Wait()
+			Elements.UIPageLayout:JumpToIndex(1)
+			RunService.Heartbeat:Wait()
 			Elements.UIPageLayout.Animated = true
+		else
+			TabPage.LayoutOrder = #Elements:GetChildren() + 1
+			TabPage.Parent = Elements
 		end
 
 		if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
