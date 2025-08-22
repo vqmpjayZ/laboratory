@@ -12,6 +12,34 @@ vqmpjay | Designing + Programming + New Features
 Arrays had so many issues its actually insane
 ]]
 
+--[[
+
+// DD/MM/YY //
+[ -3.3.25- ]
+- Added Mobile Support (Dragging Functionality + Input Accessibility)
+- Added Lucide icons support to Tabs and Notifications
+- Added rich text support to Paragraphs and Labels
+- Fixed Paragraphs not appearing when not parented to sections
+- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
+- Fixed Search not being able to search for elements parented to sections
+- Fixed Sidetab not loading (Added pcall)
+- Removed Themes Button (pointless)
+- Revamped Design
+- Fixed Sidetab having a chance of duplicating once minimized
+- Added Mobile toggle button
+- Switch unhide UI keybind to K instead of RightShift
+
+[ -1.8.25- ]
+- Added TextWrapping to labels
+- Added Icon support to labels
+- Added Descriptions for Buttons, Toggles, Sliders and Inputs
+- Fixed Issue with the sidebar opening when minimized after minimizing too quickly
+- Added Themes
+- Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
+
+let me know what other stuff i can add
+]]
+
 local Release = "Release 2D"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
@@ -2733,9 +2761,12 @@ function Tab:CreateButton(ButtonSettings)
         CreateDescriptionLabel()
     end
 
-    Button.Interact.MouseButton1Click:Connect(function()
+Button.Interact.MouseButton1Click:Connect(function()
         if ButtonValue.Locked then return end
         local Success, Response = pcall(ButtonSettings.Callback)
+        
+        if not Button.Parent then return end
+        
         if not Success then
             TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
             TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
@@ -2767,7 +2798,6 @@ function Tab:CreateButton(ButtonSettings)
             DescriptionVisible = true
             DescriptionLabel.Visible = true
             
-            -- Move title further up when showing description
             local NewTitleY = OriginalTitlePosition.Y.Scale
             local NewTitleYOffset = OriginalTitlePosition.Y.Offset - 15
             
@@ -2775,7 +2805,6 @@ function Tab:CreateButton(ButtonSettings)
                 Position = UDim2.new(OriginalTitlePosition.X.Scale, OriginalTitlePosition.X.Offset, NewTitleY, NewTitleYOffset)
             }):Play()
             
-            -- Expand button to accommodate description
             local newHeight = 40 + DescriptionLabel.AbsoluteSize.Y + 12
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Size = UDim2.new(0, 465, 0, newHeight)
@@ -2792,14 +2821,12 @@ function Tab:CreateButton(ButtonSettings)
         if ButtonSettings.Description and DescriptionLabel and DescriptionVisible then
             DescriptionVisible = false
             
-            -- Move title back to original position
             TweenService:Create(Button.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Position = OriginalTitlePosition
             }):Play()
             
             TweenService:Create(DescriptionLabel, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
             
-            -- Shrink
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Size = UDim2.new(0, 465, 0, 40)
             }):Play()
