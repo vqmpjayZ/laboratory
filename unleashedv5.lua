@@ -16,7 +16,11 @@ Arrays had so many issues its actually insane
 
 // DD/MM/YY //
 [ -22.8.25- ]
------------------------------------
+- Fixed Console Errors while minimizing/unminimizing Interface
+- Fixed Console Errors when Hiding/Unhiding Interface
+- Fixed Console Errors for when Destroying the Interface
+- Fixed Console Errors for 'Template' on Notifications and fixed all errors for 'OpenSideBar'
+- Removed AddInfos (it never worked as intended anyways)
 
 [ -1.8.25- ]
 - Added TextWrapping to labels
@@ -2723,6 +2727,14 @@ warn("discord rpc was removed. discord invite saving cant work")
 			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
 		end
 	end
+spawn(function()
+    wait(1)
+    if Elements.UIPageLayout and Elements.UIPageLayout:GetChildren()[1] then
+        Elements.UIPageLayout.Animated = false
+        Elements.UIPageLayout:JumpTo(Elements.UIPageLayout:GetChildren()[1])
+        Elements.UIPageLayout.Animated = true
+    end
+end)
 	TweenService:Create(Main.SideTabList, TweenInfo.new(0, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
