@@ -2770,7 +2770,7 @@ function Tab:CreateButton(ButtonSettings)
             Button.Title.Text = ButtonSettings.Name
             TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
+            --TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
         else
             SaveConfiguration()
             TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
@@ -2779,7 +2779,7 @@ function Tab:CreateButton(ButtonSettings)
             wait(0.2)
             TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
+            --TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
         end
     end)
 
@@ -2800,7 +2800,7 @@ function Tab:CreateButton(ButtonSettings)
             }):Play()
             
             -- Expand button to accommodate description
-            local newHeight = 40 + DescriptionLabel.AbsoluteSize.Y + 12 -- Add padding
+            local newHeight = 40 + DescriptionLabel.AbsoluteSize.Y + 12
             TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
                 Size = UDim2.new(0, 465, 0, newHeight)
             }):Play()
