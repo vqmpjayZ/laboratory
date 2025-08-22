@@ -16,11 +16,7 @@ Arrays had so many issues its actually insane
 
 // DD/MM/YY //
 [ -22.8.25- ]
-- Fixed Console Errors while minimizing/unminimizing Interface
-- Fixed Console Errors when Hiding/Unhiding Interface
-- Fixed Console Errors for when Destroying the Interface
-- Fixed Console Errors for 'Template' on Notifications and fixed all errors for 'OpenSideBar'
-- Removed AddInfos (it never worked as intended anyways)
+--siadhjaisabd9iays)
 
 [ -1.8.25- ]
 - Added TextWrapping to labels
@@ -2839,7 +2835,6 @@ warn("discord rpc was removed. discord invite saving cant work")
 		TopTabButton.Visible = true
 		SideTabButton.Visible = true
 
-		--Create Elements Page
 		local TabPage = Elements.Template:Clone()
 		TabPage.Name = Name
 		TabPage.Visible = true
@@ -2853,16 +2848,14 @@ warn("discord rpc was removed. discord invite saving cant work")
 		end
 
 		TabPage.Parent = Elements
-		
-		local isFirstTab = not FirstTab
-		if isFirstTab then
+
+		if not FirstTab then
 			FirstTab = Name
 			Elements.UIPageLayout.Animated = false
+			task.wait()
 			Elements.UIPageLayout:JumpTo(TabPage)
-			spawn(function()
-				wait()
-				Elements.UIPageLayout.Animated = true
-			end)
+			task.wait()
+			Elements.UIPageLayout.Animated = true
 		end
 
 		if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
@@ -2870,37 +2863,35 @@ warn("discord rpc was removed. discord invite saving cant work")
 		end
 		TopTabButton.UIStroke.Color = SelectedTheme.TabStroke
 		
-		spawn(function()
-			wait(0.05)
-			if isFirstTab then
-				TopTabButton.BackgroundColor3 = SelectedTheme.TabBackgroundSelected
-				TopTabButton.Image.ImageColor3 = SelectedTheme.SelectedTabTextColor
-				TopTabButton.Title.TextColor3 = SelectedTheme.SelectedTabTextColor
-				SideTabButton.Image.ImageColor3 = Color3.fromRGB(255, 255, 255)
-				SideTabButton.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-				
-				TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
-				TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-				TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-				TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-				TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+		wait(0.1)
+		if FirstTab == Name then
+			TopTabButton.BackgroundColor3 = SelectedTheme.TabBackgroundSelected
+			TopTabButton.Image.ImageColor3 = SelectedTheme.SelectedTabTextColor
+			TopTabButton.Title.TextColor3 = SelectedTheme.SelectedTabTextColor
+			TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
+			TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+			TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+			TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+			TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
 
-				TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-				TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-			else
-				TopTabButton.BackgroundColor3 = SelectedTheme.TabBackground
-				TopTabButton.Image.ImageColor3 = SelectedTheme.TabTextColor
-				TopTabButton.Title.TextColor3 = SelectedTheme.TabTextColor
-				TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
-				TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-				TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
-				TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-				TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
+			SideTabButton.Image.ImageColor3 = Color3.fromRGB(255, 255, 255)
+			SideTabButton.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+			TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+			TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
-				TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0, ImageColor3 = Color3.fromRGB(205, 205, 205)}):Play()
-				TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0.2, TextColor3 = Color3.fromRGB(205, 205, 205)}):Play()	
-			end
-		end)
+		else
+			TopTabButton.BackgroundColor3 = SelectedTheme.TabBackground
+			TopTabButton.Image.ImageColor3 = SelectedTheme.TabTextColor
+			TopTabButton.Title.TextColor3 = SelectedTheme.TabTextColor
+			TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
+			TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
+			TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
+			TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+			TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
+
+			TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0,ImageColor3 = Color3.fromRGB(205, 205, 205)}):Play()
+			TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = .2,TextColor3 = Color3.fromRGB(205, 205, 205)}):Play()	
+		end
 
 		local function Pick()
 			if Minimised then return end
