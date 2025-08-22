@@ -833,11 +833,11 @@ function AddInfos(Object:Frame,Settings,type)
 		--if not (input.UserInputType == Enum.UserInputType.MouseButton2) then return end
 		if Settings and Settings.Info then
 			InfoPromptOpen = true
-			FadeDescription(Settings,type)
+			--FadeDescription(Settings,type)
 		end
 	end)
 	Object.MouseLeave:Connect(function()
-		FadeDescription(nil,nil,true)
+		--FadeDescription(nil,nil,true)
 	end)
 end
 
@@ -1800,9 +1800,9 @@ function Hide()
 		end
 	end
 
-	spawn(function()
-		FadeDescription(nil,true)
-	end)
+	--spawn(function()
+		--FadeDescription(nil,true)
+	--end)
 	Debounce = true
     ArrayFieldLibrary:Notify({
         Title = "Interface Hidden", 
@@ -2297,9 +2297,9 @@ function Minimise()
         wait(.1)
         Main.SideTabList.Visible = false
 	end
-	spawn(function()
-		FadeDescription(nil,true)
-	end)
+	--spawn(function()
+	--	FadeDescription(nil,true)
+	--end)
 	for _, tabbtn in ipairs(TopList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
 			TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
