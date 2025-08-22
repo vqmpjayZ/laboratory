@@ -16,7 +16,11 @@ Arrays had so many issues its actually insane
 
 // DD/MM/YY //
 [ -22.8.25- ]
---siadhjaisabd9iays)
+- Fixed Console Errors while minimizing/unminimizing Interface
+- Fixed Console Errors when Hiding/Unhiding Interface
+- Fixed Console Errors for when Destroying the Interface
+- Fixed Console Errors for 'Template' on Notifications and fixed all errors for 'OpenSideBar'
+- Removed AddInfos (it never worked as intended anyways)
 
 [ -1.8.25- ]
 - Added TextWrapping to labels
@@ -2847,13 +2851,18 @@ warn("discord rpc was removed. discord invite saving cant work")
 			end
 		end
 
-		TabPage.Parent = Elements
-
 		if not FirstTab then
 			FirstTab = Name
+			TabPage.LayoutOrder = 0
+		else
+			TabPage.LayoutOrder = #Elements:GetChildren()
+		end
+
+		TabPage.Parent = Elements
+
+		if FirstTab == Name then
 			Elements.UIPageLayout.Animated = false
-			task.wait()
-			Elements.UIPageLayout:JumpTo(TabPage)
+			Elements.UIPageLayout.CurrentPage = TabPage
 			task.wait()
 			Elements.UIPageLayout.Animated = true
 		end
