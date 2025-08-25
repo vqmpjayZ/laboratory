@@ -7,7 +7,37 @@ Original by Sirius
 
 -------------------------------
 Arrays  | Designing + Programming + New Features
-s
+vqmpjay | Designing + Programming + New Features
+
+]]
+
+--[[
+
+// DD/MM/YY //
+[ -22.8.25- ]
+- Fixed Console Errors while minimizing/unminimizing Interface
+- Fixed Console Errors when Hiding/Unhiding Interface
+- Fixed Console Errors for when Destroying the Interface
+- Fixed Console Errors for 'Template' on Notifications and fixed all errors for 'OpenSideBar'
+- Removed AddInfos (it never worked as intended anyways)
+
+[ -1.8.25- ]
+- Added TextWrapping to labels
+- Added Icon support to labels
+- Added Descriptions for Buttons, Toggles, Sliders and Inputs
+- Fixed Issue with the sidebar opening when minimized after minimizing too quickly
+- Added Themes
+- Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
+
+[ -3.3.25- ]
+- Added Mobile Support (Dragging Functionality + Input Accessibility)
+- Added Lucide icons support to Tabs and Notifications
+- Added rich text support to Paragraphs and Labels
+- Fixed Paragraphs not appearing when not parented to sections
+- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
+- Fixed Search not being able to search for elements parented to sections
+- Fixed Sidetab not loading (Added pcall)
+- Removed Themes Button (pointless)
 - Revamped Design
 - Fixed Sidetab having a chance of duplicating once minimized
 - Added Mobile toggle button
@@ -2742,11 +2772,10 @@ warn("discord rpc was removed. discord invite saving cant work")
 
 	Elements.UIPageLayout.FillDirection = Enum.FillDirection.Horizontal
 
-	--Tab
+	-- Tab
 local FirstTab = false
 ArrayFieldQuality.Window = {Tabs = {}}
 local Window = ArrayFieldQuality.Window
-
 function Window:CreateTab(Name, Image)
     Window.Tabs[Name] = {Elements = {}}
     local Tab = Window.Tabs[Name]
@@ -2881,7 +2910,6 @@ function Window:CreateTab(Name, Image)
 
     TopTabButton.Interact.MouseButton1Click:Connect(Pick)
     SideTabButton.Interact.MouseButton1Click:Connect(Pick)
-end
 
 -- Button
 function Tab:CreateButton(ButtonSettings)
