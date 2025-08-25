@@ -2852,12 +2852,9 @@ warn("discord rpc was removed. discord invite saving cant work")
 		end
 
 		TabPage.Parent = Elements
-		if not FirstTab then
-			task.wait()
+		if not isFirstTab then
 			Elements.UIPageLayout.Animated = false
-			task.wait()
 			Elements.UIPageLayout:JumpTo(TabPage)
-			task.wait()
 			Elements.UIPageLayout.Animated = true
 		end
 
