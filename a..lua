@@ -2858,11 +2858,14 @@ warn("discord rpc was removed. discord invite saving cant work")
 			Elements.UIPageLayout.Animated = true
 		end
 		if not FirstTab then
-			Elements.UIPageLayout.Animated = false
-			Elements.UIPageLayout:JumpTo(TabPage)
-			Elements.UIPageLayout.Animated = true
+            local firsttab = Elements:FindFirstChild(FirstTab)
+            if firsttab then
+            Elements.UIPageLayout.Animated = false
+            Elements.UIPageLayout:JumpTo(firsttab)
+            Elements.UIPageLayout.Animated = true
+            end
 		end
-		
+
 		if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
 			TopTabButton.Shadow.Visible = false
 		end
