@@ -8,7 +8,7 @@ Original by Sirius
 -------------------------------
 Arrays  | Designing + Programming + New Features
 vqmpjay | Designing + Programming + New Features
-
+test version 2
 ]]
 
 --[[
@@ -2852,7 +2852,7 @@ warn("discord rpc was removed. discord invite saving cant work")
 		end
 
 		TabPage.Parent = Elements
-		if not isFirstTab then
+		if not FirstTab then
 			Elements.UIPageLayout.Animated = false
 			Elements.UIPageLayout:JumpTo(TabPage)
 			Elements.UIPageLayout.Animated = true
@@ -5294,12 +5294,12 @@ Elements.Position = UDim2.new(0.5, 80, 0.55, 0)
 Elements.Size = UDim2.new(1, -180, 0, 295)
 
 return ArrayFieldLibrary
---[[ template
+--[[
 local Window = ArrayFieldLibrary:CreateWindow({
         Name = "ArrayField Example Window",
         LoadingTitle = "ArrayField Interface Suite",
         LoadingSubtitle = "by Arrays",
-		Theme = "Bloom",
+		Theme = "Default",
         ConfigurationSaving = { -- Don't use configurations saving if you want to support executors such as Delta
             Enabled = true,
             FolderName = nil, -- Create a custom folder for your hub/game
@@ -5529,4 +5529,19 @@ local Window = ArrayFieldLibrary:CreateWindow({
 
         end,
     })
+
+local Tab2 = Window:CreateTab("Tab Example 2")
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+local Tab2 = Window:CreateTab("Tab Example 2") 
+
 ]]
