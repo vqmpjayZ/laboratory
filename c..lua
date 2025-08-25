@@ -2853,15 +2853,23 @@ warn("discord rpc was removed. discord invite saving cant work")
 
 		TabPage.Parent = Elements
 		if not FirstTab then
-    		FirstTab = TabPage
-    		task.defer(function()
-        		if Elements and Elements.UIPageLayout then
-           			Elements.UIPageLayout.Animated = false
-            		Elements.UIPageLayout:JumpTo(TabPage)
-            		Elements.UIPageLayout.Animated = true
-        		end
-    		end)
-		end
+    FirstTab = TabPage
+    task.defer(function()
+        if Elements and Elements.UIPageLayout then
+            Elements.UIPageLayout.Animated = false
+            Elements.UIPageLayout:JumpTo(TabPage)
+            Elements.UIPageLayout.Animated = true
+        end
+        for _, button in ipairs(SideList:GetChildren()) do
+            if button:IsA("Frame") and button:FindFirstChild("Title") then
+                button.Title.TextColor3 = SelectedTheme.TabTextColor
+            end
+        end
+        if TabButton and TabButton:FindFirstChild("Title") then
+            TabButton.Title.TextColor3 = SelectedTheme.SelectedTabTextColor
+        end
+    end)
+end
 
 		if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
 			TopTabButton.Shadow.Visible = false
