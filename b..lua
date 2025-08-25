@@ -13,7 +13,25 @@ vqmpjay | Designing + Programming + New Features
 
 --[[
 
-// Dssssssss
+// DD/MM/YY //
+[ -22.8.25- ]
+- Fixed Console Errors while minimizing/unminimizing Interface
+- Fixed Console Errors when Hiding/Unhiding Interface
+- Fixed Console Errors for when Destroying the Interface
+- Fixed Console Errors for 'Template' on Notifications and fixed all errors for 'OpenSideBar'
+- Removed AddInfos (it never worked as intended anyways)
+
+[ -1.8.25- ]
+- Added TextWrapping to labels
+- Added Icon support to labels
+- Added Descriptions for Buttons, Toggles, Sliders and Inputs
+- Fixed Issue with the sidebar opening when minimized after minimizing too quickly
+- Added Themes
+- Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
+
+[ -3.3.25- ]
+- Added Mobile Support (Dragging Functionality + Input Accessibility)
+- Added Lucide icons support to Tabs and Notifications
 - Added rich text support to Paragraphs and Labels
 - Fixed Paragraphs not appearing when not parented to sections
 - Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
@@ -2835,17 +2853,12 @@ warn("discord rpc was removed. discord invite saving cant work")
 
 		TabPage.Parent = Elements
 		if not FirstTab then
+			task.wait()
 			Elements.UIPageLayout.Animated = false
+			task.wait()
 			Elements.UIPageLayout:JumpTo(TabPage)
+			task.wait()
 			Elements.UIPageLayout.Animated = true
-		end
-		if FirstTab then
-            local firsttab = Elements:FindFirstChild(FirstTab)
-            if firsttab then
-            Elements.UIPageLayout.Animated = false
-            Elements.UIPageLayout:JumpTo(firsttab)
-            Elements.UIPageLayout.Animated = true
-            end
 		end
 
 		if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
