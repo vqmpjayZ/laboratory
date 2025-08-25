@@ -1,51 +1,3 @@
---[[
-
-ArrayField Interface Suite
-by vqmpjay
-
-Original by Sirius
-
--------------------------------
-Arrays  | Designing + Programming + New Features
-vqmpjay | Designing + Programming + New Features
-test version 2
-]]
-
---[[
-
-// DD/MM/YY //
-[ -22.8.25- ]
-- Fixed Console Errors while minimizing/unminimizing Interface
-- Fixed Console Errors when Hiding/Unhiding Interface
-- Fixed Console Errors for when Destroying the Interface
-- Fixed Console Errors for 'Template' on Notifications and fixed all errors for 'OpenSideBar'
-- Removed AddInfos (it never worked as intended anyways)
-
-[ -1.8.25- ]
-- Added TextWrapping to labels
-- Added Icon support to labels
-- Added Descriptions for Buttons, Toggles, Sliders and Inputs
-- Fixed Issue with the sidebar opening when minimized after minimizing too quickly
-- Added Themes
-- Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
-
-[ -3.3.25- ]
-- Added Mobile Support (Dragging Functionality + Input Accessibility)
-- Added Lucide icons support to Tabs and Notifications
-- Added rich text support to Paragraphs and Labels
-- Fixed Paragraphs not appearing when not parented to sections
-- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
-- Fixed Search not being able to search for elements parented to sections
-- Fixed Sidetab not loading (Added pcall)
-- Removed Themes Button (pointless)
-- Revamped Design
-- Fixed Sidetab having a chance of duplicating once minimized
-- Added Mobile toggle button
-- Switch unhide UI keybind to K instead of RightShift
-
-let me know what other stuff i can add
-]]
-
 local Release = "Release 2D"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
@@ -57,7 +9,7 @@ local ArrayFieldLibrary = {
 	Flags = {},
 	Theme = {
 		Default = {
-			TextFont = "Default",
+			TextFont = "SourceSansBold",
 			TextColor = Color3.fromRGB(240, 240, 240),
 
 			Background = Color3.fromRGB(25, 25, 25),
@@ -99,8 +51,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(178, 178, 178)
 		},
 		Light = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(50, 50, 50),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(20, 20, 20),
 
 			Background = Color3.fromRGB(255, 255, 255),
 			Topbar = Color3.fromRGB(217, 217, 217),
@@ -112,8 +64,8 @@ local ArrayFieldLibrary = {
 			TabBackground = Color3.fromRGB(220, 220, 220),
 			TabStroke = Color3.fromRGB(112, 112, 112),
 			TabBackgroundSelected = Color3.fromRGB(0, 142, 208),
-			TabTextColor = Color3.fromRGB(240, 240, 240),
-			SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+			TabTextColor = Color3.fromRGB(30, 30, 30),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(198, 198, 198),
 			ElementBackgroundHover = Color3.fromRGB(230, 230, 230),
@@ -138,11 +90,11 @@ local ArrayFieldLibrary = {
 
 			InputBackground = Color3.fromRGB(31, 159, 71),
 			InputStroke = Color3.fromRGB(19, 65, 31),
-			PlaceholderColor = Color3.fromRGB(178, 178, 178)
+			PlaceholderColor = Color3.fromRGB(100, 100, 100)
 		},
 		Ocean = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(200, 230, 255),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(230, 250, 255),
 
 			Background = Color3.fromRGB(15, 25, 35),
 			Topbar = Color3.fromRGB(20, 35, 50),
@@ -154,7 +106,7 @@ local ArrayFieldLibrary = {
 			TabBackground = Color3.fromRGB(30, 50, 70),
 			TabStroke = Color3.fromRGB(50, 80, 110),
 			TabBackgroundSelected = Color3.fromRGB(40, 120, 180),
-			TabTextColor = Color3.fromRGB(200, 230, 255),
+			TabTextColor = Color3.fromRGB(230, 250, 255),
 			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(25, 40, 55),
@@ -183,8 +135,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(150, 180, 210)
 		},
 		Purple = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(220, 200, 255),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(240, 220, 255),
 
 			Background = Color3.fromRGB(20, 15, 35),
 			Topbar = Color3.fromRGB(35, 25, 55),
@@ -196,7 +148,7 @@ local ArrayFieldLibrary = {
 			TabBackground = Color3.fromRGB(50, 30, 80),
 			TabStroke = Color3.fromRGB(80, 50, 120),
 			TabBackgroundSelected = Color3.fromRGB(120, 80, 180),
-			TabTextColor = Color3.fromRGB(220, 200, 255),
+			TabTextColor = Color3.fromRGB(240, 220, 255),
 			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(40, 25, 65),
@@ -225,8 +177,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(180, 150, 210)
 		},
 		Green = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(200, 255, 200),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(230, 255, 230),
 
 			Background = Color3.fromRGB(15, 25, 15),
 			Topbar = Color3.fromRGB(25, 40, 25),
@@ -238,7 +190,7 @@ local ArrayFieldLibrary = {
 			TabBackground = Color3.fromRGB(40, 60, 40),
 			TabStroke = Color3.fromRGB(60, 90, 60),
 			TabBackgroundSelected = Color3.fromRGB(80, 160, 80),
-			TabTextColor = Color3.fromRGB(200, 255, 200),
+			TabTextColor = Color3.fromRGB(230, 255, 230),
 			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(30, 45, 30),
@@ -267,8 +219,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(150, 200, 150)
 		},
 		Red = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(255, 200, 200),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(255, 230, 230),
 
 			Background = Color3.fromRGB(25, 15, 15),
 			Topbar = Color3.fromRGB(40, 25, 25),
@@ -280,7 +232,7 @@ local ArrayFieldLibrary = {
 			TabBackground = Color3.fromRGB(60, 40, 40),
 			TabStroke = Color3.fromRGB(90, 60, 60),
 			TabBackgroundSelected = Color3.fromRGB(160, 80, 80),
-			TabTextColor = Color3.fromRGB(255, 200, 200),
+			TabTextColor = Color3.fromRGB(255, 230, 230),
 			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(45, 30, 30),
@@ -309,8 +261,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(200, 150, 150)
 		},
 		Synapse = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(200, 200, 200),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(220, 220, 220),
 
 			Background = Color3.fromRGB(26, 26, 30),
 			Topbar = Color3.fromRGB(30, 30, 35),
@@ -322,8 +274,8 @@ local ArrayFieldLibrary = {
 			TabBackground = Color3.fromRGB(35, 35, 40),
 			TabStroke = Color3.fromRGB(45, 45, 50),
 			TabBackgroundSelected = Color3.fromRGB(0, 170, 255),
-			TabTextColor = Color3.fromRGB(200, 200, 200),
-			SelectedTabTextColor = Color3.fromRGB(20, 20, 25),
+			TabTextColor = Color3.fromRGB(220, 220, 220),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(32, 32, 36),
 			ElementBackgroundHover = Color3.fromRGB(38, 38, 44),
@@ -351,8 +303,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(150, 150, 160)
 		},
 		AmberGlow = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(255, 245, 230),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(255, 250, 240),
 
 			Background = Color3.fromRGB(45, 30, 20),
 			Topbar = Color3.fromRGB(55, 40, 25),
@@ -364,7 +316,7 @@ local ArrayFieldLibrary = {
 			TabBackground = Color3.fromRGB(75, 50, 35),
 			TabStroke = Color3.fromRGB(90, 60, 45),
 			TabBackgroundSelected = Color3.fromRGB(230, 180, 100),
-			TabTextColor = Color3.fromRGB(250, 220, 200),
+			TabTextColor = Color3.fromRGB(255, 250, 240),
 			SelectedTabTextColor = Color3.fromRGB(50, 30, 10),
 
 			ElementBackground = Color3.fromRGB(60, 45, 35),
@@ -393,8 +345,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(190, 150, 130)
 		},
 		Amethyst = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(240, 240, 240),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(250, 250, 255),
 
 			Background = Color3.fromRGB(30, 20, 40),
 			Topbar = Color3.fromRGB(40, 25, 50),
@@ -406,8 +358,8 @@ local ArrayFieldLibrary = {
 			TabBackground = Color3.fromRGB(60, 40, 80),
 			TabStroke = Color3.fromRGB(70, 45, 90),
 			TabBackgroundSelected = Color3.fromRGB(180, 140, 200),
-			TabTextColor = Color3.fromRGB(230, 230, 240),
-			SelectedTabTextColor = Color3.fromRGB(50, 20, 50),
+			TabTextColor = Color3.fromRGB(250, 250, 255),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(45, 30, 60),
 			ElementBackgroundHover = Color3.fromRGB(50, 35, 70),
@@ -435,8 +387,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(178, 150, 200)
 		},
 		Bloom = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(60, 40, 50),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(40, 20, 30),
 
 			Background = Color3.fromRGB(255, 240, 245),
 			Topbar = Color3.fromRGB(250, 220, 225),
@@ -447,9 +399,9 @@ local ArrayFieldLibrary = {
 
 			TabBackground = Color3.fromRGB(240, 210, 220),
 			TabStroke = Color3.fromRGB(230, 200, 210),
-			TabBackgroundSelected = Color3.fromRGB(255, 225, 235),
-			TabTextColor = Color3.fromRGB(80, 40, 60),
-			SelectedTabTextColor = Color3.fromRGB(50, 30, 50),
+			TabBackgroundSelected = Color3.fromRGB(255, 140, 170),
+			TabTextColor = Color3.fromRGB(40, 20, 30),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(255, 235, 240),
 			ElementBackgroundHover = Color3.fromRGB(245, 220, 230),
@@ -474,11 +426,11 @@ local ArrayFieldLibrary = {
 
 			InputBackground = Color3.fromRGB(255, 235, 240),
 			InputStroke = Color3.fromRGB(220, 190, 200),
-			PlaceholderColor = Color3.fromRGB(170, 130, 140)
+			PlaceholderColor = Color3.fromRGB(150, 100, 120)
 		},
 		DarkBlue = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(230, 230, 230),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(240, 240, 250),
 
 			Background = Color3.fromRGB(20, 25, 30),
 			Topbar = Color3.fromRGB(30, 35, 40),
@@ -490,7 +442,7 @@ local ArrayFieldLibrary = {
 			TabBackground = Color3.fromRGB(35, 40, 45),
 			TabStroke = Color3.fromRGB(45, 50, 60),
 			TabBackgroundSelected = Color3.fromRGB(40, 70, 100),
-			TabTextColor = Color3.fromRGB(200, 200, 200),
+			TabTextColor = Color3.fromRGB(240, 240, 250),
 			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(30, 35, 40),
@@ -519,8 +471,8 @@ local ArrayFieldLibrary = {
 			PlaceholderColor = Color3.fromRGB(150, 150, 160)
 		},
 		Serenity = {
-			TextFont = "Gotham",
-			TextColor = Color3.fromRGB(50, 55, 60),
+			TextFont = "GothamBold",
+			TextColor = Color3.fromRGB(30, 35, 45),
 
 			Background = Color3.fromRGB(240, 245, 250),
 			Topbar = Color3.fromRGB(215, 225, 235),
@@ -531,9 +483,9 @@ local ArrayFieldLibrary = {
 
 			TabBackground = Color3.fromRGB(200, 210, 220),
 			TabStroke = Color3.fromRGB(180, 190, 200),
-			TabBackgroundSelected = Color3.fromRGB(175, 185, 200),
-			TabTextColor = Color3.fromRGB(50, 55, 60),
-			SelectedTabTextColor = Color3.fromRGB(30, 35, 40),
+			TabBackgroundSelected = Color3.fromRGB(70, 130, 180),
+			TabTextColor = Color3.fromRGB(30, 35, 45),
+			SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
 			ElementBackground = Color3.fromRGB(210, 220, 230),
 			ElementBackgroundHover = Color3.fromRGB(220, 230, 240),
@@ -558,12 +510,11 @@ local ArrayFieldLibrary = {
 
 			InputBackground = Color3.fromRGB(220, 230, 240),
 			InputStroke = Color3.fromRGB(180, 190, 200),
-			PlaceholderColor = Color3.fromRGB(150, 150, 150)
+			PlaceholderColor = Color3.fromRGB(120, 120, 120)
 		}
 	}
 }
 
--- Services
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
@@ -572,13 +523,11 @@ local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = game:GetService('Players').LocalPlayer
 
--- Interface Management
-local ArrayField = game:GetObjects("rbxassetid://104864835246885")[1] --Backup: 13853811008
+local ArrayField = game:GetObjects("rbxassetid://104864835246885")[1]
 ArrayField.Enabled = false
 local spawn = task.spawn
 local delay = task.delay
 
---Studio
 if game["Run Service"]:IsStudio() then
 	function gethui() return ArrayField end local http_request = nil local syn = {protect_gui = false,request = false,}local http = nil function writefile(tt,t,ttt)end function isfolder(t)end function makefolder(t)end function isfile(r)end function readfile(t)end
 end
@@ -610,8 +559,6 @@ local ParentObject = function(Gui)
 end
 ParentObject(ArrayField)
 
---Object Variables
-
 local Camera = workspace.CurrentCamera
 local Main = ArrayField.Main
 local Topbar = Main.Topbar
@@ -629,8 +576,6 @@ local InfoPrompt = ArrayField.Info
 ArrayField.DisplayOrder = 100
 LoadingFrame.Version.Text = Release
 
-
---Variables
 local request = (syn and syn.request) or (http and http.request) or http_request
 local CFileName = nil
 local CEnabled = false
@@ -677,8 +622,8 @@ function ChangeTheme(ThemeName)
 			end
 		end
 	end
-
 end
+
 local function AddDraggingFunctionality(DragPoint, Main)
     pcall(function()
         local Dragging = false
@@ -764,89 +709,6 @@ function BoolToText(Bool)
 	end
 end
 
-local function FadeDescription(Infos,type,Out:boolean?)
-	if not InfoPrompt or not InfoPrompt.Parent then return end
-	
-	local Size = UDim2.fromOffset(230,275)
-	local Transparency = 0
-	local WaitTime = .05
-	if Out then
-		Size = UDim2.fromOffset(212,254)
-		Transparency = 1
-		WaitTime = nil
-	end
-	if not Out then
-		if InfoPrompt:FindFirstChild("Status") then
-			if type == 'slider' then
-				InfoPrompt.Status.Text = Infos.CurrentValue
-			elseif type == 'button' then
-				InfoPrompt.Status.Text = 'Clickable'
-			elseif type == 'toggle' then
-				InfoPrompt.Status.Text,InfoPrompt.Status.TextColor3 = BoolToText(Infos.CurrentValue)
-			elseif type == 'dropdown' then
-				--=| Do this |=--
-			elseif type == 'colorpicker' then
-				InfoPrompt.Status.Text = Infos.Color.R..Infos.Color.G..Infos.Color.B
-			end
-		end
---[[
-		if not Infos.Info.Image then
-			if InfoPrompt:FindFirstChild("ImageLabel") then
-				InfoPrompt.ImageLabel.Visible = false
-			end
-			if InfoPrompt:FindFirstChild("Description") and InfoPrompt:FindFirstChild("ImageLabel") then
-				InfoPrompt.Description.Position = InfoPrompt.ImageLabel.Position
-			end
-		else
-			if InfoPrompt:FindFirstChild("ImageLabel") then
-				InfoPrompt.ImageLabel.Visible = true
-				InfoPrompt.ImageLabel.Image = 'rbxassetid://'..Infos.Info.Image
-			end
-			if InfoPrompt:FindFirstChild("Description") then
-				InfoPrompt.Description.Position = UDim2.new(.5,0,0,160)
-			end
-		end
-]]
-	end
-	TweenService:Create(InfoPrompt,TweenInfo.new(.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
-		Size = Size,BackgroundTransparency = Transparency
-	}):Play()
-	if InfoPrompt:FindFirstChild("ImageLabel") then
-		TweenService:Create(InfoPrompt.ImageLabel,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-			ImageTransparency = Transparency
-		}):Play()
-	end
-	if InfoPrompt:FindFirstChild("Description") then
-		TweenService:Create(InfoPrompt.Description,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-			TextTransparency = Transparency
-		}):Play()
-	end
-	if InfoPrompt:FindFirstChild("Status") then
-		TweenService:Create(InfoPrompt.Status,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-			TextTransparency = Transparency
-		}):Play()
-	end
-	if InfoPrompt:FindFirstChild("Title") then
-		TweenService:Create(InfoPrompt.Title,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-			TextTransparency = Transparency
-		}):Play()
-	end
-end
---[[
-function AddInfos(Object:Frame,Settings,type)
-	--local Interact = Object:FindFirstChild('Interact') or Object:FindFirstChild('Main'):FindFirstChild('Interact')
-	Object.MouseEnter:Connect(function(input)
-		--if not (input.UserInputType == Enum.UserInputType.MouseButton2) then return end
-		if Settings and Settings.Info then
-			InfoPromptOpen = true
-			--FadeDescription(Settings,type)
-		end
-	end)
-	Object.MouseLeave:Connect(function()
-		--FadeDescription(nil,nil,true)
-	end)
-end
-]]
 local function PackColor(Color)
 	return {R = Color.R * 255, G = Color.G * 255, B = Color.B * 255}
 end    
@@ -885,7 +747,7 @@ local function SaveConfiguration()
 	writefile(ConfigurationFolder .. "/" .. CFileName .. ConfigurationExtension, tostring(HttpService:JSONEncode(Data)))
 end
 
-local neon = (function()  --Open sourced neon module
+local neon = (function()
 	local module = {}
 
 	do
@@ -909,11 +771,9 @@ local neon = (function()  --Open sourced neon module
 		end
 	end
 
-
 	local binds = {}
 	local root = Instance.new('Folder', RootParent)
 	root.Name = 'neon'
-
 
 	local GenUid; do
 		local id = 0
@@ -1101,9 +961,7 @@ local neon = (function()  --Open sourced neon module
 		return binds[frame] and binds[frame].parts
 	end
 
-
 	return module
-
 end)()
 
 function CloseNPrompt()
@@ -1123,10 +981,11 @@ function CloseNPrompt()
 	wait(0.21)
 	NotePrompt.Visible = false
 end
+
 function qNotePrompt(PromptSettings)
 	local Infos= TweenInfo.new(.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
 	NotePrompt.Visible = false
-	--Setup
+	
 	NotePrompt.Size = UDim2.fromOffset(436,92)
 	NotePrompt.Position = UDim2.fromScale(0.5,0.19)
 	NotePrompt.BackgroundTransparency = 1
@@ -1144,7 +1003,7 @@ function qNotePrompt(PromptSettings)
 	NotePrompt.Load.UIStroke.Transparency = 1
 	NotePrompt.Load.TextTransparency = 1
 	NotePrompt.Load.Shadow.ImageTransparency = 1
-	--Settings
+	
 	NotePrompt.Title.Text = PromptSettings.Title or ''
 	NotePrompt.Description.Text = PromptSettings.Description or ''
 	NotePrompt.Icon.Image = PromptSettings.Icon or 'rbxassetid://4483362748'
@@ -1160,7 +1019,7 @@ function qNotePrompt(PromptSettings)
 		CloseNPrompt()
 	end)
 	NotePrompt.Visible = true
-	--Opening
+	
 	TweenService:Create(NotePrompt,Infos,{BackgroundTransparency = .1,Size = UDim2.fromOffset(474,100),Position = UDim2.fromScale(0.5,0.21)}):Play()
 	TweenService:Create(NotePrompt.UIStroke,Infos,{Transparency = 0}):Play()
 	TweenService:Create(NotePrompt.Shadow.Image,Infos,{ImageTransparency = .2}):Play()
@@ -1175,6 +1034,7 @@ function qNotePrompt(PromptSettings)
 	TweenService:Create(NotePrompt.Load.UIStroke,Infos,{Transparency = 0}):Play()
 	TweenService:Create(NotePrompt.Load.Shadow,Infos,{ImageTransparency = .8}):Play()
 end
+
 function ClosePrompt()
 	local PromptUI = Prompt.Prompt
 	clicked = false
@@ -1195,63 +1055,6 @@ function ClosePrompt()
 	end
 	wait(.5)
 	Prompt.Visible = false
-end
-
-local function FadeDescription(Infos,type,Out:boolean?)
-	local Size = UDim2.fromOffset(230,275)
-	local Transparency = 0
-	local WaitTime = .05
-	if Out then
-		Size = UDim2.fromOffset(212,254)
-		Transparency = 1
-		WaitTime = nil
-	end
-	
-	if not InfoPrompt or not InfoPrompt.Parent then 
-		return 
-	end
-	
-	if not Out then
-		if type == 'slider' then
-			InfoPrompt.Status.Text = Infos.CurrentValue
-		elseif type == 'button' then
-			InfoPrompt.Status.Text = 'Clickable'
-		elseif type == 'toggle' then
-			InfoPrompt.Status.Text,InfoPrompt.Status.TextColor3 = BoolToText(Infos.CurrentValue)
-		elseif type == 'dropdown' then
-			--=| Do this |=--
-		elseif type == 'colorpicker' then
-			InfoPrompt.Status.Text = Infos.Color.R..Infos.Color.G..Infos.Color.B
-		end
-	end
-	
-	TweenService:Create(InfoPrompt,TweenInfo.new(.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
-		Size = Size,BackgroundTransparency = Transparency
-	}):Play()
-	
-	if InfoPrompt:FindFirstChild("ImageLabel") then
-		TweenService:Create(InfoPrompt.ImageLabel,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-			ImageTransparency = Transparency
-		}):Play()
-	end
-	
-	if InfoPrompt:FindFirstChild("Description") then
-		TweenService:Create(InfoPrompt.Description,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-			TextTransparency = Transparency
-		}):Play()
-	end
-	
-	if InfoPrompt:FindFirstChild("Status") then
-		TweenService:Create(InfoPrompt.Status,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-			TextTransparency = Transparency
-		}):Play()
-	end
-	
-	if InfoPrompt:FindFirstChild("Title") then
-		TweenService:Create(InfoPrompt.Title,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-			TextTransparency = Transparency
-		}):Play()
-	end
 end
 
 function ArrayFieldLibrary:Notify(NotificationSettings)
@@ -1310,6 +1113,7 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
             Notification.Title.Text = NotificationSettings.Title or "Unknown"
             Notification.Title.TextTransparency = 1
             Notification.Title.TextColor3 = SelectedTheme.TextColor
+            Notification.Title.Font = SelectedTheme.TextFont
         end
         if Notification:FindFirstChild("Description") then
             Notification.Description.Text = NotificationSettings.Content or "Unknown"
@@ -1457,6 +1261,7 @@ function ArrayFieldLibrary:Notify(NotificationSettings)
         end
     end)
 end
+
 function CloseSideBar()
 	Debounce = true
 	SideBarClosed = true
@@ -1466,14 +1271,18 @@ function CloseSideBar()
 			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
 		end
 	end
-	if Main and SideTabList then
-	TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
-	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
-	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+	if Main and Main:FindFirstChild("SideTabList") then
+		TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
+		if Main.SideTabList:FindFirstChild("UIStroke") then
+			TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
+		end
+		if Main.SideTabList:FindFirstChild("RDMT") then
+			TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+		end
 	end
 	wait(.4)
-	if Main and SideTabList then
-	Main.SideTabList.Visible = false
+	if Main and Main:FindFirstChild("SideTabList") then
+		Main.SideTabList.Visible = false
 	end
 	wait(0.2)
 	Debounce = false
@@ -1503,9 +1312,9 @@ local MobileToggle = {}
 
 local function createMobileButton()
 	local existingMobileButton = ArrayField:FindFirstChild("MobileToggleButton")
-if existingMobileButton then
-	existingMobileButton:Destroy()
-end
+	if existingMobileButton then
+		existingMobileButton:Destroy()
+	end
     ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "MobileToggleButton"
     ScreenGui.ResetOnSpawn = false
@@ -1712,34 +1521,34 @@ local ClickDetector
 if UserInputService.TouchEnabled then
 	ClickDetector = createMobileButton()
 
+	ClickDetector.MouseButton1Click:Connect(function()
+		animateClick()
+		if Debounce then return end
+		if Hidden then
+			Hidden = false
+			Unhide()
+		else
+			if not SearchHided then spawn(CloseSearch) end
+			Hidden = true
+			Hide()
+		end
+	end)
 
-ClickDetector.MouseButton1Click:Connect(function()
-    animateClick()
-    if Debounce then return end
-    if Hidden then
-        Hidden = false
-        Unhide()
-    else
-        if not SearchHided then spawn(CloseSearch) end
-        Hidden = true
-        Hide()
-    end
-end)
+	ClickDetector.MouseEnter:Connect(function()
+		animateHover(true)
+	end)
 
-ClickDetector.MouseEnter:Connect(function()
-    animateHover(true)
-end)
+	ClickDetector.MouseLeave:Connect(function()
+		animateHover(false)
+	end)
 
-ClickDetector.MouseLeave:Connect(function()
-    animateHover(false)
-end)
-
-ClickDetector.MouseButton1Down:Connect(function()
-    isDragging = true
-    dragStart = UserInputService:GetMouseLocation()
-    startPos = ButtonFrame.Position
-end)
+	ClickDetector.MouseButton1Down:Connect(function()
+		isDragging = true
+		dragStart = UserInputService:GetMouseLocation()
+		startPos = ButtonFrame.Position
+	end)
 end
+
 UserInputService.InputChanged:Connect(function(input)
     if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
         local currentPos = UserInputService:GetMouseLocation()
@@ -1806,9 +1615,6 @@ function Hide()
 		end
 	end
 
-	--spawn(function()
-		--FadeDescription(nil,true)
-	--end)
 	Debounce = true
     ArrayFieldLibrary:Notify({
         Title = "Interface Hidden", 
@@ -2029,6 +1835,7 @@ function Unhide()
 	Minimised = false
 	Debounce = false
 end
+
 function CloseSearch()
 	Debounce = true
 	TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0, 460,0, 35)}):Play()
@@ -2045,6 +1852,7 @@ function CloseSearch()
 	SearchBar.Visible = false
 	Debounce = false
 end
+
 function OpenSearch()
 	Debounce = true
 	SearchBar.Visible = true
@@ -2147,15 +1955,14 @@ function Maximise()
 		wait(.1)
 		spawn(OpenSideBar)
 	end
-task.spawn(function()
-    task.wait(0.2)
-
-    for _, Descendant in ipairs(Elements:GetDescendants()) do
-        if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
-            Descendant.BackgroundColor3 = SelectedTheme.Background
-        end
-    end
-end)
+	task.spawn(function()
+		task.wait(0.2)
+		for _, Descendant in ipairs(Elements:GetDescendants()) do
+			if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
+				Descendant.BackgroundColor3 = SelectedTheme.Background
+			end
+		end
+	end)
 
 	Debounce = true
 	Topbar.ChangeSize.Image = "rbxassetid://"..10137941941
@@ -2228,10 +2035,8 @@ end)
 				TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
 				TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
 			end
-
 		end
 	end
-
 
 	wait(0.5)
 	Debounce = false
@@ -2288,6 +2093,7 @@ function OpenSideBar()
 	wait(0.2)
 	Debounce = false
 end
+
 function Minimise()
 	Debounce = true
 	Topbar.ChangeSize.Image = "rbxassetid://"..11036884234
@@ -2303,9 +2109,7 @@ function Minimise()
         wait(.1)
         Main.SideTabList.Visible = false
 	end
-	--spawn(function()
-	--	FadeDescription(nil,true)
-	--end)
+	
 	for _, tabbtn in ipairs(TopList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
 			TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
@@ -2325,7 +2129,7 @@ function Minimise()
 							TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
 							TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
 						else
-							TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
 							pcall(function()
 								TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
 							end)
@@ -2433,6 +2237,7 @@ function ArrayFieldLibrary:CreateWindow(Settings)
     ArrayField.Enabled = false
     local Passthrough = false
     Topbar.Title.Text = Settings.Name
+    Topbar.Title.Font = SelectedTheme.TextFont
     Main.Size = UDim2.new(0, 250, 0, 260)
     Main.Visible = true
     Main.BackgroundTransparency = 1
@@ -2449,6 +2254,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
     Topbar.Visible = false
     Elements.Visible = false
     LoadingFrame.Visible = true
+    LoadingFrame.Title.Font = SelectedTheme.TextFont
+    LoadingFrame.Subtitle.Font = SelectedTheme.TextFont
+    LoadingFrame.Version.Font = SelectedTheme.TextFont
 
     ApplyTheme()
 
@@ -2492,9 +2300,9 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			makefolder(ArrayFieldFolder.."/Discord Invites")
 		end
 		if not isfile(ArrayFieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension) then
-warn("discord rpc was removed. discord invite saving cant work")
+			warn("discord rpc was removed. discord invite saving cant work")
 
-			if Settings.Discord.RememberJoins then -- We do logic this way so if the developer changes this setting, the user still won't be prompted, only new users
+			if Settings.Discord.RememberJoins then
 				writefile(ArrayFieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension,"ArrayField RememberJoins is true for this invite, this invite will not ask you to join again")
 			end
 		else
@@ -2729,13 +2537,6 @@ warn("discord rpc was removed. discord invite saving cant work")
 	TweenService:Create(Main.SideTabList, TweenInfo.new(0, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-	--delay(4,function()
-	--	qNotePrompt({
-	--		Title = 'Preview',
-	--		Description = 'This is a preview for the official ArrayField forum post. Remember that things are subject to change.',
-
-	--	})
-	--end)
 
 	TweenService:Create(InfoPrompt,TweenInfo.new(.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
 		Size = UDim2.fromOffset(212,254),BackgroundTransparency = 1
@@ -2772,8 +2573,8 @@ warn("discord rpc was removed. discord invite saving cant work")
 
 	Elements.UIPageLayout.FillDirection = Enum.FillDirection.Horizontal
 
-	-- Tab
 	local FirstTab = false
+	local FirstTabObject = nil
 	ArrayFieldQuality.Window = {Tabs = {}}
 	local Window = ArrayFieldQuality.Window
     function Window:CreateTab(Name, Image)
@@ -2790,6 +2591,8 @@ warn("discord rpc was removed. discord invite saving cant work")
         
         TopTabButton.Title.Text = Name 
         SideTabButton.Title.Text = Name
+        TopTabButton.Title.Font = SelectedTheme.TextFont
+        SideTabButton.Title.Font = SelectedTheme.TextFont
         SideTabButton.Title.TextWrapped = false 
         TopTabButton.Title.TextWrapped = false
         
@@ -2838,7 +2641,6 @@ warn("discord rpc was removed. discord invite saving cant work")
 		TopTabButton.Visible = true
 		SideTabButton.Visible = true
 
-		--Create Elements Page
 		local TabPage = Elements.Template:Clone()
 		TabPage.Name = Name
 		TabPage.Visible = true
@@ -2852,7 +2654,10 @@ warn("discord rpc was removed. discord invite saving cant work")
 		end
 
 		TabPage.Parent = Elements
+		
 		if not FirstTab then
+			FirstTab = Name
+			FirstTabObject = TabPage
 			Elements.UIPageLayout.Animated = false
 			Elements.UIPageLayout:JumpTo(TabPage)
 			Elements.UIPageLayout.Animated = true
@@ -2862,23 +2667,9 @@ warn("discord rpc was removed. discord invite saving cant work")
 			TopTabButton.Shadow.Visible = false
 		end
 		TopTabButton.UIStroke.Color = SelectedTheme.TabStroke
-		--Animate
+		
 		wait(0.1)
-		if FirstTab then
-			TopTabButton.BackgroundColor3 = SelectedTheme.TabBackground
-			TopTabButton.Image.ImageColor3 = SelectedTheme.TabTextColor
-			TopTabButton.Title.TextColor3 = SelectedTheme.TabTextColor
-			TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
-			TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-			TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
-			TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-			TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
-
-			TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0,ImageColor3 = Color3.fromRGB(205, 205, 205)}):Play()
-			TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = .2,TextColor3 = Color3.fromRGB(205, 205, 205)}):Play()	
-		else
-			FirstTab = Name
-
+		if Name == FirstTab then
 			TopTabButton.BackgroundColor3 = SelectedTheme.TabBackgroundSelected
 			TopTabButton.Image.ImageColor3 = SelectedTheme.SelectedTabTextColor
 			TopTabButton.Title.TextColor3 = SelectedTheme.SelectedTabTextColor
@@ -2891,7 +2682,18 @@ warn("discord rpc was removed. discord invite saving cant work")
 			SideTabButton.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 			TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
 			TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+		else
+			TopTabButton.BackgroundColor3 = SelectedTheme.TabBackground
+			TopTabButton.Image.ImageColor3 = SelectedTheme.TabTextColor
+			TopTabButton.Title.TextColor3 = SelectedTheme.TabTextColor
+			TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
+			TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
+			TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
+			TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+			TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
 
+			TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0,ImageColor3 = Color3.fromRGB(205, 205, 205)}):Play()
+			TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = .2,TextColor3 = Color3.fromRGB(205, 205, 205)}):Play()	
 		end
 
 		local function Pick()
@@ -2927,13 +2729,11 @@ warn("discord rpc was removed. discord invite saving cant work")
 					end
 				end)
 			end
-
 		end
 
 		TopTabButton.Interact.MouseButton1Click:Connect(Pick)
 		SideTabButton.Interact.MouseButton1Click:Connect(Pick)
 
--- Button
 function Tab:CreateButton(ButtonSettings)
     local ButtonValue = {Locked = false}
 
@@ -2947,6 +2747,7 @@ function Tab:CreateButton(ButtonSettings)
 
     Button.Name = ButtonSettings.Name
     Button.Title.Text = ButtonSettings.Name
+    Button.Title.Font = SelectedTheme.TextFont
     Button.ElementIndicator.Text = ButtonSettings.Interact or 'button'
     Button.Visible = true
 
@@ -3126,7 +2927,6 @@ Button.Interact.MouseButton1Click:Connect(function()
     return ButtonValue
 end
 
-		-- Section
 		function Tab:CreateSection(SectionName,Display)
 
 			local SectionValue = {
@@ -3137,6 +2937,7 @@ end
 			local Section = Elements.Template.SectionTitle:Clone()
 			SectionValue.Holder = Section.Holder
 			Section.Title.Text = SectionName
+			Section.Title.Font = SelectedTheme.TextFont
 			Section.Visible = true
 			Section.Parent = TabPage
 
@@ -3168,7 +2969,6 @@ end
 			Section.Title.ImageButton.MouseButton1Down:Connect(function()
 				if Debounce then return end
 				if SectionValue.Open then
-					--Section.Holder.Visible = true
 					Debounce = true
 					TweenService:Create(Section._UIPadding_, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {PaddingBottom = UDim.new(0,0)}):Play()
 					for _, element in ipairs(Section.Holder:GetChildren()) do
@@ -3182,7 +2982,7 @@ end
 									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
 								end
 								for _, child in ipairs(element:GetChildren()) do
-									if child.ClassName == "Frame" then --or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
+									if child.ClassName == "Frame" then
 										child.Visible = false
 									end
 								end
@@ -3246,7 +3046,6 @@ end
 			return SectionValue
 		end
 
-		-- Spacing
 		function Tab:CreateSpacing(SectionParent,Size)
 			local Spacing = Elements.Template.SectionSpacing:Clone()
 			Spacing.Visible = true
@@ -3261,7 +3060,6 @@ end
 			end
 		end
 
-		-- Label
 function Tab:CreateLabel(LabelSettings, SectionParent)
     local LabelValue = {}
     
@@ -3275,6 +3073,7 @@ function Tab:CreateLabel(LabelSettings, SectionParent)
 
     local Label = Elements.Template.Label:Clone()
     Label.Title.Text = labelText
+    Label.Title.Font = SelectedTheme.TextFont
     
     Label.Title.RichText = true
     Label.Title.TextWrapped = true
@@ -3407,12 +3206,12 @@ function Tab:CreateLabel(LabelSettings, SectionParent)
     return LabelValue
 end
 
-    -- Paragraph
 function Tab:CreateParagraph(ParagraphSettings, SectionParent)
     local ParagraphValue = {}
     
     local Paragraph = Elements.Template.Paragraph:Clone()
     Paragraph.Title.Text = ParagraphSettings.Title
+    Paragraph.Title.Font = SelectedTheme.TextFont
     Paragraph.Content.Text = ParagraphSettings.Content
     Paragraph.Visible = true
     Paragraph.Content.RichText = true
@@ -3475,11 +3274,11 @@ function Tab:CreateParagraph(ParagraphSettings, SectionParent)
     return ParagraphValue
 end      
 
-     -- Input
 function Tab:CreateInput(InputSettings)
     local Input = Elements.Template.Input:Clone()
     Input.Name = InputSettings.Name
     Input.Title.Text = InputSettings.Name
+    Input.Title.Font = SelectedTheme.TextFont
     Input.Visible = true
     InputSettings.Locked = false
     
@@ -3494,8 +3293,6 @@ function Tab:CreateInput(InputSettings)
     else
         Input.Parent = TabPage
     end
-    
-    --AddInfos(Input, InputSettings.Info, 'input')
     
     Input.BackgroundTransparency = 1
     Input.UIStroke.Transparency = 1
@@ -3692,207 +3489,327 @@ function Tab:CreateInput(InputSettings)
     
     return InputSettings
 end
-        function Tab:CreateDropdown(DropdownSettings)
-            local Dropdown = Elements.Template.Dropdown:Clone()
-            local SearchBar = Dropdown.List["-SearchBar"]
-            local Required = 1
-            --local Debounce = false
-            local InputButton = Instance.new("TextButton")
-            InputButton.Name = "InputButton"
-            InputButton.BackgroundTransparency = 1
-            InputButton.Size = UDim2.new(1, 0, 1, 0)
-            InputButton.Text = ""
-            InputButton.ZIndex = 10
-            InputButton.Parent = SearchBar
 
-            InputButton.MouseButton1Click:Connect(function()
-                if not DropdownSettings.Locked then
-                    SearchBar.Input:CaptureFocus()
-                end
-            end)
-            
-            InputButton.TouchTap:Connect(function()
-                if not DropdownSettings.Locked then
-                    SearchBar.Input:CaptureFocus()
-                end
-            end)
-            
-            DropdownSettings.Items = {
-                Selected = {Default = DropdownSettings.Selected or nil}
-            }
-            --AddInfos(Dropdown,DropdownSettings,'dropdown')
-            DropdownSettings.Locked = false
-            local Multi = DropdownSettings.MultiSelection or false
-            if string.find(DropdownSettings.Name,"closed") then
-                Dropdown.Name = "Dropdown"
-            else
-                Dropdown.Name = DropdownSettings.Name
-            end
-            Dropdown.Title.Text = DropdownSettings.Name
-            Dropdown.Visible = true
-            Tab.Elements[DropdownSettings.Name] = {
-                type = 'dropdown',
-                section = DropdownSettings.SectionParent,
-                element = Dropdown
-            }
-            if DropdownSettings.SectionParent then
-                Dropdown.Parent = DropdownSettings.SectionParent.Holder
-            else
-                Dropdown.Parent = TabPage
-            end
+function Tab:CreateDropdown(DropdownSettings)
+    local Dropdown = Elements.Template.Dropdown:Clone()
+    local SearchBar = Dropdown.List["-SearchBar"]
+    local Required = 1
+    local InputButton = Instance.new("TextButton")
+    InputButton.Name = "InputButton"
+    InputButton.BackgroundTransparency = 1
+    InputButton.Size = UDim2.new(1, 0, 1, 0)
+    InputButton.Text = ""
+    InputButton.ZIndex = 10
+    InputButton.Parent = SearchBar
 
-			Dropdown.List.Visible = false
-			Dropdown.BackgroundTransparency = 1
-			Dropdown.UIStroke.Transparency = 1
-			Dropdown.Title.TextTransparency = 1
-
-			Dropdown.Size = UDim2.new(0,465, 0, 44)
-
-			TweenService:Create(Dropdown, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-			TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-			TweenService:Create(Dropdown.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
-
-
-			for _, ununusedoption in ipairs(Dropdown.List:GetChildren()) do
-				if ununusedoption.ClassName == "Frame" and ununusedoption.Name ~= 'PlaceHolder' and ununusedoption.Name ~= "-SearchBar" then
-					ununusedoption:Destroy()
-				end
-			end
-
-			Dropdown.Toggle.Rotation = 180
-
-			local function RefreshSelected()
-				if #DropdownSettings.Items.Selected > 1 then
-					local NT = {}
-					for _,kj in ipairs(DropdownSettings.Items.Selected) do
-						NT[#NT+1] = kj.Option.Name
-					end
-					Dropdown.Selected.Text = table.concat(NT, ", ")
-				elseif DropdownSettings.Items.Selected[1] then
-					Dropdown.Selected.Text = DropdownSettings.Items.Selected[1].Option.Name
-				else
-					Dropdown.Selected.Text = "Select an option"
-				end
-			end
-
-Dropdown.Interact.MouseButton1Click:Connect(function()
-    if DropdownSettings.Locked then return end
-    TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-    wait(0.1)
-    TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-    if Debounce then return end
-    if Dropdown.List.Visible then
-        Debounce = true
-        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 44)}):Play()
-        for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
-            if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt~= SearchBar then
-                TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-            end
+    InputButton.MouseButton1Click:Connect(function()
+        if not DropdownSettings.Locked then
+            SearchBar.Input:CaptureFocus()
         end
-        TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
-        TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()    
-        wait(0.35)
-        Dropdown.List.Visible = false
-        Debounce = false
+    end)
+    
+    InputButton.TouchTap:Connect(function()
+        if not DropdownSettings.Locked then
+            SearchBar.Input:CaptureFocus()
+        end
+    end)
+    
+    DropdownSettings.Items = {
+        Selected = {Default = DropdownSettings.Selected or nil}
+    }
+    DropdownSettings.Locked = false
+    local Multi = DropdownSettings.MultiSelection or false
+    if string.find(DropdownSettings.Name,"closed") then
+        Dropdown.Name = "Dropdown"
     else
-        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 178)}):Play()
-        Dropdown.List.Visible = true
-        TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
-        TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()    
-
-        SearchBar.Input.Text = ""
-        TweenService:Create(SearchBar, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-        TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-        TweenService:Create(SearchBar.Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
-        for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
-            if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt ~= SearchBar then
-                TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            end
-        end
+        Dropdown.Name = DropdownSettings.Name
     end
-end)
+    Dropdown.Title.Text = DropdownSettings.Name
+    Dropdown.Title.Font = SelectedTheme.TextFont
+    Dropdown.Visible = true
+    Tab.Elements[DropdownSettings.Name] = {
+        type = 'dropdown',
+        section = DropdownSettings.SectionParent,
+        element = Dropdown
+    }
+    if DropdownSettings.SectionParent then
+        Dropdown.Parent = DropdownSettings.SectionParent.Holder
+    else
+        Dropdown.Parent = TabPage
+    end
 
-			Dropdown.List['-SearchBar'].Input:GetPropertyChangedSignal('Text'):Connect(function()
-				local InputText=string.upper(Dropdown.List['-SearchBar'].Input.Text)
-				for _,item in ipairs(Dropdown.List:GetChildren()) do
-					if item:IsA('Frame') and item.Name ~= 'Template' and item ~= SearchBar and item.Name ~= 'PlaceHolder' then
-						if InputText=="" or InputText==" "or string.find(string.upper(item.Name),InputText)~=nil then
-							TweenService:Create(item, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-							TweenService:Create(item.UIStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-							TweenService:Create(item.Title, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-						else
-							TweenService:Create(item, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-							TweenService:Create(item.UIStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-							TweenService:Create(item.Title, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-						end
+	Dropdown.List.Visible = false
+	Dropdown.BackgroundTransparency = 1
+	Dropdown.UIStroke.Transparency = 1
+	Dropdown.Title.TextTransparency = 1
+
+	Dropdown.Size = UDim2.new(0,465, 0, 44)
+
+	TweenService:Create(Dropdown, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+	TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+	TweenService:Create(Dropdown.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+
+	for _, ununusedoption in ipairs(Dropdown.List:GetChildren()) do
+		if ununusedoption.ClassName == "Frame" and ununusedoption.Name ~= 'PlaceHolder' and ununusedoption.Name ~= "-SearchBar" then
+			ununusedoption:Destroy()
+		end
+	end
+
+	Dropdown.Toggle.Rotation = 180
+
+	local function RefreshSelected()
+		if #DropdownSettings.Items.Selected > 1 then
+			local NT = {}
+			for _,kj in ipairs(DropdownSettings.Items.Selected) do
+				NT[#NT+1] = kj.Option.Name
+			end
+			Dropdown.Selected.Text = table.concat(NT, ", ")
+		elseif DropdownSettings.Items.Selected[1] then
+			Dropdown.Selected.Text = DropdownSettings.Items.Selected[1].Option.Name
+		else
+			Dropdown.Selected.Text = "Select an option"
+		end
+	end
+
+	Dropdown.Interact.MouseButton1Click:Connect(function()
+		if DropdownSettings.Locked then return end
+		TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+		TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+		wait(0.1)
+		TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+		TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+		if Debounce then return end
+		if Dropdown.List.Visible then
+			Debounce = true
+			TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 44)}):Play()
+			for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
+				if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt~= SearchBar then
+					TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+					TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+					TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+				end
+			end
+			TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
+			TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()    
+			wait(0.35)
+			Dropdown.List.Visible = false
+			Debounce = false
+		else
+			TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 178)}):Play()
+			Dropdown.List.Visible = true
+			TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
+			TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()    
+
+			SearchBar.Input.Text = ""
+			TweenService:Create(SearchBar, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+			TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+			TweenService:Create(SearchBar.Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+			for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
+				if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt ~= SearchBar then
+					TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+					TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+					TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+				end
+			end
+		end
+	end)
+
+	Dropdown.List['-SearchBar'].Input:GetPropertyChangedSignal('Text'):Connect(function()
+		local InputText=string.upper(Dropdown.List['-SearchBar'].Input.Text)
+		for _,item in ipairs(Dropdown.List:GetChildren()) do
+			if item:IsA('Frame') and item.Name ~= 'Template' and item ~= SearchBar and item.Name ~= 'PlaceHolder' then
+				if InputText=="" or InputText==" "or string.find(string.upper(item.Name),InputText)~=nil then
+					TweenService:Create(item, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+					TweenService:Create(item.UIStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+					TweenService:Create(item.Title, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+				else
+					TweenService:Create(item, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+					TweenService:Create(item.UIStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+					TweenService:Create(item.Title, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+				end
+			end
+		end
+	end)
+
+	Dropdown.MouseEnter:Connect(function()
+		if not Dropdown.List.Visible then
+			TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+		end
+	end)
+
+	Dropdown.MouseLeave:Connect(function()
+		TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+	end)
+
+	local function Error(text)
+		TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+		TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+		Dropdown.Title.Text = text
+		wait(0.5)
+		Dropdown.Title.Text = DropdownSettings.Name
+		TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+		TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+	end
+
+	local function AddOption(Option,Selecteds)
+		local DropdownOption = Elements.Template.Dropdown.List.Template:Clone()
+		DropdownOption:GetPropertyChangedSignal('BackgroundTransparency'):Connect(function()
+			if DropdownOption.BackgroundTransparency == 1 then
+				DropdownOption.Visible = false
+			else
+				DropdownOption.Visible = true
+			end
+		end)
+		DropdownSettings.Items[Option] = {
+			Option = DropdownOption,
+			Selected = false
+		}
+		local OptionInTable = DropdownSettings.Items[Option]
+		DropdownOption.Name = Option.Name or Option
+		DropdownOption.Title.Text = Option.Name or Option
+		DropdownOption.Title.Font = SelectedTheme.TextFont
+		DropdownOption.Parent = Dropdown.List
+		DropdownOption.Visible = true
+		local IsSelected = OptionInTable.Selected
+		if Selecteds and #Selecteds > 0 then
+			if typeof(Selecteds) == 'string' then
+				Selecteds = {Selecteds}
+			end
+			for index,Selected in pairs(Selecteds) do
+				if Selected == Option then
+					IsSelected = true
+					OptionInTable.Selected = true
+					table.insert(DropdownSettings.Items.Selected,OptionInTable)
+					DropdownSettings.Items.Selected[table.find(DropdownSettings.Items.Selected,OptionInTable)].Selected = true
+				end
+			end
+			RefreshSelected()
+		end
+
+		if IsSelected then
+			DropdownOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+		end
+
+		if Dropdown.Visible then
+			DropdownOption.BackgroundTransparency = 0
+			DropdownOption.UIStroke.Transparency = 0
+			DropdownOption.Title.TextTransparency = 0
+		else
+			DropdownOption.BackgroundTransparency = 1
+			DropdownOption.UIStroke.Transparency = 1
+			DropdownOption.Title.TextTransparency = 1
+		end
+
+		DropdownOption.Interact.ZIndex = 50
+		DropdownOption.Interact.MouseButton1Click:Connect(function()
+			if DropdownSettings.Locked then return end
+			if OptionInTable.Selected then
+				OptionInTable.Selected = false
+				table.remove(DropdownSettings.Items.Selected,table.find(DropdownSettings.Items.Selected,OptionInTable))
+				RefreshSelected()
+				TweenService:Create(DropdownOption, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
+				SaveConfiguration()
+				return
+			end
+			if not Multi and DropdownSettings.Items.Selected[1] then
+				DropdownSettings.Items.Selected[1].Selected = false
+				TweenService:Create(DropdownSettings.Items.Selected[1].Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
+			end
+			if not (Multi) then
+				DropdownSettings.Items.Selected = {OptionInTable}
+				Dropdown.Selected.Text = Option.Name or Option
+			else
+				table.insert(DropdownSettings.Items.Selected,OptionInTable)
+				RefreshSelected()
+			end
+
+			local Success, Response = pcall(function()
+				DropdownSettings.Callback(Option)
+			end)
+			if not Success then
+				Error('Callback Error')
+				print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
+			end
+
+			OptionInTable.Selected = true
+
+			if not (Multi) then
+				for _,op in ipairs(DropdownSettings.Items.Selected) do
+					TweenService:Create(op.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
+				end
+			end
+			TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+			TweenService:Create(DropdownOption, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
+			Debounce = true
+			wait(0.2)
+			TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+			wait(0.1)
+			if not Multi then
+				TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 45)}):Play()
+				for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
+					if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
+						TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+						TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+						TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
 					end
 				end
-			end)
+				TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
+				TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
+				wait(0.35)
+				Dropdown.List.Visible = false
 
-			Dropdown.MouseEnter:Connect(function()
-				if not Dropdown.List.Visible then
-					TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-				end
-			end)
+			end
+			Debounce = false
+			SaveConfiguration()
+		end)
+	end
+	local function AddOptions(Options,Selected)
+		if typeof(Options) == 'table' then
+			for _, Option in ipairs(Options) do
+				AddOption(Option,Selected)
+			end
+		else
+			AddOption(Options,Selected)
+		end
+		if Settings.ConfigurationSaving then
+			if Settings.ConfigurationSaving.Enabled and DropdownSettings.Flag then
+				ArrayFieldLibrary.Flags[DropdownSettings.Flag] = DropdownSettings
+			end
+		end
+	end
+	function DropdownSettings:Add(Items,Selected)
+		AddOptions(Items,Selected)
+	end
 
-			Dropdown.MouseLeave:Connect(function()
-				TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-			end)
+	AddOptions(DropdownSettings.Options,DropdownSettings.CurrentOption)
 
-			local function Error(text)
+	function DropdownSettings:Set(NewOption)
+
+		for _,o in pairs(NewOption) do
+
+			if typeof(NewOption) == 'table' then
+
+				DropdownSettings.Items.Selected = NewOption
+			else
+				DropdownSettings.Items.Selected = {NewOption}
+			end
+			local Success, Response = pcall(function()
+				DropdownSettings.Callback(NewOption)
+			end)
+			if not Success then
 				TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
 				TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-				Dropdown.Title.Text = text
+				Dropdown.Title.Text = "Callback Error"
+				print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
 				wait(0.5)
 				Dropdown.Title.Text = DropdownSettings.Name
 				TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
 				TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
 			end
-
-			local function AddOption(Option,Selecteds)
-				local DropdownOption = Elements.Template.Dropdown.List.Template:Clone()
-				DropdownOption:GetPropertyChangedSignal('BackgroundTransparency'):Connect(function()
-					if DropdownOption.BackgroundTransparency == 1 then
-						DropdownOption.Visible = false
-					else
-						DropdownOption.Visible = true
-					end
-				end)
-				DropdownSettings.Items[Option] = {
-					Option = DropdownOption,
-					Selected = false
-				}
-				local OptionInTable = DropdownSettings.Items[Option]
-				DropdownOption.Name = Option.Name or Option
-				DropdownOption.Title.Text = Option.Name or Option
-				DropdownOption.Parent = Dropdown.List
-				DropdownOption.Visible = true
-				local IsSelected = OptionInTable.Selected
-				if Selecteds and #Selecteds > 0 then
-					if typeof(Selecteds) == 'string' then
-						Selecteds = {Selecteds}
-					end
-					for index,Selected in pairs(Selecteds) do
-						if Selected == Option then
-							IsSelected = true
-							OptionInTable.Selected = true
-							table.insert(DropdownSettings.Items.Selected,OptionInTable)
-							DropdownSettings.Items.Selected[table.find(DropdownSettings.Items.Selected,OptionInTable)].Selected = true
-						end
-					end
-					RefreshSelected()
-				end
-
-				if IsSelected then
-					DropdownOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-				end
+			if DropdownSettings.Items[NewOption] then
+				local DropdownOption =  DropdownSettings.Items[NewOption]
+				DropdownOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 
 				if Dropdown.Visible then
 					DropdownOption.BackgroundTransparency = 0
@@ -3904,209 +3821,87 @@ end)
 					DropdownOption.Title.TextTransparency = 1
 				end
 
-				DropdownOption.Interact.ZIndex = 50
-				DropdownOption.Interact.MouseButton1Click:Connect(function()
-					if DropdownSettings.Locked then return end
-					if OptionInTable.Selected then
-						OptionInTable.Selected = false
-						table.remove(DropdownSettings.Items.Selected,table.find(DropdownSettings.Items.Selected,OptionInTable))
-						RefreshSelected()
-						TweenService:Create(DropdownOption, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-						SaveConfiguration()
-						return
-					end
-					if not Multi and DropdownSettings.Items.Selected[1] then
-						DropdownSettings.Items.Selected[1].Selected = false
-						TweenService:Create(DropdownSettings.Items.Selected[1].Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-					end
-					if not (Multi) then
-						DropdownSettings.Items.Selected = {OptionInTable}
-						Dropdown.Selected.Text = Option.Name or Option
-					else
-						table.insert(DropdownSettings.Items.Selected,OptionInTable)
-						RefreshSelected()
-					end
-
-					local Success, Response = pcall(function()
-						DropdownSettings.Callback(Option)
-					end)
-					if not Success then
-						Error('Callback Error')
-						print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
-					end
-
-					OptionInTable.Selected = true
-
-					if not (Multi) then
-						for _,op in ipairs(DropdownSettings.Items.Selected) do
-							TweenService:Create(op.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-						end
-					end
-					TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-					TweenService:Create(DropdownOption, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
-					Debounce = true
-					wait(0.2)
-					TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-					wait(0.1)
-					if not Multi then
-						TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 45)}):Play()
-						for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
-							if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
-								TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-								TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-								TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-							end
-						end
-						TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
-						TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
-						wait(0.35)
-						Dropdown.List.Visible = false
-
-					end
-					Debounce = false
-					SaveConfiguration()
-				end)
 			end
-			local function AddOptions(Options,Selected)
-				if typeof(Options) == 'table' then
-					for _, Option in ipairs(Options) do
-						AddOption(Option,Selected)
-					end
-				else
-					AddOption(Options,Selected)
-				end
-				if Settings.ConfigurationSaving then
-					if Settings.ConfigurationSaving.Enabled and DropdownSettings.Flag then
-						ArrayFieldLibrary.Flags[DropdownSettings.Flag] = DropdownSettings
-					end
-				end
-			end
-			function DropdownSettings:Add(Items,Selected)
-				AddOptions(Items,Selected)
-			end
-
-			AddOptions(DropdownSettings.Options,DropdownSettings.CurrentOption)
-
-			--fix
-			function DropdownSettings:Set(NewOption)
-
-				for _,o in pairs(NewOption) do
-
-					if typeof(NewOption) == 'table' then
-
-						DropdownSettings.Items.Selected = NewOption
-					else
-						DropdownSettings.Items.Selected = {NewOption}
-					end
-					local Success, Response = pcall(function()
-						DropdownSettings.Callback(NewOption)
-					end)
-					if not Success then
-						TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-						TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-						Dropdown.Title.Text = "Callback Error"
-						print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
-						wait(0.5)
-						Dropdown.Title.Text = DropdownSettings.Name
-						TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-						TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-					end
-					if DropdownSettings.Items[NewOption] then
-						local DropdownOption =  DropdownSettings.Items[NewOption]
-						DropdownOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-
-						if Dropdown.Visible then
-							DropdownOption.BackgroundTransparency = 0
-							DropdownOption.UIStroke.Transparency = 0
-							DropdownOption.Title.TextTransparency = 0
-						else
-							DropdownOption.BackgroundTransparency = 1
-							DropdownOption.UIStroke.Transparency = 1
-							DropdownOption.Title.TextTransparency = 1
-						end
-
-					end
-				end
-				--Dropdown.Selected.Text = NewText
-			end
-			function DropdownSettings:Error(text)
-				Error(text)
-			end
-			function DropdownSettings:Refresh(NewOptions,Selecteds)
-				DropdownSettings.Items = {}
-				DropdownSettings.Items.Selected = {}
-				for _, option in ipairs(Dropdown.List:GetChildren()) do
-					if option.ClassName == "Frame" and option ~= SearchBar and option.Name ~= "Placeholder" then
-						option:Destroy()
-					end
-				end
-				AddOptions(NewOptions,Selecteds)
-			end
-			function DropdownSettings:Remove(Item)
-				if Item.Name ~= "Placeholder" and Item ~= SearchBar then
-					if DropdownSettings.Items[Item] then
-						DropdownSettings.Items[Item].Option:Destroy()
-						table.remove(DropdownSettings.Items,table.find(DropdownSettings.Items,Item))
-					else
-						Error('Option not found.')
-					end
-				else
-					SearchBar:Destroy()
-					Error("why you trynna remove the searchbar? FINE")
-				end
-				if Dropdown.Selected.Text == Item then
-					Dropdown.Selected.Text = ''
-				end
-			end
-
-			function DropdownSettings:Destroy()
-				Dropdown:Destroy()
-			end
-			function DropdownSettings:Lock(Reason)
-				if DropdownSettings.Locked then return end
-				DropdownSettings.Locked = true
-				Debounce = true
-				TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 44)}):Play()
-				for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
-					if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt.Name ~= "-SearchBar" then
-						TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-						TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-						TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-					end
-				end
-				TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
-				TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
-				wait(0.35)
-				Dropdown.List.Visible = false
-				Debounce = false
-				Dropdown.Lock.Reason.Text = Reason or 'Locked'
-				TweenService:Create(Dropdown.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-				TweenService:Create(Dropdown.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-				wait(0.2)
-				if not DropdownSettings.Locked then return end --no icon bug
-				TweenService:Create(Dropdown.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
-			end
-			function DropdownSettings:Unlock()
-				if not DropdownSettings.Locked then return end
-				DropdownSettings.Locked = false
-				wait(0.2)
-				TweenService:Create(Dropdown.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
-				if DropdownSettings.Locked then return end --no icon bug
-				TweenService:Create(Dropdown.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-				TweenService:Create(Dropdown.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
-			end
-			function DropdownSettings:Visible(bool)
-				Dropdown.Visible = bool
-			end
-			return DropdownSettings
 		end
+	end
+	function DropdownSettings:Error(text)
+		Error(text)
+	end
+	function DropdownSettings:Refresh(NewOptions,Selecteds)
+		DropdownSettings.Items = {}
+		DropdownSettings.Items.Selected = {}
+		for _, option in ipairs(Dropdown.List:GetChildren()) do
+			if option.ClassName == "Frame" and option ~= SearchBar and option.Name ~= "Placeholder" then
+				option:Destroy()
+			end
+		end
+		AddOptions(NewOptions,Selecteds)
+	end
+	function DropdownSettings:Remove(Item)
+		if Item.Name ~= "Placeholder" and Item ~= SearchBar then
+			if DropdownSettings.Items[Item] then
+				DropdownSettings.Items[Item].Option:Destroy()
+				table.remove(DropdownSettings.Items,table.find(DropdownSettings.Items,Item))
+			else
+				Error('Option not found.')
+			end
+		else
+			SearchBar:Destroy()
+			Error("why you trynna remove the searchbar? FINE")
+		end
+		if Dropdown.Selected.Text == Item then
+			Dropdown.Selected.Text = ''
+		end
+	end
 
-		-- Keybind
+	function DropdownSettings:Destroy()
+		Dropdown:Destroy()
+	end
+	function DropdownSettings:Lock(Reason)
+		if DropdownSettings.Locked then return end
+		DropdownSettings.Locked = true
+		Debounce = true
+		TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 44)}):Play()
+		for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
+			if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= 'PlaceHolder' and DropdownOpt.Name ~= "-SearchBar" then
+				TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+				TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+				TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+			end
+		end
+		TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
+		TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
+		wait(0.35)
+		Dropdown.List.Visible = false
+		Debounce = false
+		Dropdown.Lock.Reason.Text = Reason or 'Locked'
+		TweenService:Create(Dropdown.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
+		TweenService:Create(Dropdown.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
+		wait(0.2)
+		if not DropdownSettings.Locked then return end
+		TweenService:Create(Dropdown.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+	end
+	function DropdownSettings:Unlock()
+		if not DropdownSettings.Locked then return end
+		DropdownSettings.Locked = false
+		wait(0.2)
+		TweenService:Create(Dropdown.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+		if DropdownSettings.Locked then return end
+		TweenService:Create(Dropdown.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
+		TweenService:Create(Dropdown.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+	end
+	function DropdownSettings:Visible(bool)
+		Dropdown.Visible = bool
+	end
+	return DropdownSettings
+end
+
 		function Tab:CreateKeybind(KeybindSettings)
 			local CheckingForKey = false
 			local Keybind = Elements.Template.Keybind:Clone()
 			Keybind.Name = KeybindSettings.Name
 			Keybind.Title.Text = KeybindSettings.Name
+			Keybind.Title.Font = SelectedTheme.TextFont
 			Keybind.Visible = true
 			Tab.Elements[KeybindSettings.Name] = {
 				type = 'keybind',
@@ -4118,7 +3913,6 @@ end)
 			else
 				Keybind.Parent = TabPage
 			end
-			--AddInfos(Keybind,KeybindSettings,'keybind')
 
 			Keybind.BackgroundTransparency = 1
 			Keybind.UIStroke.Transparency = 1
@@ -4168,7 +3962,7 @@ end)
 						Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
 						SaveConfiguration()
 					end
-				elseif KeybindSettings.CurrentKeybind ~= nil and (input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] and not processed) then  --Test
+				elseif KeybindSettings.CurrentKeybind ~= nil and (input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] and not processed) then
 					local Held = true
 					local Connection
 					Connection = input.Changed:Connect(function(prop)
@@ -4195,10 +3989,10 @@ end)
 						if Held then
 							local Loop; Loop = RunService.Stepped:Connect(function()
 								if not Held then
-									KeybindSettings.Callback(false) -- maybe pcall this
+									KeybindSettings.Callback(false)
 									Loop:Disconnect()
 								else
-									KeybindSettings.Callback(true) -- maybe pcall this
+									KeybindSettings.Callback(true)
 								end
 							end)	
 						end
@@ -4226,7 +4020,7 @@ end)
 				TweenService:Create(Keybind.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
 				TweenService:Create(Keybind.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
 				wait(0.2)
-				if not KeybindSettings.Locked then return end --no icon bug
+				if not KeybindSettings.Locked then return end
 				TweenService:Create(Keybind.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
 			end
 			function KeybindSettings:Unlock()
@@ -4234,7 +4028,7 @@ end)
 				KeybindSettings.Locked = false
 				wait(0.2)
 				TweenService:Create(Keybind.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
-				if KeybindSettings.Locked then return end --no icon bug
+				if KeybindSettings.Locked then return end
 				TweenService:Create(Keybind.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
 				TweenService:Create(Keybind.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
 			end
@@ -4249,12 +4043,12 @@ end)
 			return KeybindSettings
 		end
 
-		-- Toggle
 function Tab:CreateToggle(ToggleSettings)
 
     local Toggle = Elements.Template.Toggle:Clone()
     Toggle.Name = ToggleSettings.Name
     Toggle.Title.Text = ToggleSettings.Name
+    Toggle.Title.Font = SelectedTheme.TextFont
     Toggle.Visible = true
 
     Toggle.BackgroundTransparency = 1
@@ -4266,7 +4060,7 @@ function Tab:CreateToggle(ToggleSettings)
         section = ToggleSettings.SectionParent,
         element = Toggle
     }
-    --AddInfos(Toggle,ToggleSettings,'toggle')
+    
     if ToggleSettings.SectionParent then
         Toggle.Parent = ToggleSettings.SectionParent.Holder
     else
@@ -4518,15 +4312,13 @@ function Tab:CreateToggle(ToggleSettings)
     return ToggleSettings
 end
 
-		-- ColorPicker
-		function Tab:CreateColorPicker(ColorPickerSettings) -- by Throit
+		function Tab:CreateColorPicker(ColorPickerSettings)
 			local ColorPicker = Elements.Template.ColorPicker:Clone()
 			Tab.Elements[ColorPickerSettings.Name] = {
 				type = 'colorpicker',
 				section = ColorPickerSettings.SectionParent,
 				element = ColorPicker
 			}
-			--AddInfos(ColorPicker,ColorPickerSettings,'colorpicker')
 			local Background = ColorPicker.CPBackground
 			local Display = Background.Display
 			local Main = Background.MainCP
@@ -4535,6 +4327,7 @@ end
 			ColorPicker.ClipsDescendants = true
 			ColorPicker.Name = ColorPickerSettings.Name
 			ColorPicker.Title.Text = ColorPickerSettings.Name
+			ColorPicker.Title.Font = SelectedTheme.TextFont
 			ColorPickerSettings.Locked = false
 			ColorPicker.Visible = true
 			if ColorPickerSettings.SectionParent then
@@ -4625,12 +4418,10 @@ end
 			local hex = string.format("#%02X%02X%02X",color.R*0xFF,color.G*0xFF,color.B*0xFF)
 			ColorPicker.HexInput.InputBox.Text = hex
 			local function setDisplay()
-				--Main
 				Main.MainPoint.Position = UDim2.new(s,-Main.MainPoint.AbsoluteSize.X/2,1-v,-Main.MainPoint.AbsoluteSize.Y/2)
 				Main.MainPoint.ImageColor3 = Color3.fromHSV(h,s,v)
 				Background.BackgroundColor3 = Color3.fromHSV(h,1,1)
 				Display.BackgroundColor3 = Color3.fromHSV(h,s,v)
-				--Slider 
 				local x = h * Slider.AbsoluteSize.X
 				Slider.SliderPoint.Position = UDim2.new(0,x-Slider.SliderPoint.AbsoluteSize.X/2,0.5,0)
 				Slider.SliderPoint.ImageColor3 = Color3.fromHSV(h,1,1)
@@ -4660,7 +4451,7 @@ end
 				ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
 				SaveConfiguration()
 			end)
-			--RGB
+			
 			local function rgbBoxes(box,toChange)
 				local value = tonumber(box.Text) 
 				local color = Color3.fromHSV(h,s,v) 
@@ -4783,7 +4574,7 @@ end
 				TweenService:Create(ColorPicker.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
 				TweenService:Create(ColorPicker.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
 				wait(0.2)
-				if not ColorPickerSettings.Locked then return end --no icon bug
+				if not ColorPickerSettings.Locked then return end
 				TweenService:Create(ColorPicker.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
 			end
 			function ColorPickerSettings:Unlock()
@@ -4791,7 +4582,7 @@ end
 				ColorPickerSettings.Locked = false
 				wait(0.2)
 				TweenService:Create(ColorPicker.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
-				if ColorPickerSettings.Locked then return end --no icon bug
+				if ColorPickerSettings.Locked then return end
 				TweenService:Create(ColorPicker.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
 				TweenService:Create(ColorPicker.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
 			end
@@ -4801,19 +4592,19 @@ end
 			return ColorPickerSettings
 		end
 
-		-- Slider
 function Tab:CreateSlider(SliderSettings)
     local Dragging = false
     local Slider = Elements.Template.Slider:Clone()
     Slider.Name = SliderSettings.Name
     Slider.Title.Text = SliderSettings.Name
+    Slider.Title.Font = SelectedTheme.TextFont
     Slider.Visible = true
     Tab.Elements[SliderSettings.Name] = {
         type = 'slider',
         section = SliderSettings.SectionParent,
         element = Slider
     }
-    --AddInfos(Slider,SliderSettings,'slider')
+    
     if SliderSettings.SectionParent then
         Slider.Parent = SliderSettings.SectionParent.Holder
     else
@@ -5045,13 +4836,13 @@ end
 	end
 
 	function ArrayFieldLibrary:SetTheme(ThemeName)
-    if ArrayFieldLibrary.Theme[ThemeName] then
-        SelectedTheme = ArrayFieldLibrary.Theme[ThemeName]
-        ApplyTheme()
-    else
-        warn("ArrayField: Theme '" .. ThemeName .. "' not found")
-    end
-end
+		if ArrayFieldLibrary.Theme[ThemeName] then
+			SelectedTheme = ArrayFieldLibrary.Theme[ThemeName]
+			ApplyTheme()
+		else
+			warn("ArrayField: Theme '" .. ThemeName .. "' not found")
+		end
+	end
 
 	Elements.Visible = true
 
@@ -5108,9 +4899,6 @@ end
 		PromptUI.Buttons.Template.Visible = false
 		PromptUI.Buttons.Template.TextLabel.TextTransparency = 1
 		PromptUI.Buttons.Template.UIStroke.Transparency = 1
-		--PromptUI.Buttons.Middle.Visible = false
-		--PromptUI.Buttons.Middle.TextLabel.TextTransparency = 1
-		--PromptUI.Buttons.Middle.UIStroke.Transparency = 1
 
 		PromptUI.Content.Text = PromptSettings.Content
 		PromptUI.Sub.Text = PromptSettings.SubTitle or ''
@@ -5133,7 +4921,7 @@ end
 					end
 				end)
 				Button.Name = name
-				Button.Parent = PromptUI.Buttons -- saving memory
+				Button.Parent = PromptUI.Buttons
 				Button.Size = UDim2.fromOffset(Button.TextLabel.TextBounds.X + 24, 30)
 			end
 		end
@@ -5157,10 +4945,14 @@ end
 				end
 			end
 		else
-			--TweenService:Create(PromptUI.Buttons.Middle.UIStroke,TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-			--TweenService:Create(PromptUI.Buttons.Middle.TextLabel,TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
 		end
 	end
+	
+	if FirstTabObject then
+		Elements.UIPageLayout:JumpTo(FirstTabObject)
+	end
+	
 	return Window
 end
 
@@ -5168,9 +4960,9 @@ MobileToggle:Hide()
 
 function ArrayFieldLibrary:Destroy()
 	ArrayField:Destroy()
-if ArrayField:FindFirstChild("MobileToggleButton") then
-	ArrayField:FindFirstChild("MobileToggleButton"):Destroy()
-end
+	if ArrayField:FindFirstChild("MobileToggleButton") then
+		ArrayField:FindFirstChild("MobileToggleButton"):Destroy()
+	end
 end
 
 Topbar.ChangeSize.MouseButton1Click:Connect(function()
@@ -5258,7 +5050,6 @@ for _, TopbarButton in ipairs(Topbar:GetChildren()) do
 	end
 end
 
-
 function ArrayFieldLibrary:LoadConfiguration()
 	if CEnabled then
 		pcall(function()
@@ -5294,254 +5085,3 @@ Elements.Position = UDim2.new(0.5, 80, 0.55, 0)
 Elements.Size = UDim2.new(1, -180, 0, 295)
 
 return ArrayFieldLibrary
---[[
-local Window = ArrayFieldLibrary:CreateWindow({
-        Name = "ArrayField Example Window",
-        LoadingTitle = "ArrayField Interface Suite",
-        LoadingSubtitle = "by Arrays",
-		Theme = "Default",
-        ConfigurationSaving = { -- Don't use configurations saving if you want to support executors such as Delta
-            Enabled = true,
-            FolderName = nil, -- Create a custom folder for your hub/game
-            FileName = "ArrayField"
-        },
-        Discord = {
-            Enabled = false,
-            Invite = "sirius", -- The Discord invite code, do not include discord.gg/
-            RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-        },
-        KeySystem = false, -- Set this to true to use our key system
-        KeySettings = {
-            Title = "ArrayField",
-            Subtitle = "Key System",
-            Note = "Join the discord (discord.gg/sirius)",
-            FileName = "ArrayFieldsKeys",
-            SaveKey = false,
-            GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like ArrayField to get the key from
-            Key = {"Hello",'Bye'},
-            Actions = {
-                [1] = {
-                    Text = 'Click here to copy the key link',
-                    OnPress = function()
-
-                    end,
-                }
-            },
-        }
-    })
-    local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
-    local Tab2 = Window:CreateTab("Tab Example 2") -- Title, Image
-    local Section = Tab:CreateSection("Section Example",false) -- The 2nd argument is to tell if its only a Title and doesnt contain element
-    Tab:CreateSpacing(nil,10)
-    local Button = Tab:CreateButton({
-        Name = "Button Example",
-		Description = "start diggin in yo butt twin",
-        Interact = 'Changable',
-        Callback = function()
-            print('Pressed')
-        end,
-    })
-    Tab:CreateSpacing(nil,10)
-    local Toggle = Tab:CreateToggle({
-        Name = "Toggle Example",
-        Info = {
-            Title = 'Slider template',
-            Image = '12735851647',
-            Description = 'Just a slider for stuff',
-        },
-        CurrentValue = false,
-        Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-        Callback = function(Value)
-            print(Value)
-        end,
-    })
-    Tab:CreateSpacing(nil,10)
-    local ColorPicker = Tab:CreateColorPicker({
-        Name = "Color Picker",
-        Color = Color3.fromRGB(2,255,255),
-        Flag = "ColorPicker1",
-        Callback = function(Value)
-            print(Value)
-        end
-    })
-    Tab:CreateSpacing(nil,10)
-    local Slider = Tab:CreateSlider({
-        Name = "Slider Example",
-        Range = {0, 100},
-        Increment = 10,
-        Suffix = "Bananas",
-        Description = "hi",
-        CurrentValue = 10,
-        Flag = "Slider1",
-        Callback = function(Value)
-            print(Value)
-        end,
-    })
-    Tab:CreateSpacing(nil,10)
-    local Keybind = Tab:CreateKeybind({
-        Name = "Keybind Example",
-        CurrentKeybind = "Q",
-        HoldToInteract = false,
-        Flag = "Keybind1",
-        Callback = function(Keybind)
-
-        end,
-    })
-    Tab:CreateSpacing(nil,10)
-    local Section2 = Tab:CreateSection("Inputs Examples",true)
-    Tab:CreateInput({
-        Name = "Numbers Only",
-        PlaceholderText = "Amount",
-        NumbersOnly = true,
-        Description = "hiiiiiii",
-        OnEnter = true,
-        RemoveTextAfterFocusLost = true,
-        Callback = function(Text)
-            print(Text)
-        end,
-    })
-    Tab:CreateInput({
-        Name = "11 Characters Limit",
-        PlaceholderText = "Text",
-        CharacterLimit = 11,
-        RemoveTextAfterFocusLost = true,
-        Callback = function(Text)
-            print(Text)
-        end,
-    })
-    Tab:CreateInput({
-        Name = "No RemoveTextAfterFocusLost",
-        PlaceholderText = "Input",
-        RemoveTextAfterFocusLost = false,
-        Callback = function(Text)
-            print(Text)
-        end,
-    })
-    local Section3= Tab:CreateSection("Dropdown Examples",true)
-    local MultiSelectionDropdown = Tab:CreateDropdown({
-        Name = "Multi Selection",
-        Options = {"Option 1","Option 2",'Option 3'},
-        CurrentOption = {"Option 1","Option 3"} ,
-        MultiSelection = true,
-        Flag = "Dropdown1",
-        Callback = function(Option)
-            print(Option)
-        end,
-    })
-    local SingleSelection = Tab:CreateDropdown({
-        Name = "Single Selection",
-        Options = {"Option 1","Option 2"},
-        CurrentOption = "Option 1",
-        MultiSelection = false,
-        Flag = "Dropdown2",
-        Callback = function(Option)
-            print(Option)
-        end,
-    })
-    local Label = Tab:CreateLabel({"Thanks for using Arrayfield, there were alot of issues but here we are! also if you want to have sex hmu what the hell what the hell what the hell what the hell", "heart"}, Section)
-    local Paragraph = Tab:CreateParagraph({Title = "Paragraph Example", Content = "Paragraph Example"},Section)
-    local Sets = Tab:CreateSection('Set Functions',false)
-    local SButton
-    SButton = Tab:CreateButton({
-        Name = "Button Example",
-        Interact = 'Interact',
-		Description = "the",
-        SectionParent = Sets,
-        Callback = function()
-            SButton:Set(nil,'New Interaction')
-			SButton:SetDescription("sex")
-        end
-    })
-    Tab:CreateButton({
-        Name = "Dropdown Set",
-        Interact = 'Interact',
-        SectionParent = Sets,
-        Callback = function()
-            SingleSelection:Set('Option 1')
-        end
-    })
-
-    local LockTesting = Tab:CreateSection('Lockdown Section',false)
-    local ToLock = {}
-    Tab:CreateToggle({
-        Name = "Lockdown",
-        SectionParent = LockTesting,
-		Description = "hi",
-        CurrentValue = false,
-        Callback = function(Value)
-            if Value then
-                for _,v in ToLock do
-                    v:Lock('Locked')
-                end
-            else
-                for _,v in ToLock do
-                    v:Unlock('Locked')
-                end
-            end
-        end,
-    })
-    Tab:CreateSpacing(LockTesting)
-    ToLock.Button = Tab:CreateButton({
-        SectionParent = LockTesting,
-        Name = "Button Example",
-        Interact = 'Interact',
-        Callback = function()
-            print('Pressed')
-        end,
-    })
-    ToLock.Toggle = Tab:CreateToggle({
-        SectionParent = LockTesting,
-        Name = "Toggle Example",
-        CurrentValue = false,
-        Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-        Callback = function(Value)
-            print(Value)
-        end,
-    })
-    ToLock.ColorPicker = Tab:CreateColorPicker({
-        Name = "Color Picker",
-        SectionParent = LockTesting,
-        Color = Color3.fromRGB(2,255,255),
-        Flag = "ColorPicker2",
-        Callback = function(Value)
-            print(Value)
-        end
-    })
-    ToLock.Slider = Tab:CreateSlider({
-        SectionParent = LockTesting,
-        Name = "Slider Example",
-        Range = {0, 100},
-        Increment = 10,
-        Suffix = "Bananas",
-        CurrentValue = 10,
-        Flag = "Slider2",
-        Callback = function(Value)
-            print(Value)
-        end,
-    })
-    ToLock.Keybind = Tab:CreateKeybind({
-        Name = "Keybind Example",
-        CurrentKeybind = "Q",
-        HoldToInteract = false,
-        SectionParent = LockTesting,
-        Flag = "Keybind2",
-        Callback = function(Keybind)
-
-        end,
-    })
-
-local Tab2 = Window:CreateTab("Tab Example 2")
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-
-]]
