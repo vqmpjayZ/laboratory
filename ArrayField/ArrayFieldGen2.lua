@@ -15,7 +15,6 @@ vqmpjay | Designing + Programming + New Features
 
 // DD/MM/YY //
 [ -22.8.25- ]
-- Fixed First Tab not showing up
 - Fixed Console Errors while minimizing/unminimizing Interface
 - Fixed Console Errors when Hiding/Unhiding Interface
 - Fixed Console Errors for when Destroying the Interface
@@ -2720,16 +2719,13 @@ warn("discord rpc was removed. discord invite saving cant work")
 	if Settings.KeySystem then
 		repeat wait() until Passthrough
 	end
-ArrayField.Enabled = true
-for _,tabbtn in pairs(SideList:GetChildren()) do
-    if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-        if tabbtn:FindFirstChild("Title") and tabbtn:FindFirstChild("Image") then
-            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-        end
-    end
-end
-
+	ArrayField.Enabled = true
+	for _,tabbtn in pairs(SideList:GetChildren()) do
+		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
+			TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
+		end
+	end
 	TweenService:Create(Main.SideTabList, TweenInfo.new(0, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,160,0,285),Position = UDim2.new(0,14,0.5,22)}):Play()
 	TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
 	TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
@@ -2776,7 +2772,7 @@ end
 
 	Elements.UIPageLayout.FillDirection = Enum.FillDirection.Horizontal
 
--- Tab
+	-- Tab
 	local FirstTab = false
 	ArrayFieldQuality.Window = {Tabs = {}}
 	local Window = ArrayFieldQuality.Window
@@ -2842,6 +2838,7 @@ end
 		TopTabButton.Visible = true
 		SideTabButton.Visible = true
 
+		--Create Elements Page
 		local TabPage = Elements.Template:Clone()
 		TabPage.Name = Name
 		TabPage.Visible = true
@@ -2855,40 +2852,19 @@ end
 		end
 
 		TabPage.Parent = Elements
-
-		local isFirstTab = not FirstTab
-		if isFirstTab then
-			FirstTab = Name
+		if not FirstTab then
+			Elements.UIPageLayout.Animated = false
+			Elements.UIPageLayout:JumpTo(TabPage)
+			Elements.UIPageLayout.Animated = true
 		end
 
 		if SelectedTheme ~= ArrayFieldLibrary.Theme.Default then
 			TopTabButton.Shadow.Visible = false
 		end
 		TopTabButton.UIStroke.Color = SelectedTheme.TabStroke
-		
+		--Animate
 		wait(0.1)
-		
-		if isFirstTab then
-			Elements.UIPageLayout.Animated = false
-			Elements.UIPageLayout:JumpTo(TabPage)
-			Elements.UIPageLayout.Animated = true
-		end
-		if FirstTab == Name then
-			TopTabButton.BackgroundColor3 = SelectedTheme.TabBackgroundSelected
-			TopTabButton.Image.ImageColor3 = SelectedTheme.SelectedTabTextColor
-			TopTabButton.Title.TextColor3 = SelectedTheme.SelectedTabTextColor
-			TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
-			TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-			TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-			TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-			TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-
-			SideTabButton.Image.ImageColor3 = Color3.fromRGB(255, 255, 255)
-			SideTabButton.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-			TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-			TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
-		else
+		if FirstTab then
 			TopTabButton.BackgroundColor3 = SelectedTheme.TabBackground
 			TopTabButton.Image.ImageColor3 = SelectedTheme.TabTextColor
 			TopTabButton.Title.TextColor3 = SelectedTheme.TabTextColor
@@ -2900,6 +2876,22 @@ end
 
 			TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0,ImageColor3 = Color3.fromRGB(205, 205, 205)}):Play()
 			TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = .2,TextColor3 = Color3.fromRGB(205, 205, 205)}):Play()	
+		else
+			FirstTab = Name
+
+			TopTabButton.BackgroundColor3 = SelectedTheme.TabBackgroundSelected
+			TopTabButton.Image.ImageColor3 = SelectedTheme.SelectedTabTextColor
+			TopTabButton.Title.TextColor3 = SelectedTheme.SelectedTabTextColor
+			TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
+			TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+			TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+			TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+			SideTabButton.Image.ImageColor3 = Color3.fromRGB(255, 255, 255)
+			SideTabButton.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+			TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+			TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
 		end
 
 		local function Pick()
@@ -2940,16 +2932,7 @@ end
 
 		TopTabButton.Interact.MouseButton1Click:Connect(Pick)
 		SideTabButton.Interact.MouseButton1Click:Connect(Pick)
-task.defer(function()
-    if FirstTab then
-        local firstPage = Elements:FindFirstChild(FirstTab)
-        if firstPage then
-            Elements.UIPageLayout.Animated = false
-            Elements.UIPageLayout:JumpTo(firstPage)
-            Elements.UIPageLayout.Animated = true
-        end
-    end
-end)
+
 -- Button
 function Tab:CreateButton(ButtonSettings)
     local ButtonValue = {Locked = false}
@@ -5311,239 +5294,3 @@ Elements.Position = UDim2.new(0.5, 80, 0.55, 0)
 Elements.Size = UDim2.new(1, -180, 0, 295)
 
 return ArrayFieldLibrary
---[[ template
-local Window = ArrayFieldLibrary:CreateWindow({
-        Name = "ArrayField Example Window",
-        LoadingTitle = "ArrayField Interface Suite",
-        LoadingSubtitle = "by Arrays",
-		Theme = "Bloom",
-        ConfigurationSaving = { -- Don't use configurations saving if you want to support executors such as Delta
-            Enabled = true,
-            FolderName = nil, -- Create a custom folder for your hub/game
-            FileName = "ArrayField"
-        },
-        Discord = {
-            Enabled = false,
-            Invite = "sirius", -- The Discord invite code, do not include discord.gg/
-            RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-        },
-        KeySystem = false, -- Set this to true to use our key system
-        KeySettings = {
-            Title = "ArrayField",
-            Subtitle = "Key System",
-            Note = "Join the discord (discord.gg/sirius)",
-            FileName = "ArrayFieldsKeys",
-            SaveKey = false,
-            GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like ArrayField to get the key from
-            Key = {"Hello",'Bye'},
-            Actions = {
-                [1] = {
-                    Text = 'Click here to copy the key link',
-                    OnPress = function()
-
-                    end,
-                }
-            },
-        }
-    })
-    local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
-    local Tab2 = Window:CreateTab("Tab Example 2") -- Title, Image
-    local Section = Tab:CreateSection("Section Example",false) -- The 2nd argument is to tell if its only a Title and doesnt contain element
-    Tab:CreateSpacing(nil,10)
-    local Button = Tab:CreateButton({
-        Name = "Button Example",
-		Description = "start diggin in yo butt twin",
-        Interact = 'Changable',
-        Callback = function()
-            print('Pressed')
-        end,
-    })
-    Tab:CreateSpacing(nil,10)
-    local Toggle = Tab:CreateToggle({
-        Name = "Toggle Example",
-        Info = {
-            Title = 'Slider template',
-            Image = '12735851647',
-            Description = 'Just a slider for stuff',
-        },
-        CurrentValue = false,
-        Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-        Callback = function(Value)
-            print(Value)
-        end,
-    })
-    Tab:CreateSpacing(nil,10)
-    local ColorPicker = Tab:CreateColorPicker({
-        Name = "Color Picker",
-        Color = Color3.fromRGB(2,255,255),
-        Flag = "ColorPicker1",
-        Callback = function(Value)
-            print(Value)
-        end
-    })
-    Tab:CreateSpacing(nil,10)
-    local Slider = Tab:CreateSlider({
-        Name = "Slider Example",
-        Range = {0, 100},
-        Increment = 10,
-        Suffix = "Bananas",
-        Description = "hi",
-        CurrentValue = 10,
-        Flag = "Slider1",
-        Callback = function(Value)
-            print(Value)
-        end,
-    })
-    Tab:CreateSpacing(nil,10)
-    local Keybind = Tab:CreateKeybind({
-        Name = "Keybind Example",
-        CurrentKeybind = "Q",
-        HoldToInteract = false,
-        Flag = "Keybind1",
-        Callback = function(Keybind)
-
-        end,
-    })
-    Tab:CreateSpacing(nil,10)
-    local Section2 = Tab:CreateSection("Inputs Examples",true)
-    Tab:CreateInput({
-        Name = "Numbers Only",
-        PlaceholderText = "Amount",
-        NumbersOnly = true,
-        Description = "hiiiiiii",
-        OnEnter = true,
-        RemoveTextAfterFocusLost = true,
-        Callback = function(Text)
-            print(Text)
-        end,
-    })
-    Tab:CreateInput({
-        Name = "11 Characters Limit",
-        PlaceholderText = "Text",
-        CharacterLimit = 11,
-        RemoveTextAfterFocusLost = true,
-        Callback = function(Text)
-            print(Text)
-        end,
-    })
-    Tab:CreateInput({
-        Name = "No RemoveTextAfterFocusLost",
-        PlaceholderText = "Input",
-        RemoveTextAfterFocusLost = false,
-        Callback = function(Text)
-            print(Text)
-        end,
-    })
-    local Section3= Tab:CreateSection("Dropdown Examples",true)
-    local MultiSelectionDropdown = Tab:CreateDropdown({
-        Name = "Multi Selection",
-        Options = {"Option 1","Option 2",'Option 3'},
-        CurrentOption = {"Option 1","Option 3"} ,
-        MultiSelection = true,
-        Flag = "Dropdown1",
-        Callback = function(Option)
-            print(Option)
-        end,
-    })
-    local SingleSelection = Tab:CreateDropdown({
-        Name = "Single Selection",
-        Options = {"Option 1","Option 2"},
-        CurrentOption = "Option 1",
-        MultiSelection = false,
-        Flag = "Dropdown2",
-        Callback = function(Option)
-            print(Option)
-        end,
-    })
-    local Label = Tab:CreateLabel({"Thanks for using Arrayfield, there were alot of issues but here we are! also if you want to have sex hmu what the hell what the hell what the hell what the hell", "heart"}, Section)
-    local Paragraph = Tab:CreateParagraph({Title = "Paragraph Example", Content = "Paragraph Example"},Section)
-    local Sets = Tab:CreateSection('Set Functions',false)
-    local SButton
-    SButton = Tab:CreateButton({
-        Name = "Button Example",
-        Interact = 'Interact',
-		Description = "the",
-        SectionParent = Sets,
-        Callback = function()
-            SButton:Set(nil,'New Interaction')
-			SButton:SetDescription("sex")
-        end
-    })
-    Tab:CreateButton({
-        Name = "Dropdown Set",
-        Interact = 'Interact',
-        SectionParent = Sets,
-        Callback = function()
-            SingleSelection:Set('Option 1')
-        end
-    })
-
-    local LockTesting = Tab:CreateSection('Lockdown Section',false)
-    local ToLock = {}
-    Tab:CreateToggle({
-        Name = "Lockdown",
-        SectionParent = LockTesting,
-		Description = "hi",
-        CurrentValue = false,
-        Callback = function(Value)
-            if Value then
-                for _,v in ToLock do
-                    v:Lock('Locked')
-                end
-            else
-                for _,v in ToLock do
-                    v:Unlock('Locked')
-                end
-            end
-        end,
-    })
-    Tab:CreateSpacing(LockTesting)
-    ToLock.Button = Tab:CreateButton({
-        SectionParent = LockTesting,
-        Name = "Button Example",
-        Interact = 'Interact',
-        Callback = function()
-            print('Pressed')
-        end,
-    })
-    ToLock.Toggle = Tab:CreateToggle({
-        SectionParent = LockTesting,
-        Name = "Toggle Example",
-        CurrentValue = false,
-        Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-        Callback = function(Value)
-            print(Value)
-        end,
-    })
-    ToLock.ColorPicker = Tab:CreateColorPicker({
-        Name = "Color Picker",
-        SectionParent = LockTesting,
-        Color = Color3.fromRGB(2,255,255),
-        Flag = "ColorPicker2",
-        Callback = function(Value)
-            print(Value)
-        end
-    })
-    ToLock.Slider = Tab:CreateSlider({
-        SectionParent = LockTesting,
-        Name = "Slider Example",
-        Range = {0, 100},
-        Increment = 10,
-        Suffix = "Bananas",
-        CurrentValue = 10,
-        Flag = "Slider2",
-        Callback = function(Value)
-            print(Value)
-        end,
-    })
-    ToLock.Keybind = Tab:CreateKeybind({
-        Name = "Keybind Example",
-        CurrentKeybind = "Q",
-        HoldToInteract = false,
-        SectionParent = LockTesting,
-        Flag = "Keybind2",
-        Callback = function(Keybind)
-
-        end,
-    })
-]]
