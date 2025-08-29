@@ -14,36 +14,16 @@ vqmpjay | Designing + Programming + New Features
 --[[
 
 // DD/MM/YY //
-[ -22.8.25- ]
-- Fixed Console Errors while minimizing/unminimizing Interface
-- Fixed Console Errors when Hiding/Unhiding Interface
-- Fixed Console Errors for when Destroying the Interface
-- Fixed Console Errors for 'Template' on Notifications and fixed all errors for 'OpenSideBar'
-- Removed AddInfos (it never worked as intended anyways)
+[ -2..8.25- ]
 
-[ -1.8.25- ]
-- Added TextWrapping to labels
-- Added Icon support to labels
-- Added Descriptions for Buttons, Toggles, Sliders and Inputs
-- Fixed Issue with the sidebar opening when minimized after minimizing too quickly
-- Added Themes
-- Added more Themes other than just Light (Modern Rayfield's themes + Synapse + Colors)
+- Added Rich Text support to every Element + Title
+- Added Drag frame
+- Added Settings
+- Added Transparency to Interface
+- Fixed Search animation
+- Fixed Section Background Glitches
+- Fixed Resizing issues
 
-[ -3.3.25- ]
-- Added Mobile Support (Dragging Functionality + Input Accessibility)
-- Added Lucide icons support to Tabs and Notifications
-- Added rich text support to Paragraphs and Labels
-- Fixed Paragraphs not appearing when not parented to sections
-- Fixed long Paragraphs getting cut off when parented to sections [+] Improved / 22.4.2035
-- Fixed Search not being able to search for elements parented to sections
-- Fixed Sidetab not loading (Added pcall)
-- Removed Themes Button (pointless)
-- Revamped Design
-- Fixed Sidetab having a chance of duplicating once minimized
-- Added Mobile toggle button
-- Switch unhide UI keybind to K instead of RightShift
-
-let me know what other stuff i can add
 ]]
 
 local Release = "Release 2D"
@@ -78,7 +58,7 @@ local ArrayFieldLibrary = {
 			SecondaryElementBackground = Color3.fromRGB(25, 25, 25),
 			ElementStroke = Color3.fromRGB(50, 50, 50),
 			SecondaryElementStroke = Color3.fromRGB(40, 40, 40),
-
+			
 			SectionTitleBackground = Color3.fromRGB(25, 25, 25),
 			SidebarBackground = Color3.fromRGB(50, 50, 50),
 
@@ -573,7 +553,7 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = game:GetService('Players').LocalPlayer
 
 -- Interface Management
-local ArrayField = game:GetObjects("rbxassetid://113897228689352")[1] --OG: 13853811008 Old: 104864835246885
+local ArrayField = game:GetObjects("rbxassetid://118670181302984")[1] --OG: 13853811008 Old: 104864835246885
 ArrayField.Enabled = false
 local spawn = task.spawn
 local delay = task.delay
@@ -614,6 +594,7 @@ ParentObject(ArrayField)
 local Camera = workspace.CurrentCamera
 local Drag = ArrayField.Drag
 local Main = ArrayField.Main
+local MobileButton = ArrayField.MobileButton
 local Topbar = Main.Topbar
 local Elements = Main.Elements
 local LoadingFrame = Main.LoadingFrame
@@ -624,10 +605,11 @@ local SearchBar = Main.Searchbar
 local Filler = SearchBar.CanvasGroup.Filler
 local Prompt = Main.Prompt
 local NotePrompt = Main.NotePrompt
-local MobileButton = Main.MobileButton
 local InfoPrompt = ArrayField.Info
 local Notifications = ArrayField.Notifications
-local Settings = Main.Topbar.Settings
+local Settings = ArrayField.Settings
+local SettingsDropdown = Settings.Frame.Dropdown
+local SettingsKeybind = Settings.Frame.Keybind
 
 ArrayField.DisplayOrder = 100
 LoadingFrame.Version.Text = Release
@@ -641,6 +623,7 @@ local Hidden = false
 local Debounce = false
 local clicked = false
 local SearchHided = true
+local SettingsHidden = true
 local SideBarClosed = false
 local InfoPromptOpen = false
 local BarType = 'Side'
@@ -668,7 +651,6 @@ function ChangeTheme(ThemeName)
 
 	ArrayField.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
 	ArrayField.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
-	ArrayField.Main.Topbar.Theme.ImageColor3 = SelectedTheme.TextColor
 
 	for _, TabPage in ipairs(Elements:GetChildren()) do
 		for _, Element in ipairs(TabPage:GetChildren()) do
@@ -1499,9 +1481,8 @@ local savedPosition = UDim2.new(1, -67, 0.5, -22)
 local savedBlurPosition = UDim2.new(1, -70, 0.5, -25)
 
 local MobileToggle = {}
-
 local function createMobileButton()
-	local existingMobileButton = ArrayField:FindFirstChild("MobileToggleButton")
+	local existingMobileButton = ArrayField:FindFirstChild("MobileButton")
 if existingMobileButton then
 	existingMobileButton:Destroy()
 end
@@ -1720,6 +1701,7 @@ ClickDetector.MouseButton1Click:Connect(function()
         Unhide()
     else
         if not SearchHided then spawn(CloseSearch) end
+		if not SettingsHidden then spawn(CloseSettings) end
         Hidden = true
         Hide()
     end
@@ -1783,6 +1765,7 @@ UserInputService.TouchTapInWorld:Connect(function(position, processed)
             Unhide()
         else
             if not SearchHided then spawn(CloseSearch) end
+			if not SettingsHidden then spawn(CloseSettings) end
             Hidden = true
             Hide()
         end
@@ -1817,10 +1800,9 @@ function Hide()
     })
     
 	if not Main or not Main.Parent then return end
-	
-	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 400)}):Play()
+	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 700, 0, 400)}):Play()
 	if Main:FindFirstChild("Topbar") then
-		TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 45)}):Play()
+		TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 700, 0, 45)}):Play()
 	end
 	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
 	if Main:FindFirstChild("Topbar") then
@@ -1919,6 +1901,7 @@ function Unhide()
 		if Elements then
 			for _, Descendant in ipairs(Elements:GetDescendants()) do
 				if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
+					Descendant.BackgroundTransparency = 1
 					Descendant.BackgroundColor3 = SelectedTheme.Background
 				end
 			end
@@ -1936,14 +1919,14 @@ function Unhide()
 	if Main:FindFirstChild("Shadow") and Main.Shadow:FindFirstChild("Image") then
 		TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
 	end
-	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
+	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.03}):Play()
 	if Main:FindFirstChild("Topbar") then
-		TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
+		TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.03}):Play()
 		if Main.Topbar:FindFirstChild("Divider") then
-			TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
+			TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.03}):Play()
 		end
 		if Main.Topbar:FindFirstChild("CornerRepair") then
-			TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
+			TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.03}):Play()
 		end
 		if Main.Topbar:FindFirstChild("Title") then
 			TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
@@ -1969,7 +1952,7 @@ function Unhide()
 								if element:FindFirstChild("Title") then
 									TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 								end
-								TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = .25}):Play()
+								TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
 							else
 								if element.Name ~= 'SectionTitle' then
 									TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
@@ -2028,7 +2011,7 @@ function Unhide()
 	Minimised = false
 	Debounce = false
 end
-
+TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0, 460,0, 35)}):Play()
 function CloseSearch()
 	Debounce = true
 	TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0, 460,0, 35)}):Play()
@@ -2050,7 +2033,7 @@ function OpenSearch()
 	Debounce = true
 	SearchBar.Visible = true
 	SearchBar.Input.Visible = true
-	TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0, 500,0, 40), Position = UDim2.new(0.5, 80, 0.150000006, 0)}):Play()
+	TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0, 500,0, 40)}):Play()
 	TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
 	TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
 	TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0.05}):Play()
@@ -2058,23 +2041,6 @@ function OpenSearch()
 	TweenService:Create(SearchBar.Filter, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = .8}):Play()
 	TweenService:Create(SearchBar.Input, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 	wait(0.5)
-	Debounce = false
-end
-
-function CloseSearch()
-	Debounce = true
-	TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0, 460,0, 35)}):Play()
-	TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-	TweenService:Create(SearchBar.Clear, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-	TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-	TweenService:Create(SearchBar.Filter, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-	TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
-	TweenService:Create(SearchBar.Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-	delay(.3,function()
-		SearchBar.Input.Visible = false
-	end)
-	wait(0.5)
-	SearchBar.Visible = false
 	Debounce = false
 end
 
@@ -2160,25 +2126,125 @@ SearchBar.Clear.TouchTap:Connect(function()
     SearchBar.Input.Text = ''
 end)
 
+Settings.Size = UDim2.new(0, 200, 0, 40)
 function OpenSettings()
 	Debounce = true
-	TweenService:Create(Settings, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1,Size = UDim2.new(0, 460,0, 35)}):Play()
-	TweenService:Create(Settings.Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-	TweenService:Create(Settings.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-	TweenService:Create(Settings.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+	Settings.Visible = true
+
+	TweenService:Create(Settings, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {
+		BackgroundTransparency = 0.1,
+		Size = UDim2.new(0, 240, 0, 50)
+	}):Play()
+	TweenService:Create(Settings.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+	TweenService:Create(Settings.Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+	TweenService:Create(Settings.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+	TweenService:Create(SettingsKeybind.KeybindFrame.KeybindBox, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+	if Settings.Hide:IsA("TextButton") or Settings.Hide:IsA("TextLabel") then
+		TweenService:Create(Settings.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+	elseif Settings.Hide:IsA("ImageButton") or Settings.Hide:IsA("ImageLabel") then
+		TweenService:Create(Settings.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+	else
+		TweenService:Create(Settings.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+	end
+	TweenService:Create(SettingsDropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
+	if SettingsDropdown:FindFirstChild("UIStroke") then
+		TweenService:Create(SettingsDropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+	end
+	for _, element in ipairs(SettingsDropdown:GetChildren()) do
+		if element:IsA("Frame") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
+			if element:FindFirstChild("Title") then
+				TweenService:Create(element.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+			end
+			if element:FindFirstChild("UIStroke") then
+				TweenService:Create(element.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+			end
+		elseif element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0, BackgroundTransparency = 1}):Play()
+		elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+		end
+	end
+	TweenService:Create(SettingsKeybind, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
+	if SettingsKeybind:FindFirstChild("UIStroke") then
+		TweenService:Create(SettingsKeybind.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+	end
+	for _, element in ipairs(SettingsKeybind:GetChildren()) do
+		if element:IsA("Frame") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
+			if element:FindFirstChild("UIStroke") then
+				TweenService:Create(element.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+			end
+		elseif element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0, BackgroundTransparency = 1}):Play()
+		elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+		end
+	end
+
 	wait(0.5)
-	Settings.Visible = false
+	SettingsHidden = false
 	Debounce = false
 end
 
 function CloseSettings()
 	Debounce = true
-	TweenService:Create(Settings, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0, 460,0, 35)}):Play()
-	TweenService:Create(Settings.Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-	TweenService:Create(Settings.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-	TweenService:Create(Settings.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+	TweenService:Create(Settings, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(0, 200, 0, 40)
+	}):Play()
+	TweenService:Create(Settings.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+	TweenService:Create(Settings.Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+	TweenService:Create(Settings.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+	TweenService:Create(SettingsKeybind.KeybindFrame.KeybindBox, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+	
+	if Settings.Hide:IsA("TextButton") or Settings.Hide:IsA("TextLabel") then
+		TweenService:Create(Settings.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+	elseif Settings.Hide:IsA("ImageButton") or Settings.Hide:IsA("ImageLabel") then
+		TweenService:Create(Settings.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+	else
+		TweenService:Create(Settings.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+	end
+	TweenService:Create(SettingsDropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+	if SettingsDropdown:FindFirstChild("UIStroke") then
+		TweenService:Create(SettingsDropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+	end
+	for _, element in ipairs(SettingsDropdown:GetChildren()) do
+		if element:IsA("Frame") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+			if element:FindFirstChild("Title") then
+				TweenService:Create(element.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+			end
+			if element:FindFirstChild("UIStroke") then
+				TweenService:Create(element.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+			end
+		elseif element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1, BackgroundTransparency = 1}):Play()
+		elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+		end
+	end
+	TweenService:Create(SettingsKeybind, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+	if SettingsKeybind:FindFirstChild("UIStroke") then
+		TweenService:Create(SettingsKeybind.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+	end
+	for _, element in ipairs(SettingsKeybind:GetChildren()) do
+		if element:IsA("Frame") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+			if element:FindFirstChild("UIStroke") then
+				TweenService:Create(element.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+			end
+		elseif element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1, BackgroundTransparency = 1}):Play()
+		elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
+			TweenService:Create(element, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+		end
+	end
+
 	wait(0.5)
 	Settings.Visible = false
+	SettingsHidden = true
 	Debounce = false
 end
 
@@ -2192,6 +2258,7 @@ task.spawn(function()
 
     for _, Descendant in ipairs(Elements:GetDescendants()) do
         if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
+			Descendant.BackgroundTransparency = 1
             Descendant.BackgroundColor3 = SelectedTheme.Background
         end
     end
@@ -2217,7 +2284,7 @@ end)
 				if element.ClassName == "Frame" then
 					if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and not element:FindFirstChild('ColorPickerIs') then
 						if element:FindFirstChild('_UIPadding_') then
-							TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = .25}):Play()
+							TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
 							TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 						else
 							if element.Name ~= 'SectionTitle' then
@@ -2334,6 +2401,9 @@ function Minimise()
 	if not SearchHided then
 		spawn(CloseSearch)
 	end
+	if not SettingsHidden then
+		spawn(CloseSettings)
+	end
 	if not SideBarClosed then
 		wait(.1)
         spawn(CloseSideBar)
@@ -2386,8 +2456,8 @@ function Minimise()
 	TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
 	TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
 	TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
-	TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
+	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 700, 0, 45)}):Play()
+	TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 700, 0, 45)}):Play()
 
 	wait(0.3)
 
@@ -2429,6 +2499,7 @@ function ApplyTheme()
 
     for _, Descendant in ipairs(Elements:GetDescendants()) do
         if Descendant:IsA("Frame") and Descendant.Name == "SectionTitle" then
+			Descendant.BackgroundTransparency = 1
             Descendant.BackgroundColor3 = SelectedTheme.TabBackground
         end
     end
@@ -3185,7 +3256,6 @@ end
 			Section.Visible = true
 			Section.Parent = TabPage
 
-			Section.BackgroundTransparency = 1
 			if Section:FindFirstChild("UIStroke") then
    				Section.UIStroke.Transparency = 1
 			end
@@ -3206,7 +3276,6 @@ end
 			if Display then
 				Section._UIPadding_:Destroy()
 				Section.Holder.Visible = false
-				Section.BackgroundTransparency = 1
 				SectionValue.Holder.Parent = ArrayField.Holding
 				Section.Title.ImageButton.Visible = false
 			end
@@ -3321,7 +3390,6 @@ function Tab:CreateLabel(LabelSettings, SectionParent)
     local Label = Elements.Template.Label:Clone()
     Label.Title.Text = labelText
     
-    Label.Title.RichText = true
     Label.Title.TextWrapped = true
     Label.Title.TextScaled = false
     
@@ -3460,7 +3528,6 @@ function Tab:CreateParagraph(ParagraphSettings, SectionParent)
     Paragraph.Title.Text = ParagraphSettings.Title
     Paragraph.Content.Text = ParagraphSettings.Content
     Paragraph.Visible = true
-    Paragraph.Content.RichText = true
 
     Tab.Elements[ParagraphSettings.Title] = {
         type = 'paragraph',
@@ -5121,7 +5188,6 @@ end
 	Topbar.Divider.Size = UDim2.new(0, 0, 0, 1)
 	Topbar.CornerRepair.BackgroundTransparency = 1
 	Topbar.Title.TextTransparency = 1
-	Topbar.Theme.ImageTransparency = 1
 	Topbar.ChangeSize.ImageTransparency = 1
 	Topbar.Hide.ImageTransparency = 1
 
@@ -5133,8 +5199,6 @@ end
 	TweenService:Create(Topbar.Divider, TweenInfo.new(1, Enum.EasingStyle.Quint), {Size = UDim2.new(1, 0, 0, 1)}):Play()
 	wait(0.1)
 	TweenService:Create(Topbar.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-	wait(0.1)
-	TweenService:Create(Topbar.Theme, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
 	wait(0.1)
 	TweenService:Create(Topbar.ChangeSize, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
 	wait(0.1)
@@ -5149,7 +5213,6 @@ end
 		PromptUI.Content.TextTransparency = 1
 		PromptUI.Title.TextTransparency = 1
 		PromptUI.Sub.TextTransparency = 1
-		PromptUI.Size = UDim2.new(0,340,0,140)
 		PromptUI.Buttons.Template.Visible = false
 		PromptUI.Buttons.Template.TextLabel.TextTransparency = 1
 		PromptUI.Buttons.Template.UIStroke.Transparency = 1
@@ -5178,14 +5241,14 @@ end
 					end
 				end)
 				Button.Name = name
-				Button.Parent = PromptUI.Buttons -- saving memory
+				Button.Parent = PromptUI.Buttons
 				Button.Size = UDim2.fromOffset(Button.TextLabel.TextBounds.X + 24, 30)
 			end
 		end
 
 		TweenService:Create(Prompt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = .5}):Play()
 		wait(.2)
-		TweenService:Create(PromptUI, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,350,0,150)}):Play()
+		TweenService:Create(PromptUI, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
 		wait(0.2)
 		TweenService:Create(PromptUI.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
 		TweenService:Create(PromptUI.Title, TweenInfo.new(0.45, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
@@ -5213,8 +5276,8 @@ MobileToggle:Hide()
 
 function ArrayFieldLibrary:Destroy()
 	ArrayField:Destroy()
-if ArrayField:FindFirstChild("MobileToggleButton") then
-	ArrayField:FindFirstChild("MobileToggleButton"):Destroy()
+if ArrayField:FindFirstChild("MobileButton") then
+	ArrayField:FindFirstChild("MobileButton"):Destroy()
 end
 end
 
@@ -5224,7 +5287,8 @@ Topbar.ChangeSize.MouseButton1Click:Connect(function()
 		Minimised = false
 		Maximise()
 	else
-		if not SearchHided then SearchHided = true spawn(CloseSearch)  end
+		if not SearchHided then SearchHided = true spawn(CloseSearch) end
+		if not SettingsHidden then SettingsHidden = true spawn(CloseSettings) end
 		Minimised = true
 		Minimise()
 	end
@@ -5237,6 +5301,16 @@ Topbar.Search.MouseButton1Click:Connect(function()
 	else
 		SearchHided = true
 		CloseSearch()
+	end
+end)
+Topbar.Settings.MouseButton1Click:Connect(function()
+	if Debounce or Minimised then return end
+	if SettingsHidden then
+		OpenSettings()
+		SettingshHiden = false
+	else
+		SettingsHidden = true
+		CloseSettings()
 	end
 end)
 Topbar.Type.MouseButton1Click:Connect(function()
@@ -5260,6 +5334,7 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 		MobileToggle:Hide()
     else
         if not SearchHided then SearchHided = true spawn(CloseSearch) end
+		if not SettingsHidden then SettingsHidden = true spawn(CloseSettings) end
         Hidden = true
         Hide()
 		MobileToggle:Show()
@@ -5274,6 +5349,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
             Unhide()
         else
             if not SearchHided then spawn(CloseSearch) end
+			if not SettingsHidden then spawn(CloseSettings) end
             Hidden = true
             Hide()
         end
@@ -5303,7 +5379,6 @@ for _, TopbarButton in ipairs(Topbar:GetChildren()) do
 	end
 end
 
-
 function ArrayFieldLibrary:LoadConfiguration()
 	if CEnabled then
 		pcall(function()
@@ -5316,53 +5391,34 @@ function ArrayFieldLibrary:LoadConfiguration()
 end
 
 task.delay(9, ArrayFieldLibrary.LoadConfiguration, ArrayFieldLibrary)
-
-ArrayField.Main.Topbar.Theme.Visible = false
-local Search = ArrayField.Main.Topbar:FindFirstChild("Search")
-
-if Search then
-    Search.Parent = nil
-    
-    Search.Parent = ArrayField.Main.Topbar 
-    
-    Search.Position = UDim2.new(0.84, 0, 0.5, 0)
-else
-    warn("Search button not found!")
-end
-
-local Sections = ArrayField.Main:GetChildren()
-local PromptButtons = ArrayField.Main.Prompt.Prompt.Buttons
-PromptButtons.Size = UDim2.new(0, 335, 0, 40)
-
 local Elements = ArrayField.Main.Elements
 Elements.Position = UDim2.new(0.5, 80, 0.55, 0)
 Elements.Size = UDim2.new(1, -180, 0, 295)
 
-return ArrayFieldLibrary
---[[
+--return ArrayFieldLibrary
 local Window = ArrayFieldLibrary:CreateWindow({
         Name = "ArrayField Example Window",
         LoadingTitle = "ArrayField Interface Suite",
         LoadingSubtitle = "by Arrays",
 		Theme = "Default",
-        ConfigurationSaving = { -- Don't use configurations saving if you want to support executors such as Delta
+        ConfigurationSaving = {
             Enabled = true,
-            FolderName = nil, -- Create a custom folder for your hub/game
+            FolderName = nil,
             FileName = "ArrayField"
         },
         Discord = {
             Enabled = false,
-            Invite = "sirius", -- The Discord invite code, do not include discord.gg/
-            RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+            Invite = "sirius",
+            RememberJoins = true
         },
-        KeySystem = false, -- Set this to true to use our key system
+        KeySystem = false,
         KeySettings = {
             Title = "ArrayField",
             Subtitle = "Key System",
             Note = "Join the discord (discord.gg/sirius)",
             FileName = "ArrayFieldsKeys",
             SaveKey = false,
-            GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like ArrayField to get the key from
+            GrabKeyFromSite = false,
             Key = {"Hello",'Bye'},
             Actions = {
                 [1] = {
@@ -5374,9 +5430,9 @@ local Window = ArrayFieldLibrary:CreateWindow({
             },
         }
     })
-    local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
-    local Tab2 = Window:CreateTab("Tab Example 2") -- Title, Image
-    local Section = Tab:CreateSection("Section Example",false) -- The 2nd argument is to tell if its only a Title and doesnt contain element
+    local Tab = Window:CreateTab("Tab Example", 4483362458)
+    local Tab2 = Window:CreateTab("Tab Example 2")
+    local Section = Tab:CreateSection("Section Example",false)
     Tab:CreateSpacing(nil,10)
     local Button = Tab:CreateButton({
         Name = "Button Example",
@@ -5395,7 +5451,7 @@ local Window = ArrayFieldLibrary:CreateWindow({
             Description = 'Just a slider for stuff',
         },
         CurrentValue = false,
-        Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+        Flag = "Toggle1",
         Callback = function(Value)
             print(Value)
         end,
@@ -5483,7 +5539,7 @@ local Window = ArrayFieldLibrary:CreateWindow({
             print(Option)
         end,
     })
-    local Label = Tab:CreateLabel({"Thanks for using Arrayfield, there were alot of issues but here we are! also if you want to have sex hmu what the hell what the hell what the hell what the hell", "heart"}, Section)
+    local Label = Tab:CreateLabel({"Thanks for using Arrayfield, there were alot of issues but here we are!", "heart"}, Section)
     local Paragraph = Tab:CreateParagraph({Title = "Paragraph Example", Content = "Paragraph Example"},Section)
     local Sets = Tab:CreateSection('Set Functions',false)
     local SButton
@@ -5496,7 +5552,12 @@ local Window = ArrayFieldLibrary:CreateWindow({
             SButton:Set(nil,'New Interaction')
 			SButton:SetDescription("sex")
         end
-    })
+    })--[[
+		Window:qNotePrompt({
+            Title = "You're account is -13",
+            Description = 'Read:',
+					
+		})]]
     Tab:CreateButton({
         Name = "Dropdown Set",
         Interact = 'Interact',
@@ -5538,7 +5599,7 @@ local Window = ArrayFieldLibrary:CreateWindow({
         SectionParent = LockTesting,
         Name = "Toggle Example",
         CurrentValue = false,
-        Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+        Flag = "Toggle2",
         Callback = function(Value)
             print(Value)
         end,
@@ -5571,22 +5632,5 @@ local Window = ArrayFieldLibrary:CreateWindow({
         SectionParent = LockTesting,
         Flag = "Keybind2",
         Callback = function(Keybind)
-
         end,
     })
-
-local Tab2 = Window:CreateTab("Tab Example 2")
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-local Tab2 = Window:CreateTab("Tab Example 2") 
-
-]]
