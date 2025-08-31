@@ -3,7 +3,6 @@ ArrayField's Open Sourced Standalone Key System
 by Meta
 
 Original by Sirius
-Optimized for better performance
 
 -------------------------------
 Brought to you by vqmpjay 
@@ -25,12 +24,6 @@ local KeyUI = game:GetObjects('rbxassetid://11695805160')[1]
 KeyUI.Enabled = true
 
 local actionExecuting = false
-local activeConnections = {} -- Track connections for cleanup
-
--- Performance optimization: Cache frequently used values
-local cachedHWID = nil
-local lastHWIDTime = 0
-local HWID_CACHE_DURATION = 300 -- 5 minutes cache
 
 if game:GetService('RunService'):IsStudio() then
     function gethui() return KeyUI end
@@ -39,7 +32,7 @@ if game:GetService('RunService'):IsStudio() then
     function makefolder() end
     function isfile() return false end
     function readfile() return '' end
-    function setclipboard(text) print("Clipboard set to: " .. tostring(text)) end
+    function setclipboard(text)  print("Clipboard set to: " .. tostring(text)) end
 end
 
 local function ParentGUI(Gui)
@@ -66,13 +59,6 @@ local ConfigurationExtension = '.rfld'
 local RbxAnalyticsService = game:GetService("RbxAnalyticsService")
 
 local function GetCustomHWID()
-    local currentTime = tick()
-    
-    -- Use cached HWID if available and not expired
-    if cachedHWID and (currentTime - lastHWIDTime) < HWID_CACHE_DURATION then
-        return cachedHWID
-    end
-    
     local baseId = RbxAnalyticsService:GetClientId()
     local result = ""
 
@@ -93,10 +79,6 @@ local function GetCustomHWID()
         end
     end
 
-    -- Cache the result
-    cachedHWID = result
-    lastHWIDTime = currentTime
-    
     return result
 end
 
@@ -145,39 +127,10 @@ local function CheckVIPStatus(Settings)
     return false
 end
 
--- Optimized animation function with fewer simultaneous tweens
-local function BatchTweenElements(elements, duration, properties, delay)
-    delay = delay or 0
-    
-    if delay > 0 then
-        RunService.Heartbeat:Wait() -- Use RunService instead of wait()
-        task.wait(delay)
-    end
-    
-    for _, element in ipairs(elements) do
-        if element.element then
-            TweenService:Create(element.element, TweenInfo.new(duration, Enum.EasingStyle.Quint), element.properties or properties):Play()
-        end
-    end
-end
-
--- Cleanup function
-local function CleanupConnections()
-    for _, connection in ipairs(activeConnections) do
-        if connection and connection.Connected then
-            connection:Disconnect()
-        end
-    end
-    activeConnections = {}
-end
-
 function KeySystem:CreateKeyUI(Settings)
     if not Settings then
         error('KeySystem: Settings table required')
     end
-    
-    -- Cleanup any existing connections
-    CleanupConnections()
     
     if CheckVIPStatus(Settings) then
         Settings.Callback()
@@ -225,7 +178,6 @@ function KeySystem:CreateKeyUI(Settings)
             local savedKey = readfile(keyFilePath)
             if savedKey and #savedKey > 0 then
                 if Settings.GrabKeyFromSite.Enabled then
-                    -- Use cached HWID to avoid repeated computation
                     local hwid = GetCustomHWID()
                     local encodedHWID = HttpService:UrlEncode(hwid)
                     local createURL = Settings.GrabKeyFromSite.KeyDestination .. encodedHWID
@@ -256,11 +208,11 @@ function KeySystem:CreateKeyUI(Settings)
         end
     end
 
-    -- Removed the anti-HTTP logger as it could cause performance issues
-    -- If needed, load it conditionally or optimize it separately
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/vqmpjayZ/utils/refs/heads/main/Anti-Http-Logger.lua"))()
+    end)
 
     if Settings.GrabKeyFromSite.Enabled then
-        -- Use cached HWID to avoid repeated computation
         local hwid = GetCustomHWID()
         local encodedHWID = HttpService:UrlEncode(hwid)
         local createURL = Settings.GrabKeyFromSite.KeyDestination .. encodedHWID
@@ -291,14 +243,6 @@ function KeySystem:CreateKeyUI(Settings)
     KeyMain.Subtitle.Text = Settings.Subtitle
     KeyMain.NoteMessage.Text = Settings.Note
 
-    -- Set initial properties more efficiently
-    local elementsToHide = {
-        KeyMain, KeyMain.EShadow, KeyMain.Title, KeyMain.Subtitle, KeyMain.KeyNote,
-        KeyMain.Input, KeyMain.Input.UIStroke, KeyMain.Input.InputBox, KeyMain.Input.HidenInput,
-        KeyMain.NoteTitle, KeyMain.NoteMessage, KeyMain.Hide, KeyMain.HideP, KeyMain.Actions.Template
-    }
-    
-    -- Set initial transparency states
     KeyMain.Size = UDim2.new(0, 467, 0, 175)
     KeyMain.BackgroundTransparency = 1
     KeyMain.EShadow.ImageTransparency = 1
@@ -319,7 +263,9 @@ function KeySystem:CreateKeyUI(Settings)
         local Action = KeyMain.Actions.Template
         Action.Text = 'Click here to copy key link'
         Action.Visible = true
+
         Action.Parent = KeyMain.Actions
+
         Action.TextStrokeTransparency = 0.5
         Action.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
         Action.ZIndex = 15 
@@ -327,50 +273,46 @@ function KeySystem:CreateKeyUI(Settings)
         Action.TextScaled = true
         Action.BackgroundTransparency = 1
 
-        if Settings.GrabKeyFromSite and Settings.GrabKeyFromSite.Enabled then
-            local HWIDButton = Action:Clone()
-            HWIDButton.Name = "CopyHWID"
-            HWIDButton.Text = "Click here to copy your HWID"
-            HWIDButton.TextTransparency = 1
-            HWIDButton.Parent = KeyMain.Actions
+    if Settings.GrabKeyFromSite and Settings.GrabKeyFromSite.Enabled then
+        local HWIDButton = Action:Clone()
+        HWIDButton.Name = "CopyHWID"
+        HWIDButton.Text = "Click here to copy your HWID"
+        HWIDButton.TextTransparency = 1
+        HWIDButton.Parent = KeyMain.Actions
 
-            HWIDButton.Font = Action.Font
-            HWIDButton.ZIndex = Action.ZIndex
-            HWIDButton.TextStrokeTransparency = Action.TextStrokeTransparency
-            HWIDButton.TextStrokeColor3 = Action.TextStrokeColor3
-            HWIDButton.TextScaled = Action.TextScaled
-            HWIDButton.BackgroundTransparency = Action.BackgroundTransparency
+        HWIDButton.Font = Action.Font
+        HWIDButton.ZIndex = Action.ZIndex
+        HWIDButton.TextStrokeTransparency = Action.TextStrokeTransparency
+        HWIDButton.TextStrokeColor3 = Action.TextStrokeColor3
+        HWIDButton.TextScaled = Action.TextScaled
+        HWIDButton.BackgroundTransparency = Action.BackgroundTransparency
 
-            local hwidConnection = HWIDButton.MouseButton1Click:Connect(function()
-                if AllClipboards then
-                    -- Use cached HWID
-                    local hwid = GetCustomHWID()
-                    AllClipboards(hwid)
+        HWIDButton.MouseButton1Click:Connect(function()
+            if AllClipboards then
+                local hwid = GetCustomHWID()
+                AllClipboards(hwid)
 
-                    local original = HWIDButton.Text
-                    HWIDButton.Text = "Copied!"
-                    task.wait(0.45)
-                    HWIDButton.Text = original
-                end
-            end)
-            table.insert(activeConnections, hwidConnection)
+                local original = HWIDButton.Text
+                HWIDButton.Text = "Copied!"
+                task.wait(0.45)
+                HWIDButton.Text = original
+            end
+        end)
 
-            local hwidEnterConnection = HWIDButton.MouseEnter:Connect(function()
-                TweenService:Create(HWIDButton, TweenInfo.new(0.25), {
-                    TextColor3 = Color3.fromRGB(185, 185, 185)
-                }):Play()
-            end)
-            table.insert(activeConnections, hwidEnterConnection)
+        HWIDButton.MouseEnter:Connect(function()
+            TweenService:Create(HWIDButton, TweenInfo.new(0.25), {
+                TextColor3 = Color3.fromRGB(185, 185, 185)
+            }):Play()
+        end)
 
-            local hwidLeaveConnection = HWIDButton.MouseLeave:Connect(function()
-                TweenService:Create(HWIDButton, TweenInfo.new(0.25), {
-                    TextColor3 = Color3.fromRGB(105, 105, 105)
-                }):Play()
-            end)
-            table.insert(activeConnections, hwidLeaveConnection)
-        end
-
-        local actionConnection = Action.MouseButton1Click:Connect(function()
+        HWIDButton.MouseLeave:Connect(function()
+            TweenService:Create(HWIDButton, TweenInfo.new(0.25), {
+                TextColor3 = Color3.fromRGB(105, 105, 105)
+            }):Play()
+        end)
+    end
+        local connection
+        connection = Action.MouseButton1Click:Connect(function()
             if actionExecuting then
                 return
             end
@@ -383,27 +325,26 @@ function KeySystem:CreateKeyUI(Settings)
             local originalText = Action.Text
             Action.Text = 'Copied!'
             
-            task.wait(0.45)
-            Action.Text = originalText
-            actionExecuting = false
+            spawn(function()
+                task.wait(0.45)
+                Action.Text = originalText
+                actionExecuting = false
+            end)
         end)
-        table.insert(activeConnections, actionConnection)
 
-        local actionEnterConnection = Action.MouseEnter:Connect(function()
+        Action.MouseEnter:Connect(function()
             if actionExecuting then
                 return
             end
             TweenService:Create(Action, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextColor3 = Color3.fromRGB(185, 185, 185)}):Play()
         end)
-        table.insert(activeConnections, actionEnterConnection)
 
-        local actionLeaveConnection = Action.MouseLeave:Connect(function()
+        Action.MouseLeave:Connect(function()
             if actionExecuting then
                 return
             end
             TweenService:Create(Action, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextColor3 = Color3.fromRGB(105, 105, 105)}):Play()
         end)
-        table.insert(activeConnections, actionLeaveConnection)
     end
 
     self:AnimateIn(KeyMain, Settings)
@@ -411,93 +352,68 @@ function KeySystem:CreateKeyUI(Settings)
 end
 
 function KeySystem:AnimateIn(KeyMain, Settings)
-    -- Optimized animation sequence with fewer simultaneous operations
-    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0, Size = UDim2.new(0, 500, 0, 187)}):Play()
-    TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-    
-    task.wait(0.05)
-    
-    -- Batch animate text elements
-    TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    
-    task.wait(0.05)
-    
-    -- Batch animate input elements
-    TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-    TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    
-    task.wait(0.05)
-    
-    -- Batch animate note elements
-    TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    TweenService:Create(KeyMain.Actions.Template, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    
-    local CopyHWID = KeyMain.Actions:FindFirstChild("CopyHWID")
-    if CopyHWID then
-        TweenService:Create(CopyHWID, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    end
-    
-    task.wait(0.15)
-    
-    -- Final elements
-    TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
-    TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
+    spawn(function()
+        TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0, 500, 0, 187)}):Play()
+        TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+        task.wait(0.05)
+        TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        task.wait(0.05)
+        TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
+        TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
+        task.wait(0.05)
+        TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        TweenService:Create(KeyMain.Actions.Template, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        local CopyHWID = KeyMain.Actions:FindFirstChild("CopyHWID")
+        if CopyHWID then
+            TweenService:Create(CopyHWID, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        end
+        task.wait(0.15)
+        TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
+        TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
+    end)
 end
 
 function KeySystem:AnimateOut(KeyMain, Settings, callback)
-    -- Optimized exit animation
-    local tweensToPlay = {}
-    
-    -- Create all tweens but don't play them yet
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.Actions.Template, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1, Size = UDim2.new(0, 467, 0, 175)}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}))
-    table.insert(tweensToPlay, TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}))
-    
-    local CopyHWID = KeyMain.Actions:FindFirstChild("CopyHWID")
-    if CopyHWID then
-        table.insert(tweensToPlay, TweenService:Create(CopyHWID, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}))
-    end
-    
-    -- Play all tweens simultaneously
-    for _, tween in ipairs(tweensToPlay) do
-        tween:Play()
-    end
-    
-    task.wait(0.51)
-    
-    if callback then
-        callback()
-    end
-    
-    KeyMain.Hide.Visible = false
-    CleanupConnections() -- Clean up connections before destroying
-    KeyUI:Destroy()
+    spawn(function()
+        TweenService:Create(KeyMain.Actions.Template, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1, Size = UDim2.new(0, 467, 0, 175)}):Play()
+        TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+        TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
+        TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+        TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+        TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+        TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+        local CopyHWID = KeyMain.Actions:FindFirstChild("CopyHWID")
+        if CopyHWID then
+            TweenService:Create(CopyHWID, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        end
+        task.wait(0.51)
+        if callback then
+            callback()
+        end
+        KeyMain.Hide.Visible = false
+        KeyUI:Destroy()
+    end)
 end
 
 function KeySystem:SetupInputHandlers(KeyMain, Settings)
     local Hidden = true
 
-    local textChangedConnection = KeyMain.Input.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
+    KeyMain.Input.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
         KeyMain.Input.HidenInput.Text = string.rep('•', #KeyMain.Input.InputBox.Text)
     end)
-    table.insert(activeConnections, textChangedConnection)
 
-    local focusLostConnection = KeyMain.Input.InputBox.FocusLost:Connect(function(EnterPressed)
+    KeyMain.Input.InputBox.FocusLost:Connect(function(EnterPressed)
         if not EnterPressed or #KeyMain.Input.InputBox.Text == 0 then
             return
         end
@@ -524,35 +440,42 @@ function KeySystem:SetupInputHandlers(KeyMain, Settings)
         else
             KeyMain.Input.InputBox.Text = ''
 
-            -- Optimized shake animation
             local originalPos = KeyMain.Position
             local shakeDistance = 10
-            local shakeTween = TweenService:Create(KeyMain, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Position = originalPos})
-            
-            -- Single shake animation instead of multiple sequential ones
-            KeyMain.Position = UDim2.new(originalPos.X.Scale, originalPos.X.Offset - shakeDistance, originalPos.Y.Scale, originalPos.Y.Offset)
-            shakeTween:Play()
+
+            -- Use spawn for shake animation to avoid blocking
+            spawn(function()
+                local shakeSequence = {
+                    {pos = UDim2.new(originalPos.X.Scale, originalPos.X.Offset - shakeDistance, originalPos.Y.Scale,originalPos.Y.Offset), time = 0.05},
+                    {pos = UDim2.new(originalPos.X.Scale, originalPos.X.Offset + shakeDistance, originalPos.Y.Scale, originalPos.Y.Offset), time = 0.05},
+                    {pos = UDim2.new(originalPos.X.Scale, originalPos.X.Offset - shakeDistance / 2, originalPos.Y.Scale, originalPos.Y.Offset), time = 0.05},
+                    {pos = UDim2.new(originalPos.X.Scale, originalPos.X.Offset + shakeDistance / 2, originalPos.Y.Scale, originalPos.Y.Offset),time = 0.05},
+                    {pos = originalPos, time = 0.1},
+                }
+
+                for _, shake in ipairs(shakeSequence) do
+                    TweenService:Create(KeyMain, TweenInfo.new(shake.time, Enum.EasingStyle.Quad),{Position = shake.pos}):Play()
+                    task.wait(shake.time)
+                end
+            end)
         end
     end)
-    table.insert(activeConnections, focusLostConnection)
 
-    local hidePConnection = KeyMain.HideP.MouseButton1Click:Connect(function()
+    KeyMain.HideP.MouseButton1Click:Connect(function()
         if Hidden then
-            TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-            TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+            TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
             Hidden = false
         else
-            TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
+            TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
             Hidden = true
         end
     end)
-    table.insert(activeConnections, hidePConnection)
 
-    local hideConnection = KeyMain.Hide.MouseButton1Click:Connect(function()
+    KeyMain.Hide.MouseButton1Click:Connect(function()
         self:AnimateOut(KeyMain, Settings)
     end)
-    table.insert(activeConnections, hideConnection)
 end
 
 return KeySystem
