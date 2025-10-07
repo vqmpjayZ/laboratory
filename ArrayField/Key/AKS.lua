@@ -1,3 +1,4 @@
+--Version: 2BA
 local KeySystem = {}
 
 local UserInputService = game:GetService('UserInputService')
@@ -10,7 +11,7 @@ local LocalPlayer = Players.LocalPlayer
 
 local AllClipboards = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
 
-local KeyUI = game:GetObjects('rbxassetid://11695805160')[1]
+local KeyUI = game:GetObjects('rbxassetid://71264174552423')[1]
 KeyUI.Enabled = true
 
 local actionExecuting = false
@@ -250,6 +251,10 @@ function KeySystem:CreateKeyUI(Settings)
     KeyMain.Subtitle.Text = Settings.Subtitle
     KeyMain.NoteMessage.Text = Settings.Note
 
+    local originalEyeImage = KeyMain.HideP.Image
+    local originalEyeRectSize = KeyMain.HideP.ImageRectSize
+    local originalEyeRectOffset = KeyMain.HideP.ImageRectOffset
+    
     KeyMain.Size = UDim2.new(0, 467, 0, 175)
     KeyMain.BackgroundTransparency = 1
     KeyMain.EShadow.ImageTransparency = 1
@@ -260,11 +265,72 @@ function KeySystem:CreateKeyUI(Settings)
     KeyMain.Input.UIStroke.Transparency = 1
     KeyMain.Input.InputBox.TextTransparency = 1
     KeyMain.Input.HidenInput.TextTransparency = 1
+    KeyMain.Input.HidenInput.Position = UDim2.new(0.517499566, 0, 0.5, 0)
     KeyMain.NoteTitle.TextTransparency = 1
     KeyMain.NoteMessage.TextTransparency = 1
     KeyMain.Hide.ImageTransparency = 1
     KeyMain.HideP.ImageTransparency = 1
-    KeyMain.Actions.Template.TextTransparency = 1
+    KeyMain.Actions.Template.Visible = false
+    KeyMain.Actions.TemplateH.Visible = false
+    KeyMain.Input.Reset.ImageTransparency = 1
+    
+    KeyMain.Input.InputBox.PlaceholderText = "Enter Key Here"
+    KeyMain.Input.InputBox.TextYAlignment = Enum.TextYAlignment.Center
+    KeyMain.Input.InputBox.Size = UDim2.new(1, -40, 1, 0)
+    KeyMain.Input.InputBox.Position = UDim2.new(0.450499594, 0, 0.5, 0)
+    KeyMain.Input.InputBox.TextScaled = false
+    KeyMain.Input.InputBox.TextSize = 14
+    KeyMain.Input.HidenInput.Size = UDim2.new(1, -40, 1, 0)
+    KeyMain.Input.HidenInput.Position = UDim2.new(0.450499594, 0, 0.5, 0)
+    KeyMain.Input.HidenInput.TextScaled = false
+    KeyMain.Input.HidenInput.TextSize = 14
+
+    local CaretLabel = Instance.new("TextLabel")
+    CaretLabel.Name = "Caret"
+    CaretLabel.Parent = KeyMain.Input
+    CaretLabel.AnchorPoint = Vector2.new(0, 0.5)
+    CaretLabel.BackgroundTransparency = 1
+    CaretLabel.Position = UDim2.new(0, 5, 0.48, 0)
+    CaretLabel.Size = UDim2.new(0, 20, 1, 0)
+    CaretLabel.Font = Enum.Font.Gotham
+    CaretLabel.Text = "|"
+    CaretLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    CaretLabel.TextScaled = false
+    CaretLabel.TextSize = 18
+    CaretLabel.TextTransparency = 1
+    CaretLabel.TextXAlignment = Enum.TextXAlignment.Left
+    CaretLabel.Visible = false
+    CaretLabel.ZIndex = 10
+    
+    local ResetButtonWrapper = Instance.new("TextButton")
+    ResetButtonWrapper.Name = "ResetWrapper"
+    ResetButtonWrapper.Parent = KeyMain.Input
+    ResetButtonWrapper.BackgroundTransparency = 1
+    ResetButtonWrapper.AnchorPoint = KeyMain.Input.Reset.AnchorPoint
+    ResetButtonWrapper.Position = KeyMain.Input.Reset.Position
+    ResetButtonWrapper.Size = UDim2.new(0, 30, 0, 30)
+    ResetButtonWrapper.Text = ""
+    ResetButtonWrapper.ZIndex = 15
+    ResetButtonWrapper.Visible = false
+    ResetButtonWrapper.AutoButtonColor = false
+    
+    KeyMain.Input.Reset.ZIndex = 14
+    
+    local VisibilityNotification = Instance.new("TextLabel")
+    VisibilityNotification.Name = "VisibilityNotification"
+    VisibilityNotification.Parent = KeyMain.Input
+    VisibilityNotification.AnchorPoint = Vector2.new(0, 0)
+    VisibilityNotification.Position = UDim2.new(0, 50, 0, -23)
+    VisibilityNotification.Size = UDim2.new(0, 120, 0, 20)
+    VisibilityNotification.BackgroundTransparency = 1
+    VisibilityNotification.Font = Enum.Font.Gotham
+    VisibilityNotification.Text = ""
+    VisibilityNotification.TextColor3 = Color3.fromRGB(160, 160, 160)
+    VisibilityNotification.TextScaled = false
+    VisibilityNotification.TextSize = 10
+    VisibilityNotification.TextTransparency = 1
+    VisibilityNotification.TextXAlignment = Enum.TextXAlignment.Left
+    VisibilityNotification.Visible = false
 
     if Settings.Action then
         local Action = KeyMain.Actions.Template
@@ -281,10 +347,10 @@ function KeySystem:CreateKeyUI(Settings)
         Action.BackgroundTransparency = 1
 
     if Settings.GrabKeyFromSite and Settings.GrabKeyFromSite.Enabled then
-        local HWIDButton = Action:Clone()
-        HWIDButton.Name = "CopyHWID"
-        HWIDButton.Text = "Click here to copy your HWID"
-        HWIDButton.TextTransparency = 1
+        local HWIDButton = KeyMain.Actions.TemplateH
+        HWIDButton.Text = 'Click here to copy your HWID'
+        HWIDButton.Visible = true
+
         HWIDButton.Parent = KeyMain.Actions
 
         HWIDButton.Font = Action.Font
@@ -356,11 +422,29 @@ function KeySystem:CreateKeyUI(Settings)
         end)
     end
 
-    self:AnimateIn(KeyMain, Settings)
-    self:SetupInputHandlers(KeyMain, Settings)
+    self:AnimateIn(KeyMain, Settings, originalEyeImage, originalEyeRectSize, originalEyeRectOffset)
+    self:SetupInputHandlers(KeyMain, Settings, originalEyeImage, originalEyeRectSize, originalEyeRectOffset, ResetButtonWrapper)
 end
 
-function KeySystem:AnimateIn(KeyMain, Settings)
+function KeySystem:AnimateIn(KeyMain, Settings, originalEyeImage, originalEyeRectSize, originalEyeRectOffset)
+    local visibilityPrefPath = ArrayFieldFolder .. '/Key System' .. '/visibility_pref' .. ConfigurationExtension
+    local savedVisibility = true
+    
+    if isfile(visibilityPrefPath) then
+        local savedPref = readfile(visibilityPrefPath)
+        savedVisibility = savedPref == "true"
+    end
+    
+    if savedVisibility then
+        KeyMain.HideP.Image = "rbxassetid://16898613353"
+        KeyMain.HideP.ImageRectSize = Vector2.new(48, 48)
+        KeyMain.HideP.ImageRectOffset = Vector2.new(820, 514)
+    else
+        KeyMain.HideP.Image = originalEyeImage
+        KeyMain.HideP.ImageRectSize = originalEyeRectSize
+        KeyMain.HideP.ImageRectOffset = originalEyeRectOffset
+    end
+    
     spawn(function()
         createTween(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0, 500, 0, 187)}):Play()
         createTween(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
@@ -371,7 +455,13 @@ function KeySystem:AnimateIn(KeyMain, Settings)
         createTween(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         createTween(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
         createTween(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
-        createTween(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
+        
+        if savedVisibility then
+            createTween(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
+        else
+            createTween(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
+        end
+        
         task.wait(0.05)
         createTween(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         createTween(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
@@ -383,6 +473,8 @@ function KeySystem:AnimateIn(KeyMain, Settings)
         task.wait(0.15)
         createTween(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
         createTween(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
+        KeyMain.Input.Reset.Visible = false
+        KeyMain.Input.ResetWrapper.Visible = false
     end)
 end
 
@@ -402,6 +494,8 @@ function KeySystem:AnimateOut(KeyMain, Settings, callback)
         createTween(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
         createTween(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
         createTween(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+        createTween(KeyMain.Input.Reset, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+        createTween(KeyMain.Input.Caret, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
         local CopyHWID = KeyMain.Actions:FindFirstChild("CopyHWID")
         if CopyHWID then
             createTween(CopyHWID, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
@@ -416,11 +510,104 @@ function KeySystem:AnimateOut(KeyMain, Settings, callback)
     end)
 end
 
-function KeySystem:SetupInputHandlers(KeyMain, Settings)
+function KeySystem:SetupInputHandlers(KeyMain, Settings, originalEyeImage, originalEyeRectSize, originalEyeRectOffset, ResetButtonWrapper)
     local Hidden = true
+    
+    local visibilityPrefPath = ArrayFieldFolder .. '/Key System' .. '/visibility_pref' .. ConfigurationExtension
+    if isfile(visibilityPrefPath) then
+        local savedPref = readfile(visibilityPrefPath)
+        Hidden = savedPref == "true"
+    end
+
+    local resetVisible = false
+    local caretConnection = nil
+
+    local function createCaret()
+        if not Hidden or #KeyMain.Input.InputBox.Text > 0 then return end
+        
+        KeyMain.Input.Caret.Visible = true
+        createTween(KeyMain.Input.Caret, TweenInfo.new(0.2), {TextTransparency = 0.2}):Play()
+        
+        caretConnection = RunService.Heartbeat:Connect(function()
+            if math.floor(tick() * 2) % 2 == 0 then
+                KeyMain.Input.Caret.TextTransparency = 0.2
+            else
+                KeyMain.Input.Caret.TextTransparency = 1
+            end
+        end)
+    end
+
+    local function removeCaret()
+        if caretConnection then
+            caretConnection:Disconnect()
+            caretConnection = nil
+        end
+        createTween(KeyMain.Input.Caret, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+        task.wait(0.2)
+        KeyMain.Input.Caret.Visible = false
+    end
+
+    local function animateResetButton(show)
+        if show and not resetVisible then
+            resetVisible = true
+            KeyMain.Input.Reset.Visible = true
+            ResetButtonWrapper.Visible = true
+            createTween(KeyMain.Input.Reset, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {
+                ImageTransparency = 0.5
+            }):Play()
+        elseif not show and resetVisible then
+            resetVisible = false
+            createTween(KeyMain.Input.Reset, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {
+                ImageTransparency = 1
+            }):Play()
+            task.wait(0.6)
+            KeyMain.Input.Reset.Visible = false
+            ResetButtonWrapper.Visible = false
+        end
+    end
 
     KeyMain.Input.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
         KeyMain.Input.HidenInput.Text = string.rep('•', #KeyMain.Input.InputBox.Text)
+        animateResetButton(#KeyMain.Input.InputBox.Text > 0)
+        
+        if #KeyMain.Input.InputBox.Text > 0 then
+            removeCaret()
+        elseif KeyMain.Input.InputBox:IsFocused() and Hidden then
+            createCaret()
+        end
+    end)
+
+    KeyMain.Input.InputBox.Focused:Connect(function()
+        if Hidden and #KeyMain.Input.InputBox.Text == 0 then
+            createCaret()
+        end
+    end)
+
+    KeyMain.Input.InputBox.FocusLost:Connect(function()
+        removeCaret()
+    end)
+
+    ResetButtonWrapper.MouseButton1Click:Connect(function()
+        KeyMain.Input.InputBox.Text = ''
+        KeyMain.Input.HidenInput.Text = ''
+        animateResetButton(false)
+        removeCaret()
+    end)
+    
+    ResetButtonWrapper.MouseEnter:Connect(function()
+        if resetVisible then
+            createTween(KeyMain.Input.Reset, TweenInfo.new(0.25), {
+                ImageTransparency = 0.3
+            }):Play()
+        end
+    end)
+    
+    ResetButtonWrapper.MouseLeave:Connect(function()
+        if resetVisible then
+            createTween(KeyMain.Input.Reset, TweenInfo.new(0.25), {
+                ImageTransparency = 0.5
+            }):Play()
+        end
     end)
 
     KeyMain.Input.InputBox.FocusLost:Connect(function(EnterPressed)
@@ -473,19 +660,87 @@ function KeySystem:SetupInputHandlers(KeyMain, Settings)
     end)
 
     KeyMain.HideP.MouseButton1Click:Connect(function()
+        removeCaret()
+        
         if Hidden then
+            createTween(KeyMain.HideP, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+            task.wait(0.15)
+            
+            KeyMain.HideP.Image = originalEyeImage
+            KeyMain.HideP.ImageRectSize = originalEyeRectSize
+            KeyMain.HideP.ImageRectOffset = originalEyeRectOffset
+            
+            createTween(KeyMain.HideP, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
+            
             createTween(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
             createTween(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
             Hidden = false
+            
+            KeyMain.Input.VisibilityNotification.Text = "(key visibility: on)"
         else
+            createTween(KeyMain.HideP, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+            task.wait(0.15)
+            
+            KeyMain.HideP.Image = "rbxassetid://16898613353"
+            KeyMain.HideP.ImageRectSize = Vector2.new(48, 48)
+            KeyMain.HideP.ImageRectOffset = Vector2.new(820, 514)
+            
+            createTween(KeyMain.HideP, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
+            
             createTween(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
             createTween(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
             Hidden = true
+            
+            if KeyMain.Input.InputBox:IsFocused() and #KeyMain.Input.InputBox.Text == 0 then
+                createCaret()
+            end
+            
+            KeyMain.Input.VisibilityNotification.Text = "(key visibility: hidden)"
         end
+        
+        KeyMain.Input.VisibilityNotification.Visible = true
+        createTween(KeyMain.Input.VisibilityNotification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        
+        spawn(function()
+            task.wait(1.5)
+            createTween(KeyMain.Input.VisibilityNotification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            task.wait(0.3)
+            KeyMain.Input.VisibilityNotification.Visible = false
+        end)
+        
+        spawn(function()
+            local visibilityPrefPath = ArrayFieldFolder .. '/Key System' .. '/visibility_pref' .. ConfigurationExtension
+            writefile(visibilityPrefPath, tostring(Hidden))
+        end)
     end)
 
     KeyMain.Hide.MouseButton1Click:Connect(function()
+        removeCaret()
         self:AnimateOut(KeyMain, Settings)
     end)
 end
 return KeySystem
+--[[
+KeySystem:CreateKeyUI({
+    Title = "Epic Hub V3",
+    Subtitle = "This script is protected with a key system.",
+    Note = "To get the key join our discord sevrer!",
+    Keys = {"Hello123", "PASSWORD"},
+    SaveKey = true,
+    FileName = "My_ScriptHub",
+    GrabKeyFromSite = {
+        Enabled = false,
+        KeyDestination = "https://keysystem.com"
+    },
+    VIP = {
+        Enabled = false,
+        PastebinURL = "https://pastebin.com/raw/something",
+        LocalList = {}
+    },
+    Action = {
+        Link = "https://discord.gg/WDbJ5wE2cR",
+    },
+    Callback = function()
+        print("Hi")
+            end
+})]]
