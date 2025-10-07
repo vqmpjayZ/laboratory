@@ -1,4 +1,4 @@
--- test version
+-- test version: 1
 local KeySystem = {}
 
 local UserInputService = game:GetService('UserInputService')
@@ -268,7 +268,7 @@ function KeySystem:CreateKeyUI(Settings)
     KeyMain.Actions.Template.TextTransparency = 1
     KeyMain.Actions.TemplateH.TextTransparency = 1
     KeyMain.Actions.Template.TextTransparency = 1
-    KeyMain.Input.Reset.TextTransparency = 1
+    KeyMain.Input.Reset.ImageTransparency = 1
 
     if Settings.Action then
         local Action = KeyMain.Actions.Template
