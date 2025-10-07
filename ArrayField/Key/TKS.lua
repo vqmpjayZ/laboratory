@@ -1,4 +1,4 @@
-
+-- test version
 local KeySystem = {}
 
 local UserInputService = game:GetService('UserInputService')
@@ -266,6 +266,9 @@ function KeySystem:CreateKeyUI(Settings)
     KeyMain.Hide.ImageTransparency = 1
     KeyMain.HideP.ImageTransparency = 1
     KeyMain.Actions.Template.TextTransparency = 1
+    KeyMain.Actions.TemplateH.TextTransparency = 1
+    KeyMain.Actions.Template.TextTransparency = 1
+    KeyMain.Input.Reset.TextTransparency = 1
 
     if Settings.Action then
         local Action = KeyMain.Actions.Template
@@ -285,7 +288,7 @@ function KeySystem:CreateKeyUI(Settings)
         local HWIDButton = KeyMain.Actions.TemplateH
         HWIDButton.Text = 'Click here to copy your HWID'
         HWIDButton.Visible = true
-        
+
         HWIDButton.Parent = KeyMain.Actions
 
         HWIDButton.Font = Action.Font
