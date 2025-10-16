@@ -1,4 +1,4 @@
---Version: 2BA
+-- version: 2BC
 local KeySystem = {}
 
 local UserInputService = game:GetService('UserInputService')
@@ -186,26 +186,24 @@ function KeySystem:CreateKeyUI(Settings)
             local savedKey = readfile(keyFilePath)
             if savedKey and #savedKey > 0 then
                 if Settings.GrabKeyFromSite.Enabled then
-                    spawn(function()
-                        local hwid = GetCustomHWID()
-                        local encodedHWID = HttpService:UrlEncode(hwid)
-                        local createURL = Settings.GrabKeyFromSite.KeyDestination .. encodedHWID
+                    local hwid = GetCustomHWID()
+                    local encodedHWID = HttpService:UrlEncode(hwid)
+                    local createURL = Settings.GrabKeyFromSite.KeyDestination .. encodedHWID
 
-                        local success, keyLink = pcall(function()
-                            return game:HttpGet(createURL)
+                    local success, keyLink = pcall(function()
+                        return game:HttpGet(createURL)
+                    end)
+
+                    if success and type(keyLink) == "string" then
+                        local keySuccess, currentKey = pcall(function()
+                            return game:HttpGet(keyLink):gsub("[%c%s]", "")
                         end)
 
-                        if success and type(keyLink) == "string" then
-                            local keySuccess, currentKey = pcall(function()
-                                return game:HttpGet(keyLink):gsub("[%c%s]", "")
-                            end)
-
-                            if keySuccess and currentKey and #currentKey > 5 and savedKey == currentKey then
-                                Settings.Callback()
-                                return
-                            end
+                        if keySuccess and currentKey and #currentKey > 5 and savedKey == currentKey then
+                            Settings.Callback()
+                            return
                         end
-                    end)
+                    end
                 else
                     for _, key in ipairs(Settings.Keys) do
                         if savedKey == key then
@@ -466,9 +464,9 @@ function KeySystem:AnimateIn(KeyMain, Settings, originalEyeImage, originalEyeRec
         createTween(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         createTween(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         createTween(KeyMain.Actions.Template, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-        local CopyHWID = KeyMain.Actions:FindFirstChild("CopyHWID")
-        if CopyHWID then
-            createTween(CopyHWID, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        local TemplateH = KeyMain.Actions:FindFirstChild("TemplateH")
+        if TemplateH then
+            createTween(TemplateH, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         end
         task.wait(0.15)
         createTween(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
@@ -496,9 +494,9 @@ function KeySystem:AnimateOut(KeyMain, Settings, callback)
         createTween(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
         createTween(KeyMain.Input.Reset, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
         createTween(KeyMain.Input.Caret, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-        local CopyHWID = KeyMain.Actions:FindFirstChild("CopyHWID")
-        if CopyHWID then
-            createTween(CopyHWID, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+        local TemplateH = KeyMain.Actions:FindFirstChild("TemplateH")
+        if TemplateH then
+            createTween(TemplateH, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
         end
         task.wait(0.51)
         if callback then
@@ -720,27 +718,3 @@ function KeySystem:SetupInputHandlers(KeyMain, Settings, originalEyeImage, origi
     end)
 end
 return KeySystem
---[[
-KeySystem:CreateKeyUI({
-    Title = "Epic Hub V3",
-    Subtitle = "This script is protected with a key system.",
-    Note = "To get the key join our discord sevrer!",
-    Keys = {"Hello123", "PASSWORD"},
-    SaveKey = true,
-    FileName = "My_ScriptHub",
-    GrabKeyFromSite = {
-        Enabled = false,
-        KeyDestination = "https://keysystem.com"
-    },
-    VIP = {
-        Enabled = false,
-        PastebinURL = "https://pastebin.com/raw/something",
-        LocalList = {}
-    },
-    Action = {
-        Link = "https://discord.gg/WDbJ5wE2cR",
-    },
-    Callback = function()
-        print("Hi")
-            end
-})]]
