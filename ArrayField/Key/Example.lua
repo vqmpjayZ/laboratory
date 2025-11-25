@@ -70,11 +70,11 @@ KeySystem:CreateKeyUI({
     
     GrabKeyFromSite = {
         Enabled = true,
-        KeyDestination = "https://vadrifts.onrender.com/create?hwid="
+        KeyDestination = "https://yourserver.com/create?hwid=" -- set up your hwid system
     },
     
     Action = {
-        Link = "https://vadrifts.onrender.com"
+        Link = "" -- adwebsite link here
     },
     
     Callback = function()
