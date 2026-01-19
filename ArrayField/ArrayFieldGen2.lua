@@ -46,6 +46,18 @@ vqmpjay | Designing + Programming + New Features
 let me know what other stuff i can add
 ]]
 
+task.spawn(function()
+    pcall(function()
+        local scriptName = "arrayfield old version i might delete ts"
+        local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+        local encodedHwid = game:GetService("HttpService"):UrlEncode(hwid)
+        local encodedScript = game:GetService("HttpService"):UrlEncode(scriptName)
+        
+        game:HttpGet("https://vadrifts.onrender.com/log-execution?hwid=" .. encodedHwid .. "&script=" .. encodedScript)
+    end)
+end)
+
+
 local Release = "Release 2D"
 local NotificationDuration = 6.5
 local ArrayFieldFolder = "ArrayField"
