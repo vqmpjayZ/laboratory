@@ -6292,6 +6292,13 @@ end
             Label.Title.TextWrapped = true
             Label.Visible = true
 
+            local function updateLabelSize()
+                local textBounds = Label.Title.TextBounds
+                local padding = 20
+                local newHeight = math.max(40, textBounds.Y + padding)
+                Label.Size = UDim2.new(Label.Size.X.Scale, Label.Size.X.Offset, 0, newHeight)
+            end
+
             local bgColors = {
                 warn = {bg = Color3.fromRGB(180, 130, 30), text = Color3.fromRGB(255, 255, 255)},
                 success = {bg = Color3.fromRGB(50, 140, 50), text = Color3.fromRGB(255, 255, 255)},
@@ -6376,6 +6383,9 @@ end
             Label.UIStroke.Transparency = 1
             Label.Title.TextTransparency = 1
 
+            task.wait()
+            updateLabelSize()
+
             TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
             TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
             TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
@@ -6391,6 +6401,9 @@ end
                 end
 
                 Label.Title.Text = newText
+
+                task.wait()
+                updateLabelSize()
 
                 if newBg then
                     if bgColors[newBg] then
@@ -6457,14 +6470,21 @@ end
                 error = {bg = Color3.fromRGB(160, 50, 50), title = Color3.fromRGB(255, 255, 255), content = Color3.fromRGB(240, 240, 240)}
             }
 
+            local hasCustomBg = false
+
             if SelectedTheme then
                 Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
                 Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
                 Paragraph.Title.TextColor3 = SelectedTheme.TextColor
-                Paragraph.Content.TextColor3 = SelectedTheme.TextColor
+
+                local contentColor = SelectedTheme.TextColor
+                Paragraph.Content.TextColor3 = Color3.fromRGB(
+                    math.max(0, contentColor.R * 255 - 40),
+                    math.max(0, contentColor.G * 255 - 40),
+                    math.max(0, contentColor.B * 255 - 40)
+                )
             end
 
-            local hasCustomBg = false
             if ParagraphSettings.Background then
                 local bg = ParagraphSettings.Background
                 if bgColors[bg] then
@@ -6579,7 +6599,7 @@ end
             end
 
             TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7,Enum.EasingStyle.Quint), {Transparency = 0}):Play()
             TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             if iconLabel then
@@ -6589,6 +6609,66 @@ end
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title or Paragraph.Title.Text
                 Paragraph.Content.Text = NewParagraphSettings.Content or Paragraph.Content.Text
+
+                if NewParagraphSettings.Background then
+                    local bg = NewParagraphSettings.Background
+                    if bgColors[bg] then
+                        Paragraph.BackgroundColor3 = bgColors[bg].bg
+                        Paragraph.Title.TextColor3 = bgColors[bg].title
+                        Paragraph.Content.TextColor3 = bgColors[bg].content
+                        if iconLabel then iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255) end
+                        Paragraph:SetAttribute("HasCustomBackground", true)
+                        Paragraph:SetAttribute("CustomBgR", bgColors[bg].bg.R)
+                        Paragraph:SetAttribute("CustomBgG", bgColors[bg].bg.G)
+                        Paragraph:SetAttribute("CustomBgB", bgColors[bg].bg.B)
+                        Paragraph:SetAttribute("CustomTitleR", bgColors[bg].title.R)
+                        Paragraph:SetAttribute("CustomTitleG", bgColors[bg].title.G)
+                        Paragraph:SetAttribute("CustomTitleB", bgColors[bg].title.B)
+                        Paragraph:SetAttribute("CustomContentR", bgColors[bg].content.R)
+                        Paragraph:SetAttribute("CustomContentG", bgColors[bg].content.G)
+                        Paragraph:SetAttribute("CustomContentB", bgColors[bg].content.B)
+                    elseif string.match(tostring(bg), "^#%x%x%x%x%x%x$") then
+                        local r, g, b = string.match(bg, "^#(%x%x)(%x%x)(%x%x)$")
+                        local bgColor = Color3.fromRGB(tonumber(r, 16), tonumber(g, 16), tonumber(b, 16))
+                        Paragraph.BackgroundColor3 = bgColor
+                        Paragraph.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        Paragraph.Content.TextColor3 = Color3.fromRGB(240, 240, 240)
+                        if iconLabel then iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255) end
+                        Paragraph:SetAttribute("HasCustomBackground", true)
+                        Paragraph:SetAttribute("CustomBgR", bgColor.R)
+                        Paragraph:SetAttribute("CustomBgG", bgColor.G)
+                        Paragraph:SetAttribute("CustomBgB", bgColor.B)
+                        Paragraph:SetAttribute("CustomTitleR", 1)
+                        Paragraph:SetAttribute("CustomTitleG", 1)
+                        Paragraph:SetAttribute("CustomTitleB", 1)
+                        Paragraph:SetAttribute("CustomContentR", 240/255)
+                        Paragraph:SetAttribute("CustomContentG", 240/255)
+                        Paragraph:SetAttribute("CustomContentB", 240/255)
+                    end
+                elseif NewParagraphSettings.Background == nil and Paragraph:GetAttribute("HasCustomBackground") then
+                    Paragraph:SetAttribute("HasCustomBackground", nil)
+                    Paragraph:SetAttribute("CustomBgR", nil)
+                    Paragraph:SetAttribute("CustomBgG", nil)
+                    Paragraph:SetAttribute("CustomBgB", nil)
+                    Paragraph:SetAttribute("CustomTitleR", nil)
+                    Paragraph:SetAttribute("CustomTitleG", nil)
+                    Paragraph:SetAttribute("CustomTitleB", nil)
+                    Paragraph:SetAttribute("CustomContentR", nil)
+                    Paragraph:SetAttribute("CustomContentG", nil)
+                    Paragraph:SetAttribute("CustomContentB", nil)
+                    if SelectedTheme then
+                        Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+                        Paragraph.Title.TextColor3 = SelectedTheme.TextColor
+                        local contentColor = SelectedTheme.TextColor
+                        Paragraph.Content.TextColor3 = Color3.fromRGB(
+                            math.max(0, contentColor.R * 255 - 40),
+                            math.max(0, contentColor.G * 255 - 40),
+                            math.max(0, contentColor.B * 255 - 40)
+                        )
+                        if iconLabel then iconLabel.ImageColor3 = SelectedTheme.TextColor end
+                    end
+                end
+
                 UpdateParagraphSize()
             end
 
@@ -7650,4 +7730,5 @@ end
 
     return Window
 end
+return ArrayFieldLibrary
 return ArrayFieldLibrary
