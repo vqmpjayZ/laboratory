@@ -1,3 +1,43 @@
+--[[
+
+ArrayField Interface Suite
+by vqmpjay
+
+Original by Sirius
+
+-------------------------------
+vqmpjay | Designing + Programming + New Features
+
+]]
+
+--[[
+
+# INTRODUCING GEN 3 OF ARRAYFIELD
+- Slick new UI (- size; + settings; + Drag bar) COMPLETELY RE-WORKED
+- Theme Changer, Keybind Changer, Configuration Saving toggle ALL in Settings now!
+
+# Say goodbye to issues or bugs!
+- We've fixed every issue that's ever overcame any ArrayField version and we've improved performence to everything!
+
+# Brand-New features
+- NotePrompt
+- CreateImage
+- CreateSeparator
+- Categories
+
+We've added Descriptions to all use-able elements apart for the Dropdown and Color-picker.
+We've Added Backgrounds to Paragraphs and labels!
+We've Added RichText support to more text-related things!
+You can now add icons to Paragraphs!
+
+Useage Example at https://raw.githubusercontent.com/vqmpjayZ/laboratory/refs/heads/main/ArrayField/ArrayField_UsageExample.lua
+Docs coming soon hopefully
+
+Change Logs (dd/mm/yy):
+// [19/1/2026] Released!
+
+]]
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
