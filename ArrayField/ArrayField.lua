@@ -30,6 +30,9 @@ We've Added Backgrounds to Paragraphs and labels!
 We've Added RichText support to more text-related things!
 You can now add icons to Paragraphs!
 
+Useage Example at https://raw.githubusercontent.com/vqmpjayZ/laboratory/refs/heads/main/ArrayField/ArrayField_UsageExample.lua
+Docs coming soon hopefully
+
 Change Logs:
 // [19.1.2026] Released!
 
