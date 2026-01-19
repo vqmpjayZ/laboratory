@@ -33,8 +33,8 @@ You can now add icons to Paragraphs!
 Useage Example at https://raw.githubusercontent.com/vqmpjayZ/laboratory/refs/heads/main/ArrayField/ArrayField_UsageExample.lua
 Docs coming soon hopefully
 
-Change Logs:
-// [19.1.2026] Released!
+Change Logs (dd/mm/yy):
+// [19/1/2026] Released!
 
 ]]
 
