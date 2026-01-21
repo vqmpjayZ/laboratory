@@ -2056,13 +2056,13 @@ local function ApplyTheme()
         if NotePrompt:FindFirstChild("Close") then
             NotePrompt.Close.ImageColor3 = SelectedTheme.NotePromptClose
         end
-        if NotePrompt:FindFirstChild("Load") then
+        --[[if NotePrompt:FindFirstChild("Load") then
             NotePrompt.Load.BackgroundColor3 = SelectedTheme.NotePromptButtonBackground
             NotePrompt.Load.TextColor3 = SelectedTheme.NotePromptButtonText
             if NotePrompt.Load:FindFirstChild("UIStroke") then
                 NotePrompt.Load.UIStroke.Color = SelectedTheme.NotePromptButtonStroke
             end
-        end
+        end]]
     end
 
     DragCosmetic.BackgroundColor3 = SelectedTheme.DragCosmetic
