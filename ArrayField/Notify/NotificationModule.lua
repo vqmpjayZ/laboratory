@@ -1,4 +1,3 @@
--- Version AAAC
 local NotificationModule = {}
 
 local TweenService = game:GetService("TweenService")
@@ -230,14 +229,12 @@ local neon = (function()
 end)()
 
 local function LoadUI()
-    local objects = game:GetObjects("rbxassetid://111409739625301")
+    local objects = game:GetObjects("rbxassetid://122378503168013")
     ArrayField = objects[1]
     ArrayField.Parent = (gethui and gethui()) or PlayerGui
 
     if ArrayField:IsA("ScreenGui") then
         ArrayField.ResetOnSpawn = false
-        ArrayField.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-        ArrayField.IgnoreGuiInset = true
         ArrayField.Enabled = true
     end
 
@@ -249,14 +246,6 @@ local function LoadUI()
                 Notifications = v
                 break
             end
-        end
-    end
-
-    if Notifications then
-        local template = Notifications:FindFirstChild("Template")
-        if template then
-            template.AnchorPoint = Vector2.new(1, 1)
-            template.Position = UDim2.new(1, 20, 1, 20)
         end
     end
 end
@@ -291,8 +280,6 @@ function NotificationModule:Notify(NotificationSettings)
         Notification.Parent = Notifications
         Notification.Name = NotificationSettings.Title or "Unknown Title"
         Notification.Visible = true
-        Notification.AnchorPoint = Vector2.new(1, 1)
-        Notification.Position = UDim2.new(1, 20, 1, 20)
 
         local blurlight = Instance.new("DepthOfFieldEffect", Lighting)
         blurlight.Enabled = true
@@ -377,7 +364,7 @@ function NotificationModule:Notify(NotificationSettings)
 
         TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 91)}):Play()
         TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
-        Notification:TweenPosition(UDim2.new(1, -20, 1, -20), 'Out', 'Quint', 0.8, true)
+        Notification:TweenPosition(UDim2.new(0.5, 0, 0.915, 0), 'Out', 'Quint', 0.8, true)
 
         wait(0.3)
 
