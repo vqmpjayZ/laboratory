@@ -1,3 +1,4 @@
+-- vAAAA
 local NotificationModule = {}
 
 local TweenService = game:GetService("TweenService")
@@ -11,12 +12,6 @@ local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
 local NotificationDuration = 5
-
-local SelectedTheme = {
-    Background = Color3.fromRGB(30, 30, 30),
-    TextColor = Color3.fromRGB(255, 255, 255),
-    NotificationActionsBackground = Color3.fromRGB(50, 50, 50),
-}
 
 local NotificationsModuleGui = nil
 local Notifications = nil
@@ -265,12 +260,6 @@ local function LoadUI()
     end
 end
 
-function NotificationModule:SetTheme(theme)
-    for key, value in pairs(theme) do
-        SelectedTheme[key] = value
-    end
-end
-
 function NotificationModule:SetDuration(duration)
     NotificationDuration = duration
 end
@@ -311,8 +300,6 @@ function NotificationModule:Notify(NotificationSettings)
                 for _, Action in pairs(NotificationSettings.Actions) do
                     ActionCompleted = false
                     local NewAction = Notification.Actions.Template:Clone()
-                    NewAction.BackgroundColor3 = SelectedTheme.NotificationActionsBackground
-                    NewAction.TextColor3 = SelectedTheme.TextColor
                     NewAction.Name = Action.Name
                     NewAction.Visible = true
                     NewAction.Parent = Notification.Actions
@@ -332,22 +319,14 @@ function NotificationModule:Notify(NotificationSettings)
             end
         end
 
-        Notification.BackgroundColor3 = SelectedTheme.Background
-
         if Notification:FindFirstChild("Title") then
             Notification.Title.Text = NotificationSettings.Title or "Unknown"
             Notification.Title.TextTransparency = 1
-            Notification.Title.TextColor3 = SelectedTheme.TextColor
         end
 
         if Notification:FindFirstChild("Description") then
             Notification.Description.Text = NotificationSettings.Content or "Unknown"
             Notification.Description.TextTransparency = 1
-            Notification.Description.TextColor3 = SelectedTheme.TextColor
-        end
-
-        if Notification:FindFirstChild("Icon") then
-            Notification.Icon.ImageColor3 = SelectedTheme.TextColor
         end
 
         if NotificationSettings.Image and Notification:FindFirstChild("Icon") then
