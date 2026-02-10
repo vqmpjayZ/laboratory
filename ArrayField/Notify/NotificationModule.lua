@@ -1,4 +1,3 @@
--- Version AAAA
 local NotificationModule = {}
 
 local TweenService = game:GetService("TweenService")
@@ -257,6 +256,13 @@ local function LoadUI()
     end
 
     Notifications = NotificationsModuleGui:FindFirstChild("Notifications", true)
+
+    if Notifications then
+        local template = Notifications:FindFirstChild("Template")
+        if template then
+            template.Visible = false
+        end
+    end
 end
 
 function NotificationModule:SetTheme(theme)
@@ -332,18 +338,12 @@ function NotificationModule:Notify(NotificationSettings)
             Notification.Title.Text = NotificationSettings.Title or "Unknown"
             Notification.Title.TextTransparency = 1
             Notification.Title.TextColor3 = SelectedTheme.TextColor
-            Notification.Title.TextScaled = true
-            Notification.Title.Size = UDim2.new(0, 250, 0, 15)
-            Notification.Title.Position = UDim2.new(0, 165, 0, 21)
         end
 
         if Notification:FindFirstChild("Description") then
             Notification.Description.Text = NotificationSettings.Content or "Unknown"
             Notification.Description.TextTransparency = 1
             Notification.Description.TextColor3 = SelectedTheme.TextColor
-            Notification.Description.TextWrapped = true
-            Notification.Description.Size = UDim2.new(0, 260, 0, 55)
-            Notification.Description.Position = UDim2.new(0, 147, 0, 60)
         end
 
         if Notification:FindFirstChild("Icon") then
