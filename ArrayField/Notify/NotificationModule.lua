@@ -1,4 +1,4 @@
--- Version AAAA
+-- Version AAAB
 local NotificationModule = {}
 
 local TweenService = game:GetService("TweenService")
@@ -19,8 +19,8 @@ local SelectedTheme = {
     NotificationActionsBackground = Color3.fromRGB(50, 50, 50),
 }
 
-local ScreenGui = nil
-local NotificationsFolder = nil
+local ArrayField = nil
+local Notifications = nil
 
 local neon = (function()
     local module = {}
@@ -229,117 +229,39 @@ local neon = (function()
     return module
 end)()
 
-local function CreateUI()
-    ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "ArrayFieldNotifications"
-    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.ResetOnSpawn = false
-    ScreenGui.IgnoreGuiInset = true
-    ScreenGui.Parent = (gethui and gethui()) or PlayerGui
+local function LoadUI()
+    local objects = game:GetObjects("rbxassetid://111409739625301")
+    ArrayField = objects[1]
+    ArrayField.Parent = (gethui and gethui()) or PlayerGui
 
-    NotificationsFolder = Instance.new("Folder")
-    NotificationsFolder.Name = "Notifications"
-    NotificationsFolder.Parent = ScreenGui
+    if ArrayField:IsA("ScreenGui") then
+        ArrayField.ResetOnSpawn = false
+        ArrayField.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        ArrayField.IgnoreGuiInset = true
+        ArrayField.Enabled = true
+    end
 
-    local Template = Instance.new("Frame")
-    Template.Name = "Template"
-    Template.AnchorPoint = Vector2.new(0.5, 0.5)
-    Template.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    Template.BackgroundTransparency = 1
-    Template.BorderSizePixel = 0
-    Template.Position = UDim2.new(0.5, 0, 1.1, 0)
-    Template.Size = UDim2.new(0, 295, 0, 91)
-    Template.ClipsDescendants = true
-    Template.Visible = false
-    Template.Parent = NotificationsFolder
+    local function enableVisibility(instance)
+        for _, child in pairs(instance:GetDescendants()) do
+            if child:IsA("GuiObject") then
+                if child.Name == "Template" then
+                    child.Visible = false
+                end
+            end
+        end
+    end
+    enableVisibility(ArrayField)
 
-    local TemplateCorner = Instance.new("UICorner")
-    TemplateCorner.CornerRadius = UDim.new(0, 10)
-    TemplateCorner.Parent = Template
+    Notifications = ArrayField:FindFirstChild("Notifications", true)
 
-    local TemplateStroke = Instance.new("UIStroke")
-    TemplateStroke.Color = Color3.fromRGB(60, 60, 60)
-    TemplateStroke.Thickness = 1
-    TemplateStroke.Transparency = 0.5
-    TemplateStroke.Parent = Template
-
-    local BlurModule = Instance.new("Frame")
-    BlurModule.Name = "BlurModule"
-    BlurModule.BackgroundTransparency = 1
-    BlurModule.Size = UDim2.new(1, 0, 1, 0)
-    BlurModule.ZIndex = 0
-    BlurModule.Parent = Template
-
-    local Icon = Instance.new("ImageLabel")
-    Icon.Name = "Icon"
-    Icon.BackgroundTransparency = 1
-    Icon.Position = UDim2.new(0, 15, 0, 18)
-    Icon.Size = UDim2.new(0, 40, 0, 40)
-    Icon.Image = "rbxassetid://3944680095"
-    Icon.ImageTransparency = 1
-    Icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    Icon.ScaleType = Enum.ScaleType.Fit
-    Icon.Parent = Template
-
-    local Title = Instance.new("TextLabel")
-    Title.Name = "Title"
-    Title.BackgroundTransparency = 1
-    Title.Position = UDim2.new(0, 65, 0, 21)
-    Title.Size = UDim2.new(0, 215, 0, 15)
-    Title.Font = Enum.Font.GothamBold
-    Title.Text = "Notification"
-    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextSize = 14
-    Title.TextTransparency = 1
-    Title.TextXAlignment = Enum.TextXAlignment.Left
-    Title.TextScaled = true
-    Title.Parent = Template
-
-    local Description = Instance.new("TextLabel")
-    Description.Name = "Description"
-    Description.BackgroundTransparency = 1
-    Description.Position = UDim2.new(0, 65, 0, 40)
-    Description.Size = UDim2.new(0, 215, 0, 40)
-    Description.Font = Enum.Font.Gotham
-    Description.Text = "Description"
-    Description.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Description.TextSize = 12
-    Description.TextTransparency = 1
-    Description.TextWrapped = true
-    Description.TextXAlignment = Enum.TextXAlignment.Left
-    Description.TextYAlignment = Enum.TextYAlignment.Top
-    Description.Parent = Template
-
-    local Actions = Instance.new("Frame")
-    Actions.Name = "Actions"
-    Actions.BackgroundTransparency = 1
-    Actions.Position = UDim2.new(0, 15, 0, 88)
-    Actions.Size = UDim2.new(1, -30, 0, 40)
-    Actions.Parent = Template
-
-    local ActionsLayout = Instance.new("UIListLayout")
-    ActionsLayout.FillDirection = Enum.FillDirection.Horizontal
-    ActionsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    ActionsLayout.Padding = UDim.new(0, 8)
-    ActionsLayout.Parent = Actions
-
-    local ActionTemplate = Instance.new("TextButton")
-    ActionTemplate.Name = "Template"
-    ActionTemplate.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    ActionTemplate.BackgroundTransparency = 1
-    ActionTemplate.Size = UDim2.new(0, 80, 0, 36)
-    ActionTemplate.Font = Enum.Font.GothamSemibold
-    ActionTemplate.Text = "Action"
-    ActionTemplate.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ActionTemplate.TextSize = 13
-    ActionTemplate.TextTransparency = 1
-    ActionTemplate.AutoButtonColor = false
-    ActionTemplate.Visible = false
-    ActionTemplate.Parent = Actions
-
-    local ActionCorner = Instance.new("UICorner")
-    ActionCorner.CornerRadius = UDim.new(0, 7)
-    ActionCorner.Parent = ActionTemplate
+    if not Notifications then
+        for _, v in pairs(ArrayField:GetDescendants()) do
+            if v.Name == "Notifications" then
+                Notifications = v
+                break
+            end
+        end
+    end
 end
 
 function NotificationModule:SetTheme(theme)
@@ -353,26 +275,23 @@ function NotificationModule:SetDuration(duration)
 end
 
 function NotificationModule:Init()
-    if not ScreenGui then
-        CreateUI()
+    if not ArrayField then
+        LoadUI()
     end
     return self
 end
 
 function NotificationModule:Notify(NotificationSettings)
     spawn(function()
-        if not ScreenGui then
-            CreateUI()
+        if not ArrayField then
+            LoadUI()
         end
 
-        if not NotificationsFolder then return end
-
-        local Template = NotificationsFolder:FindFirstChild("Template")
-        if not Template then return end
+        if not Notifications or not Notifications:FindFirstChild("Template") then return end
 
         local ActionCompleted = true
-        local Notification = Template:Clone()
-        Notification.Parent = NotificationsFolder
+        local Notification = Notifications.Template:Clone()
+        Notification.Parent = Notifications
         Notification.Name = NotificationSettings.Title or "Unknown Title"
         Notification.Visible = true
 
@@ -419,8 +338,8 @@ function NotificationModule:Notify(NotificationSettings)
             Notification.Title.TextTransparency = 1
             Notification.Title.TextColor3 = SelectedTheme.TextColor
             Notification.Title.TextScaled = true
-            Notification.Title.Size = UDim2.new(0, 215, 0, 15)
-            Notification.Title.Position = UDim2.new(0, 65, 0, 21)
+            Notification.Title.Size = UDim2.new(0, 250, 0, 15)
+            Notification.Title.Position = UDim2.new(0, 165, 0, 21)
         end
 
         if Notification:FindFirstChild("Description") then
@@ -428,8 +347,8 @@ function NotificationModule:Notify(NotificationSettings)
             Notification.Description.TextTransparency = 1
             Notification.Description.TextColor3 = SelectedTheme.TextColor
             Notification.Description.TextWrapped = true
-            Notification.Description.Size = UDim2.new(0, 215, 0, 40)
-            Notification.Description.Position = UDim2.new(0, 65, 0, 40)
+            Notification.Description.Size = UDim2.new(0, 260, 0, 55)
+            Notification.Description.Position = UDim2.new(0, 147, 0, 60)
         end
 
         if Notification:FindFirstChild("Icon") then
@@ -476,7 +395,7 @@ function NotificationModule:Notify(NotificationSettings)
 
         TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
 
-        if neon and Notification:FindFirstChild("BlurModule") then
+        if neon and ArrayField.Name == "ArrayField" and Notification:FindFirstChild("BlurModule") then
             neon:BindFrame(Notification.BlurModule, {
                 Transparency = 0.98;
                 BrickColor = BrickColor.new("Institutional white");
@@ -563,10 +482,10 @@ function NotificationModule:Notify(NotificationSettings)
 end
 
 function NotificationModule:Destroy()
-    if ScreenGui then
-        ScreenGui:Destroy()
-        ScreenGui = nil
-        NotificationsFolder = nil
+    if ArrayField then
+        ArrayField:Destroy()
+        ArrayField = nil
+        Notifications = nil
     end
 end
 
