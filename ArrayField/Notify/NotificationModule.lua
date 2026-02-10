@@ -15,25 +15,21 @@ local NotificationDuration = 5
 local NotificationsModuleGui = nil
 local Notifications = nil
 
-local Icons = {}
-local iconsLoaded = false
+local Icons = nil
 
 local function loadIcons()
-    if iconsLoaded then return end
+    if Icons then return end
     local success, result = pcall(function()
-        return game:HttpGet("https://raw.githubusercontent.com/latte-soft/lucide-roblox/master/src/modules/icons.lua")
+        return loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
     end)
     if success then
-        local fn = loadstring(result)
-        if fn then
-            Icons = fn()
-        end
+        Icons = result
     end
-    iconsLoaded = true
 end
 
 local function getIcon(name)
-    if not iconsLoaded then loadIcons() end
+    if not Icons then loadIcons() end
+    if not Icons then return nil end
     name = string.match(string.lower(name), "^%s*(.*)%s*$")
     local sizedicons = Icons['48px']
     if not sizedicons then return nil end
@@ -50,7 +46,7 @@ local function getIcon(name)
     }
 end
 
-local neon = (function()
+local neon = (function() --open sourced neon module
     local module = {}
 
     do
