@@ -17,18 +17,16 @@ local Notifications = nil
 
 local Icons = nil
 
-local function loadIcons()
-    if Icons then return end
+spawn(function()
     local success, result = pcall(function()
         return loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
     end)
     if success then
         Icons = result
     end
-end
+end)
 
 local function getIcon(name)
-    if not Icons then loadIcons() end
     if not Icons then return nil end
     name = string.match(string.lower(name), "^%s*(.*)%s*$")
     local sizedicons = Icons['48px']
@@ -46,7 +44,7 @@ local function getIcon(name)
     }
 end
 
-local neon = (function() --open sourced neon module
+local neon = (function()
     local module = {}
 
     do
@@ -311,8 +309,49 @@ function NotificationModule:Notify(NotificationSettings)
 
         local ActionCompleted = true
         local Notification = Notifications.Template:Clone()
-        Notification.Parent = Notifications
         Notification.Name = NotificationSettings.Title or "Unknown Title"
+
+        Notification.Size = UDim2.new(0, 260, 0, 80)
+        Notification.BackgroundTransparency = 1
+
+        if Notification:FindFirstChild("Title") then
+            Notification.Title.Text = NotificationSettings.Title or "Unknown"
+            Notification.Title.TextTransparency = 1
+        end
+
+        if Notification:FindFirstChild("Description") then
+            Notification.Description.Text = NotificationSettings.Content or "Unknown"
+            Notification.Description.TextTransparency = 1
+        end
+
+        if Notification:FindFirstChild("Icon") then
+            Notification.Icon.ImageTransparency = 1
+        end
+
+        if NotificationSettings.Image and Notification:FindFirstChild("Icon") then
+            pcall(function()
+                if type(NotificationSettings.Image) == "string" and not tonumber(NotificationSettings.Image) then
+                    local asset = getIcon(NotificationSettings.Image)
+                    if asset then
+                        Notification.Icon.Image = "rbxassetid://" .. asset.id
+                        Notification.Icon.ImageRectOffset = asset.imageRectOffset
+                        Notification.Icon.ImageRectSize = asset.imageRectSize
+                    end
+                else
+                    Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
+                    Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
+                    Notification.Icon.ImageRectSize = Vector2.new(0, 0)
+                end
+            end)
+        else
+            if Notification:FindFirstChild("Icon") then
+                Notification.Icon.Image = "rbxassetid://3944680095"
+                Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
+                Notification.Icon.ImageRectSize = Vector2.new(0, 0)
+            end
+        end
+
+        Notification.Parent = Notifications
         Notification.Visible = true
 
         local blurlight = Instance.new("DepthOfFieldEffect", Lighting)
@@ -348,46 +387,6 @@ function NotificationModule:Notify(NotificationSettings)
                 end
             end
         end
-
-        if Notification:FindFirstChild("Title") then
-            Notification.Title.Text = NotificationSettings.Title or "Unknown"
-            Notification.Title.TextTransparency = 1
-        end
-
-        if Notification:FindFirstChild("Description") then
-            Notification.Description.Text = NotificationSettings.Content or "Unknown"
-            Notification.Description.TextTransparency = 1
-        end
-
-        if NotificationSettings.Image and Notification:FindFirstChild("Icon") then
-            pcall(function()
-                if type(NotificationSettings.Image) == "string" and not tonumber(NotificationSettings.Image) then
-                    local asset = getIcon(NotificationSettings.Image)
-                    if asset then
-                        Notification.Icon.Image = "rbxassetid://" .. asset.id
-                        Notification.Icon.ImageRectOffset = asset.imageRectOffset
-                        Notification.Icon.ImageRectSize = asset.imageRectSize
-                    end
-                else
-                    Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
-                    Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
-                    Notification.Icon.ImageRectSize = Vector2.new(0, 0)
-                end
-            end)
-        else
-            if Notification:FindFirstChild("Icon") then
-                Notification.Icon.Image = "rbxassetid://3944680095"
-                Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
-                Notification.Icon.ImageRectSize = Vector2.new(0, 0)
-            end
-        end
-
-        if Notification:FindFirstChild("Icon") then
-            Notification.Icon.ImageTransparency = 1
-        end
-
-        Notification.Size = UDim2.new(0, 260, 0, 80)
-        Notification.BackgroundTransparency = 1
 
         TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 91)}):Play()
         TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
