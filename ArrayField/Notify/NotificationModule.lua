@@ -1,4 +1,3 @@
---ffs
 local NotificationModule = {}
 
 local TweenService = game:GetService("TweenService")
@@ -233,35 +232,7 @@ local function LoadUI()
     local objects = game:GetObjects("rbxassetid://122378503168013")
     NotificationsModuleGui = objects[1]
     NotificationsModuleGui.Parent = (gethui and gethui()) or PlayerGui
-
-    if NotificationsModuleGui:IsA("ScreenGui") then
-        NotificationsModuleGui.ResetOnSpawn = false
-        NotificationsModuleGui.Enabled = true
-    end
-
-    Notifications = NotificationsModuleGui:FindFirstChild("Notifications")
-
-    if not Notifications then
-        for _, v in pairs(NotificationsModuleGui:GetChildren()) do
-            if v:IsA("Frame") then
-                Notifications = v
-                break
-            end
-        end
-    end
-
-    if not Notifications then
-        for _, v in pairs(NotificationsModuleGui:GetDescendants()) do
-            if v:IsA("Frame") and v:FindFirstChild("Template") then
-                Notifications = v
-                break
-            end
-        end
-    end
-
-    if Notifications then
-        Notifications.Visible = true
-    end
+    Notifications = NotificationsModuleGui:FindFirstChild("Notifications", true)
 end
 
 function NotificationModule:SetTheme(theme)
@@ -287,20 +258,10 @@ function NotificationModule:Notify(NotificationSettings)
             LoadUI()
         end
 
-        if not Notifications then return end
-
-        local Template = nil
-        for _, v in pairs(Notifications:GetChildren()) do
-            if v.Name == "Template" then
-                Template = v
-                break
-            end
-        end
-
-        if not Template then return end
+        if not Notifications or not Notifications:FindFirstChild("Template") then return end
 
         local ActionCompleted = true
-        local Notification = Template:Clone()
+        local Notification = Notifications.Template:Clone()
         Notification.Parent = Notifications
         Notification.Name = NotificationSettings.Title or "Unknown Title"
         Notification.Visible = true
@@ -313,35 +274,18 @@ function NotificationModule:Notify(NotificationSettings)
         blurlight.NearIntensity = 1
         Debris:AddItem(blurlight, 10)
 
-        local ActionsHolder = nil
-        local ActionTemplate = nil
-        for _, v in pairs(Notification:GetDescendants()) do
-            if v.Name == "Actions" then
-                ActionsHolder = v
-            end
-        end
-
-        if ActionsHolder then
-            for _, v in pairs(ActionsHolder:GetChildren()) do
-                if v.Name == "Template" then
-                    ActionTemplate = v
-                    break
-                end
-            end
-        end
-
-        if ActionsHolder and ActionTemplate then
-            ActionTemplate.Visible = false
+        if Notification:FindFirstChild("Actions") and Notification.Actions:FindFirstChild("Template") then
+            Notification.Actions.Template.Visible = false
 
             if NotificationSettings.Actions then
                 for _, Action in pairs(NotificationSettings.Actions) do
                     ActionCompleted = false
-                    local NewAction = ActionTemplate:Clone()
+                    local NewAction = Notification.Actions.Template:Clone()
                     NewAction.BackgroundColor3 = SelectedTheme.NotificationActionsBackground
                     NewAction.TextColor3 = SelectedTheme.TextColor
                     NewAction.Name = Action.Name
                     NewAction.Visible = true
-                    NewAction.Parent = ActionsHolder
+                    NewAction.Parent = Notification.Actions
                     NewAction.Text = Action.Name
                     NewAction.BackgroundTransparency = 1
                     NewAction.TextTransparency = 1
@@ -360,61 +304,44 @@ function NotificationModule:Notify(NotificationSettings)
 
         Notification.BackgroundColor3 = SelectedTheme.Background
 
-        local TitleLabel = nil
-        local DescriptionLabel = nil
-        local IconImage = nil
-        local BlurModule = nil
-
-        for _, v in pairs(Notification:GetChildren()) do
-            if v.Name == "Title" then
-                TitleLabel = v
-            elseif v.Name == "Description" then
-                DescriptionLabel = v
-            elseif v.Name == "Icon" then
-                IconImage = v
-            elseif v.Name == "BlurModule" then
-                BlurModule = v
-            end
+        if Notification:FindFirstChild("Title") then
+            Notification.Title.Text = NotificationSettings.Title or "Unknown"
+            Notification.Title.TextTransparency = 1
+            Notification.Title.TextColor3 = SelectedTheme.TextColor
+            Notification.Title.TextScaled = true
+            Notification.Title.Size = UDim2.new(0, 250, 0, 15)
+            Notification.Title.Position = UDim2.new(0, 165, 0, 21)
         end
 
-        if TitleLabel then
-            TitleLabel.Text = NotificationSettings.Title or "Unknown"
-            TitleLabel.TextTransparency = 1
-            TitleLabel.TextColor3 = SelectedTheme.TextColor
-            TitleLabel.TextScaled = true
-            TitleLabel.Size = UDim2.new(0, 250, 0, 15)
-            TitleLabel.Position = UDim2.new(0, 165, 0, 21)
+        if Notification:FindFirstChild("Description") then
+            Notification.Description.Text = NotificationSettings.Content or "Unknown"
+            Notification.Description.TextTransparency = 1
+            Notification.Description.TextColor3 = SelectedTheme.TextColor
+            Notification.Description.TextWrapped = true
+            Notification.Description.Size = UDim2.new(0, 260, 0, 55)
+            Notification.Description.Position = UDim2.new(0, 147, 0, 60)
         end
 
-        if DescriptionLabel then
-            DescriptionLabel.Text = NotificationSettings.Content or "Unknown"
-            DescriptionLabel.TextTransparency = 1
-            DescriptionLabel.TextColor3 = SelectedTheme.TextColor
-            DescriptionLabel.TextWrapped = true
-            DescriptionLabel.Size = UDim2.new(0, 260, 0, 55)
-            DescriptionLabel.Position = UDim2.new(0, 147, 0, 60)
+        if Notification:FindFirstChild("Icon") then
+            Notification.Icon.ImageColor3 = SelectedTheme.TextColor
         end
 
-        if IconImage then
-            IconImage.ImageColor3 = SelectedTheme.TextColor
-        end
-
-        if NotificationSettings.Image and IconImage then
+        if NotificationSettings.Image and Notification:FindFirstChild("Icon") then
             pcall(function()
-                IconImage.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
-                IconImage.ImageRectOffset = Vector2.new(0, 0)
-                IconImage.ImageRectSize = Vector2.new(0, 0)
+                Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
+                Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
+                Notification.Icon.ImageRectSize = Vector2.new(0, 0)
             end)
         else
-            if IconImage then
-                IconImage.Image = "rbxassetid://3944680095"
-                IconImage.ImageRectOffset = Vector2.new(0, 0)
-                IconImage.ImageRectSize = Vector2.new(0, 0)
+            if Notification:FindFirstChild("Icon") then
+                Notification.Icon.Image = "rbxassetid://3944680095"
+                Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
+                Notification.Icon.ImageRectSize = Vector2.new(0, 0)
             end
         end
 
-        if IconImage then
-            IconImage.ImageTransparency = 1
+        if Notification:FindFirstChild("Icon") then
+            Notification.Icon.ImageTransparency = 1
         end
 
         Notification.Size = UDim2.new(0, 260, 0, 80)
@@ -426,21 +353,21 @@ function NotificationModule:Notify(NotificationSettings)
 
         wait(0.3)
 
-        if IconImage then
-            TweenService:Create(IconImage, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+        if Notification:FindFirstChild("Icon") then
+            TweenService:Create(Notification.Icon, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
         end
-        if TitleLabel then
-            TweenService:Create(TitleLabel, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        if Notification:FindFirstChild("Title") then
+            TweenService:Create(Notification.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         end
-        if DescriptionLabel then
-            TweenService:Create(DescriptionLabel, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
+        if Notification:FindFirstChild("Description") then
+            TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
         end
         wait(0.2)
 
         TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
 
-        if neon and BlurModule then
-            neon:BindFrame(BlurModule, {
+        if neon and Notification:FindFirstChild("BlurModule") then
+            neon:BindFrame(Notification.BlurModule, {
                 Transparency = 0.98;
                 BrickColor = BrickColor.new("Institutional white");
             })
@@ -452,8 +379,8 @@ function NotificationModule:Notify(NotificationSettings)
             wait(0.8)
             TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 132)}):Play()
             wait(0.3)
-            if ActionsHolder then
-                for _, Action in ipairs(ActionsHolder:GetChildren()) do
+            if Notification:FindFirstChild("Actions") then
+                for _, Action in ipairs(Notification.Actions:GetChildren()) do
                     if Action:IsA("TextButton") and Action.Name ~= "Template" then
                         TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
                         TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
@@ -466,8 +393,8 @@ function NotificationModule:Notify(NotificationSettings)
         repeat wait(0.001) until ActionCompleted
 
         if Notification and Notification.Parent then
-            if ActionsHolder then
-                for _, Action in ipairs(ActionsHolder:GetChildren()) do
+            if Notification:FindFirstChild("Actions") then
+                for _, Action in ipairs(Notification.Actions:GetChildren()) do
                     if Action:IsA("TextButton") and Action.Name ~= "Template" then
                         TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
                         TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
@@ -475,43 +402,43 @@ function NotificationModule:Notify(NotificationSettings)
                 end
             end
 
-            if TitleLabel then
-                TweenService:Create(TitleLabel, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.47, 0, 0.234, 0)}):Play()
+            if Notification:FindFirstChild("Title") then
+                TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.47, 0, 0.234, 0)}):Play()
             end
-            if DescriptionLabel then
-                TweenService:Create(DescriptionLabel, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0.528, 0, 0.637, 0)}):Play()
+            if Notification:FindFirstChild("Description") then
+                TweenService:Create(Notification.Description, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0.528, 0, 0.637, 0)}):Play()
             end
 
             TweenService:Create(Notification, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 280, 0, 83)}):Play()
-            if IconImage then
-                TweenService:Create(IconImage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+            if Notification:FindFirstChild("Icon") then
+                TweenService:Create(Notification.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
             end
             TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
 
             wait(0.3)
 
-            if TitleLabel then
-                TweenService:Create(TitleLabel, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
+            if Notification:FindFirstChild("Title") then
+                TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
             end
-            if DescriptionLabel then
-                TweenService:Create(DescriptionLabel, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
+            if Notification:FindFirstChild("Description") then
+                TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
             end
 
             wait(0.4)
 
             TweenService:Create(Notification, TweenInfo.new(0.9, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 260, 0, 0)}):Play()
             TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-            if TitleLabel then
-                TweenService:Create(TitleLabel, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            if Notification:FindFirstChild("Title") then
+                TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
             end
-            if DescriptionLabel then
-                TweenService:Create(DescriptionLabel, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+            if Notification:FindFirstChild("Description") then
+                TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
             end
 
             wait(0.2)
 
-            if neon and BlurModule then
-                neon:UnbindFrame(BlurModule)
+            if neon and Notification:FindFirstChild("BlurModule") then
+                neon:UnbindFrame(Notification.BlurModule)
             end
             if blurlight then
                 blurlight:Destroy()
