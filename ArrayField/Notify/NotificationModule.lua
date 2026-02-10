@@ -1,3 +1,4 @@
+-- Version AAAA
 local NotificationModule = {}
 
 local TweenService = game:GetService("TweenService")
@@ -230,8 +231,31 @@ end)()
 
 local function LoadUI()
     local objects = game:GetObjects("rbxassetid://122378503168013")
-    NotificationsModuleGui = objects[1]
-    NotificationsModuleGui.Parent = (gethui and gethui()) or PlayerGui
+    local guiParent = (gethui and gethui()) or PlayerGui
+
+    local foundScreenGui = false
+    for _, obj in pairs(objects) do
+        if obj:IsA("ScreenGui") then
+            obj.Parent = guiParent
+            NotificationsModuleGui = obj
+            foundScreenGui = true
+            break
+        end
+    end
+
+    if not foundScreenGui then
+        NotificationsModuleGui = Instance.new("ScreenGui")
+        NotificationsModuleGui.Name = "NotificationModule"
+        NotificationsModuleGui.ResetOnSpawn = false
+        NotificationsModuleGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        NotificationsModuleGui.IgnoreGuiInset = true
+        NotificationsModuleGui.Parent = guiParent
+
+        for _, obj in pairs(objects) do
+            obj.Parent = NotificationsModuleGui
+        end
+    end
+
     Notifications = NotificationsModuleGui:FindFirstChild("Notifications", true)
 end
 
