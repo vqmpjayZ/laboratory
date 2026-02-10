@@ -1,4 +1,3 @@
--- vAAAA
 local NotificationModule = {}
 
 local TweenService = game:GetService("TweenService")
@@ -15,6 +14,41 @@ local NotificationDuration = 5
 
 local NotificationsModuleGui = nil
 local Notifications = nil
+
+local Icons = {}
+local iconsLoaded = false
+
+local function loadIcons()
+    if iconsLoaded then return end
+    local success, result = pcall(function()
+        return game:HttpGet("https://raw.githubusercontent.com/latte-soft/lucide-roblox/master/src/modules/icons.lua")
+    end)
+    if success then
+        local fn = loadstring(result)
+        if fn then
+            Icons = fn()
+        end
+    end
+    iconsLoaded = true
+end
+
+local function getIcon(name)
+    if not iconsLoaded then loadIcons() end
+    name = string.match(string.lower(name), "^%s*(.*)%s*$")
+    local sizedicons = Icons['48px']
+    if not sizedicons then return nil end
+    local r = sizedicons[name]
+    if not r then return nil end
+    local rirs, riro = r[2], r[3]
+    if type(r[1]) ~= "number" or type(rirs) ~= "table" or type(riro) ~= "table" then
+        return nil
+    end
+    return {
+        id = r[1],
+        imageRectSize = Vector2.new(rirs[1], rirs[2]),
+        imageRectOffset = Vector2.new(riro[1], riro[2]),
+    }
+end
 
 local neon = (function()
     local module = {}
@@ -331,9 +365,18 @@ function NotificationModule:Notify(NotificationSettings)
 
         if NotificationSettings.Image and Notification:FindFirstChild("Icon") then
             pcall(function()
-                Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
-                Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
-                Notification.Icon.ImageRectSize = Vector2.new(0, 0)
+                if type(NotificationSettings.Image) == "string" and not tonumber(NotificationSettings.Image) then
+                    local asset = getIcon(NotificationSettings.Image)
+                    if asset then
+                        Notification.Icon.Image = "rbxassetid://" .. asset.id
+                        Notification.Icon.ImageRectOffset = asset.imageRectOffset
+                        Notification.Icon.ImageRectSize = asset.imageRectSize
+                    end
+                else
+                    Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
+                    Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
+                    Notification.Icon.ImageRectSize = Vector2.new(0, 0)
+                end
             end)
         else
             if Notification:FindFirstChild("Icon") then
