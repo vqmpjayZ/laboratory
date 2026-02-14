@@ -34,8 +34,9 @@ Useage Example at https://raw.githubusercontent.com/vqmpjayZ/laboratory/refs/hea
 Docs coming soon hopefully
 
 Change Logs (dd/mm/yy):
-// [19.1.2026] Released!
+// [19/1/2026] Released!
 // [14.2.2026] Tabs (text) slide(s) when too long now!
+
 ]]
 
 local TweenService = game:GetService("TweenService")
@@ -1900,9 +1901,9 @@ local function ApplyTheme()
                             end
                             if cattab:FindFirstChild("Image") then
                                 cattab.Image.ImageColor3 = SelectedTheme.SideListItemImage
-                            end
-                            if cattab:FindFirstChild("IconMaskBg") then
-                                cattab.IconMaskBg.BackgroundColor3 = SelectedTheme.SidebarBackground
+                                if cattab.Image.BackgroundTransparency < 1 then
+                                    cattab.Image.BackgroundColor3 = SelectedTheme.SidebarBackground
+                                end
                             end
                         end
                     end
@@ -1911,9 +1912,9 @@ local function ApplyTheme()
                 if tabbtn:FindFirstChild("Title") then tabbtn.Title.TextColor3 = SelectedTheme.SideListItemTitle end
                 if tabbtn:FindFirstChild("Image") then
                     tabbtn.Image.ImageColor3 = SelectedTheme.SideListItemImage
-                end
-                if tabbtn:FindFirstChild("IconMaskBg") then
-                    tabbtn.IconMaskBg.BackgroundColor3 = SelectedTheme.SidebarBackground
+                    if tabbtn.Image.BackgroundTransparency < 1 then
+                        tabbtn.Image.BackgroundColor3 = SelectedTheme.SidebarBackground
+                    end
                 end
             end
         end
@@ -3028,6 +3029,22 @@ function Minimise()
             Tween(tabbtn.Title, 0.3, {TextTransparency = 1})
             Tween(tabbtn.Shadow, 0.3, {ImageTransparency = 1})
             Tween(tabbtn.UIStroke, 0.3, {Transparency = 1})
+        end
+    end
+
+	for _, tabbtn in ipairs(SideList:GetChildren()) do
+        if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" and tabbtn.Name ~= "SideTemplate" then
+            if tabbtn.Name:match("^Category_") and tabbtn:FindFirstChild("Holder") then
+                for _, cattab in ipairs(tabbtn.Holder:GetChildren()) do
+                    if cattab:IsA("Frame") and cattab:FindFirstChild("IconMaskBg") then
+                        Tween(cattab.IconMaskBg, 0.3, {BackgroundTransparency = 1})
+                    end
+                end
+            else
+                if tabbtn:FindFirstChild("IconMaskBg") then
+                    Tween(tabbtn.IconMaskBg, 0.3, {BackgroundTransparency = 1})
+                end
+            end
         end
     end
 
