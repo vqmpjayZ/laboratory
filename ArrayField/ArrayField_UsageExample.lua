@@ -259,6 +259,28 @@ MainTab:CreateImage(WelcomeSection, {
 })
 
 -- ============================
+-- CONSOLE
+-- ============================
+
+local MyConsole = Tab:CreateConsole({
+    Title = "Event Logger",
+    Icon = "terminal",
+    MaxLines = 200,
+    Height = 150,
+    Timestamps = true,
+    SectionParent = WelcomeSection
+})
+
+MyConsole:Log("Script initialized")
+MyConsole:Info("Listening for events")
+MyConsole:Success("Connected to server")
+MyConsole:Warn("Rate limit approaching")
+MyConsole:Error("Failed to fetch data")
+
+-- Clear all entries
+-- MyConsole:Clear()
+
+-- ============================
 -- SEPARATORS
 -- ============================
 
