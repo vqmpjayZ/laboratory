@@ -11,6 +11,7 @@ vqmpjay | Designing + Programming + New Features
 ]]
 
 --[[
+Docs: https://vadrifts.onrender.com/docs/arrayfield
 
 # INTRODUCING GEN 3 OF ARRAYFIELD
 - Slick new UI (- size; + settings; + Drag bar) COMPLETELY RE-WORKED
@@ -35,7 +36,7 @@ Docs coming soon hopefully
 
 Change Logs (dd/mm/yy):
 // [19.1.2026] Released!
-// [14.2.2026] Tabs (text) slide(s) when too long now!
+// [14.2.2026] Tabs (text) slide(s) when too long now! // Added New Feature! The Console!
 
 ]]
 
@@ -2141,6 +2142,37 @@ local function ApplyTheme()
 							indicator.BackgroundColor3 = SelectedTheme.ToggleDisabled
 						end
 					end
+					for _, element in pairs(tabPage:GetDescendants()) do
+						if element.Name == "Console" and element:IsA("Frame") and element:FindFirstChild("LogFrame") then
+							local function DarkenColor(color, factor)
+								return Color3.fromRGB(
+									math.max(0, math.floor(color.R * 255 * factor)),
+									math.max(0, math.floor(color.G * 255 * factor)),
+									math.max(0, math.floor(color.B * 255 * factor))
+								)
+							end
+
+							element.BackgroundColor3 = SelectedTheme.ElementBackground
+							if element:FindFirstChild("UIStroke") then
+								element.UIStroke.Color = SelectedTheme.ElementStroke
+							end
+							if element:FindFirstChild("Title") then
+								element.Title.TextColor3 = SelectedTheme.TextColor
+							end
+							if element:FindFirstChild("ConsoleIcon") then
+								element.ConsoleIcon.ImageColor3 = SelectedTheme.TextColor
+							end
+							if element:FindFirstChild("ClearButton") then
+								element.ClearButton.ImageColor3 = SelectedTheme.TextColor
+							end
+
+							local logFrame = element.LogFrame
+							logFrame.BackgroundColor3 = DarkenColor(SelectedTheme.SecondaryElementBackground, 0.45)
+							if logFrame:FindFirstChild("UIStroke") then
+								logFrame.UIStroke.Color = DarkenColor(SelectedTheme.ElementStroke, 0.6)
+							end
+						end
+					end
 
 				for _, element in pairs(tabPage:GetDescendants()) do
 					if element.Name == "InputFrame" and element:IsA("Frame") and element:FindFirstChild("InputBox") then
@@ -2165,19 +2197,22 @@ local function ApplyTheme()
 					end
 
 					if element.Name == "List" and element:IsA("ScrollingFrame") and element.Parent and element.Parent:FindFirstChild("Selected") then
-						for _, opt in pairs(element:GetChildren()) do
-							if opt:IsA("Frame") and opt.Name ~= "Template" and opt.Name ~= "PlaceHolder" and opt.Name ~= "-SearchBar" then
-								local isSelected = opt.BackgroundColor3 ~= Color3.fromRGB(30, 30, 30) and opt.BackgroundColor3 ~= SelectedTheme.SecondaryElementBackground
-								if isSelected then
-									opt.BackgroundColor3 = SelectedTheme.ElementBackgroundHover
-								else
-									opt.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-								end
-								if opt:FindFirstChild("UIStroke") then
-									opt.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-								end
-								if opt:FindFirstChild("Title") then
-									opt.Title.TextColor3 = SelectedTheme.TextColor
+						local isSettingsDropdown = element.Parent and element.Parent.Parent and element.Parent.Parent.Parent == SettingsFrame
+						if not isSettingsDropdown then
+							for _, opt in pairs(element:GetChildren()) do
+								if opt:IsA("Frame") and opt.Name ~= "Template" and opt.Name ~= "PlaceHolder" and opt.Name ~= "-SearchBar" then
+									local isSelected = opt:GetAttribute("Selected") or false
+									if isSelected then
+										opt.BackgroundColor3 = SelectedTheme.ElementBackgroundHover
+									else
+										opt.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+									end
+									if opt:FindFirstChild("UIStroke") then
+										opt.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+									end
+									if opt:FindFirstChild("Title") then
+										opt.Title.TextColor3 = SelectedTheme.TextColor
+									end
 								end
 							end
 						end
@@ -3842,15 +3877,17 @@ local function SetupSettingsThemeDropdown()
             OptionInteract.MouseButton1Click:Connect(function()
                 if themeName == CurrentThemeName then return end
 
+                SelectTheme(themeName)
+
                 for _, opt in ipairs(List:GetChildren()) do
                     if opt:IsA("Frame") and opt.Name ~= "Template" and opt.Name ~= "PlaceHolder" then
-                        TweenService:Create(opt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme and SelectedTheme.SecondaryElementBackground or Color3.fromRGB(30, 30, 30)}):Play()
+                        if opt.Name == themeName then
+                            TweenService:Create(opt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                        else
+                            TweenService:Create(opt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.SecondaryElementBackground}):Play()
+                        end
                     end
                 end
-
-                TweenService:Create(Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme and SelectedTheme.ElementBackgroundHover or Color3.fromRGB(40, 40, 40)}):Play()
-
-                SelectTheme(themeName)
 
                 task.wait(0.2)
 
@@ -3896,7 +3933,7 @@ local function SetupSettingsThemeDropdown()
     if Interact then
         Interact.MouseButton1Click:Connect(function()
             if SettingsDropdownOpen then
-                TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 195,0, 40)}):Play()
+                TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 195, 0, 40)}):Play()
                 TweenService:Create(SettingsFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 210, 0, 303)}):Play()
 
                 for _, opt in ipairs(List:GetChildren()) do
@@ -7365,6 +7402,327 @@ end
             return DropdownSettings
         end
 
+        function Tab:CreateConsole(ConsoleSettings, SectionParent)
+            local ConsoleValue = {}
+
+            SectionParent = SectionParent or ConsoleSettings.SectionParent
+
+            local MaxLines = ConsoleSettings.MaxLines or 100
+            local ConsoleHeight = ConsoleSettings.Height or 150
+            local ShowTimestamps = ConsoleSettings.Timestamps ~= false
+
+            local Console = Instance.new("Frame")
+            Console.Name = "Console"
+            Console.BorderSizePixel = 0
+            Console.ZIndex = 2
+            Console.Visible = true
+
+            if SectionParent then
+                Console.Size = UDim2.new(1, -12, 0, ConsoleHeight + 40)
+            else
+                Console.Size = UDim2.new(0, 465, 0, ConsoleHeight + 40)
+            end
+
+            local ConsoleCorner = Instance.new("UICorner")
+            ConsoleCorner.CornerRadius = UDim.new(0, 4)
+            ConsoleCorner.Parent = Console
+
+            local ConsoleStroke = Instance.new("UIStroke")
+            ConsoleStroke.Parent = Console
+
+            local Title = Instance.new("TextLabel")
+            Title.Name = "Title"
+            Title.Text = ConsoleSettings.Title or "Console"
+            Title.RichText = true
+            Title.Size = UDim2.new(1, -42, 0, 30)
+            Title.Position = UDim2.new(0, 12, 0, 0)
+            Title.BackgroundTransparency = 1
+            Title.TextSize = 13
+            Title.Font = Enum.Font.GothamBold
+            Title.TextXAlignment = Enum.TextXAlignment.Left
+            Title.TextYAlignment = Enum.TextYAlignment.Center
+            Title.ZIndex = 3
+            Title.Parent = Console
+
+            local iconLabel = nil
+            if ConsoleSettings.Icon then
+                iconLabel = Instance.new("ImageLabel")
+                iconLabel.Name = "ConsoleIcon"
+                iconLabel.Size = UDim2.new(0, 18, 0, 18)
+                iconLabel.Position = UDim2.new(0, 10, 0, 7)
+                iconLabel.BackgroundTransparency = 1
+                iconLabel.ZIndex = 3
+                iconLabel.Parent = Console
+
+                if typeof(ConsoleSettings.Icon) == "string" and not tonumber(ConsoleSettings.Icon) then
+                    local success, asset = pcall(getIcon, ConsoleSettings.Icon)
+                    if success then
+                        iconLabel.Image = "rbxassetid://" .. asset.id
+                        iconLabel.ImageRectOffset = asset.imageRectOffset
+                        iconLabel.ImageRectSize = asset.imageRectSize
+                    end
+                else
+                    iconLabel.Image = "rbxassetid://" .. tostring(ConsoleSettings.Icon)
+                end
+
+                Title.Position = UDim2.new(0, 32, 0, 0)
+                Title.Size = UDim2.new(1, -62, 0, 30)
+            end
+
+            local ClearButton = Instance.new("ImageButton")
+            ClearButton.Name = "ClearButton"
+            ClearButton.Size = UDim2.new(0, 16, 0, 16)
+            ClearButton.Position = UDim2.new(1, -26, 0, 8)
+            ClearButton.BackgroundTransparency = 1
+            ClearButton.ZIndex = 4
+            ClearButton.Parent = Console
+
+            local clearSuccess, clearAsset = pcall(getIcon, "trash-2")
+            if clearSuccess then
+                ClearButton.Image = "rbxassetid://" .. clearAsset.id
+                ClearButton.ImageRectOffset = clearAsset.imageRectOffset
+                ClearButton.ImageRectSize = clearAsset.imageRectSize
+            end
+
+            local LogFrame = Instance.new("ScrollingFrame")
+            LogFrame.Name = "LogFrame"
+            LogFrame.Size = UDim2.new(1, -16, 1, -38)
+            LogFrame.Position = UDim2.new(0, 8, 0, 32)
+            LogFrame.BorderSizePixel = 0
+            LogFrame.ScrollBarThickness = 3
+            LogFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+            LogFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+            LogFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+            LogFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+            LogFrame.ZIndex = 3
+            LogFrame.Parent = Console
+
+            local LogCorner = Instance.new("UICorner")
+            LogCorner.CornerRadius = UDim.new(0, 4)
+            LogCorner.Parent = LogFrame
+
+            local LogStroke = Instance.new("UIStroke")
+            LogStroke.Parent = LogFrame
+
+            local LogLayout = Instance.new("UIListLayout")
+            LogLayout.SortOrder = Enum.SortOrder.LayoutOrder
+            LogLayout.Padding = UDim.new(0, 1)
+            LogLayout.Parent = LogFrame
+
+            local LogPadding = Instance.new("UIPadding")
+            LogPadding.PaddingLeft = UDim.new(0, 6)
+            LogPadding.PaddingRight = UDim.new(0, 6)
+            LogPadding.PaddingTop = UDim.new(0, 4)
+            LogPadding.PaddingBottom = UDim.new(0, 4)
+            LogPadding.Parent = LogFrame
+
+            local function DarkenColor(color, factor)
+                return Color3.fromRGB(
+                    math.max(0, math.floor(color.R * 255 * factor)),
+                    math.max(0, math.floor(color.G * 255 * factor)),
+                    math.max(0, math.floor(color.B * 255 * factor))
+                )
+            end
+
+            if SelectedTheme then
+                Console.BackgroundColor3 = SelectedTheme.ElementBackground
+                ConsoleStroke.Color = SelectedTheme.ElementStroke
+                Title.TextColor3 = SelectedTheme.TextColor
+                LogFrame.BackgroundColor3 = DarkenColor(SelectedTheme.SecondaryElementBackground, 0.45)
+                LogStroke.Color = DarkenColor(SelectedTheme.ElementStroke, 0.6)
+                ClearButton.ImageColor3 = SelectedTheme.TextColor
+                if iconLabel then
+                    iconLabel.ImageColor3 = SelectedTheme.TextColor
+                end
+            end
+
+            Tab.Elements[ConsoleSettings.Title or "Console"] = {
+                type = "console",
+                section = SectionParent,
+                element = Console
+            }
+
+            if SectionParent then
+                Console.Parent = SectionParent.Holder
+            else
+                Console.Parent = TabPage
+            end
+
+            Console.BackgroundTransparency = 1
+            ConsoleStroke.Transparency = 1
+            Title.TextTransparency = 1
+            LogFrame.BackgroundTransparency = 1
+            LogFrame.ScrollBarImageTransparency = 1
+            LogStroke.Transparency = 1
+            ClearButton.ImageTransparency = 1
+            if iconLabel then
+                iconLabel.ImageTransparency = 1
+            end
+
+            TweenService:Create(Console, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.15}):Play()
+            TweenService:Create(ConsoleStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            TweenService:Create(LogFrame, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.3}):Play()
+            TweenService:Create(LogFrame, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
+            TweenService:Create(LogStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(ClearButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+            if iconLabel then
+                TweenService:Create(iconLabel, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            end
+
+            ClearButton.MouseEnter:Connect(function()
+                TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            end)
+
+            ClearButton.MouseLeave:Connect(function()
+                TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+            end)
+
+            local entryCount = 0
+
+            local function AddEntry(message, entryType)
+                entryCount = entryCount + 1
+
+                local TypeColors = {
+                    log = {prefix = Color3.fromRGB(180, 180, 180), text = Color3.fromRGB(200, 200, 200)},
+                    warn = {prefix = Color3.fromRGB(230, 190, 50), text = Color3.fromRGB(230, 210, 100)},
+                    error = {prefix = Color3.fromRGB(230, 70, 70), text = Color3.fromRGB(230, 120, 120)},
+                    success = {prefix = Color3.fromRGB(70, 200, 70), text = Color3.fromRGB(120, 220, 120)},
+                    info = {prefix = Color3.fromRGB(100, 170, 230), text = Color3.fromRGB(140, 190, 230)}
+                }
+
+                local Prefixes = {
+                    log = "LOG",
+                    warn = "WARN",
+                    error = "ERROR",
+                    success = "OK",
+                    info = "INFO"
+                }
+
+                local entryColors = TypeColors[entryType] or TypeColors.log
+                local prefix = Prefixes[entryType] or "LOG"
+
+                local formattedText
+
+                if ShowTimestamps then
+                    local timestamp = os.date("%H:%M:%S")
+                    formattedText = string.format(
+                        '<font color="rgb(%d,%d,%d)">[%s]</font> <font color="rgb(%d,%d,%d)">[%s]</font> <font color="rgb(%d,%d,%d)">%s</font>',
+                        120, 120, 120,
+                        timestamp,
+                        math.floor(entryColors.prefix.R * 255), math.floor(entryColors.prefix.G * 255), math.floor(entryColors.prefix.B * 255),
+                        prefix,
+                        math.floor(entryColors.text.R * 255), math.floor(entryColors.text.G * 255), math.floor(entryColors.text.B * 255),
+                        tostring(message)
+                    )
+                else
+                    formattedText = string.format(
+                        '<font color="rgb(%d,%d,%d)">[%s]</font> <font color="rgb(%d,%d,%d)">%s</font>',
+                        math.floor(entryColors.prefix.R * 255), math.floor(entryColors.prefix.G * 255), math.floor(entryColors.prefix.B * 255),
+                        prefix,
+                        math.floor(entryColors.text.R * 255), math.floor(entryColors.text.G * 255), math.floor(entryColors.text.B * 255),
+                        tostring(message)
+                    )
+                end
+
+                local Entry = Instance.new("TextLabel")
+                Entry.Name = "Entry_" .. entryCount
+                Entry.BackgroundTransparency = 1
+                Entry.Size = UDim2.new(1, 0, 0, 0)
+                Entry.AutomaticSize = Enum.AutomaticSize.Y
+                Entry.RichText = true
+                Entry.TextColor3 = Color3.fromRGB(200, 200, 200)
+                Entry.TextSize = 12
+                Entry.Font = Enum.Font.Code
+                Entry.TextXAlignment = Enum.TextXAlignment.Left
+                Entry.TextWrapped = true
+                Entry.LayoutOrder = entryCount
+                Entry.Text = formattedText
+                Entry.ZIndex = 4
+                Entry.Parent = LogFrame
+
+                local entries = {}
+                for _, child in ipairs(LogFrame:GetChildren()) do
+                    if child:IsA("TextLabel") then
+                        table.insert(entries, child)
+                    end
+                end
+
+                while #entries > MaxLines do
+                    entries[1]:Destroy()
+                    table.remove(entries, 1)
+                end
+
+                Entry.TextTransparency = 1
+                TweenService:Create(Entry, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+                task.defer(function()
+                    task.wait()
+                    if LogFrame and LogFrame.Parent then
+                        LogFrame.CanvasPosition = Vector2.new(0, LogFrame.AbsoluteCanvasSize.Y)
+                    end
+                end)
+            end
+
+            local function ClearEntries()
+                for _, child in ipairs(LogFrame:GetChildren()) do
+                    if child:IsA("TextLabel") then
+                        TweenService:Create(child, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                    end
+                end
+                task.delay(0.25, function()
+                    for _, child in ipairs(LogFrame:GetChildren()) do
+                        if child:IsA("TextLabel") then
+                            child:Destroy()
+                        end
+                    end
+                    entryCount = 0
+                end)
+            end
+
+            ClearButton.MouseButton1Click:Connect(ClearEntries)
+
+            function ConsoleValue:Log(message)
+                AddEntry(tostring(message), "log")
+            end
+
+            function ConsoleValue:Warn(message)
+                AddEntry(tostring(message), "warn")
+            end
+
+            function ConsoleValue:Error(message)
+                AddEntry(tostring(message), "error")
+            end
+
+            function ConsoleValue:Success(message)
+                AddEntry(tostring(message), "success")
+            end
+
+            function ConsoleValue:Info(message)
+                AddEntry(tostring(message), "info")
+            end
+
+            function ConsoleValue:Clear()
+                ClearEntries()
+            end
+
+            function ConsoleValue:Set(NewSettings)
+                if NewSettings.Title then
+                    Title.Text = NewSettings.Title
+                end
+            end
+
+            function ConsoleValue:Destroy()
+                Console:Destroy()
+            end
+
+            function ConsoleValue:Visible(bool)
+                Console.Visible = bool
+            end
+
+            return ConsoleValue
+        end
+
         function Tab:CreateColorPicker(ColorPickerSettings)
             local ColorPicker = Elements.Template.ColorPicker:Clone()
 
@@ -7903,5 +8261,4 @@ end
 
     return Window
 end
-
 return ArrayFieldLibrary
