@@ -1900,9 +1900,9 @@ local function ApplyTheme()
                             end
                             if cattab:FindFirstChild("Image") then
                                 cattab.Image.ImageColor3 = SelectedTheme.SideListItemImage
-                                if cattab.Image.BackgroundTransparency < 1 then
-                                    cattab.Image.BackgroundColor3 = SelectedTheme.SidebarBackground
-                                end
+                            end
+                            if cattab:FindFirstChild("IconMaskBg") then
+                                cattab.IconMaskBg.BackgroundColor3 = SelectedTheme.SidebarBackground
                             end
                         end
                     end
@@ -1911,9 +1911,9 @@ local function ApplyTheme()
                 if tabbtn:FindFirstChild("Title") then tabbtn.Title.TextColor3 = SelectedTheme.SideListItemTitle end
                 if tabbtn:FindFirstChild("Image") then
                     tabbtn.Image.ImageColor3 = SelectedTheme.SideListItemImage
-                    if tabbtn.Image.BackgroundTransparency < 1 then
-                        tabbtn.Image.BackgroundColor3 = SelectedTheme.SidebarBackground
-                    end
+                end
+                if tabbtn:FindFirstChild("IconMaskBg") then
+                    tabbtn.IconMaskBg.BackgroundColor3 = SelectedTheme.SidebarBackground
                 end
             end
         end
