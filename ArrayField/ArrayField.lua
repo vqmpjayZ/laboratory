@@ -35,6 +35,7 @@ Docs coming soon hopefully
 
 Change Logs (dd/mm/yy):
 // [19/1/2026] Released!
+// [14/2/2026] Made tab names move if too long
 
 ]]
 
