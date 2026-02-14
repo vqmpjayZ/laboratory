@@ -1900,13 +1900,21 @@ local function ApplyTheme()
                             end
                             if cattab:FindFirstChild("Image") then
                                 cattab.Image.ImageColor3 = SelectedTheme.SideListItemImage
+                                if cattab.Image.BackgroundTransparency < 1 then
+                                    cattab.Image.BackgroundColor3 = SelectedTheme.SidebarBackground
+                                end
                             end
                         end
                     end
                 end
             else
                 if tabbtn:FindFirstChild("Title") then tabbtn.Title.TextColor3 = SelectedTheme.SideListItemTitle end
-                if tabbtn:FindFirstChild("Image") then tabbtn.Image.ImageColor3 = SelectedTheme.SideListItemImage end
+                if tabbtn:FindFirstChild("Image") then
+                    tabbtn.Image.ImageColor3 = SelectedTheme.SideListItemImage
+                    if tabbtn.Image.BackgroundTransparency < 1 then
+                        tabbtn.Image.BackgroundColor3 = SelectedTheme.SidebarBackground
+                    end
+                end
             end
         end
     end
@@ -4424,6 +4432,69 @@ function Window:CreateCategory(Name, Settings)
     return CategoryValue
 end
 
+local function StartMarquee(textLabel)
+	task.spawn(function()
+		local parent = textLabel.Parent
+		if not parent then return end
+		parent.ClipsDescendants = true
+
+		task.wait(3)
+
+		local origPos = textLabel.Position
+
+		while textLabel and textLabel.Parent do
+			if Minimised or textLabel.TextTransparency >= 0.9 then
+				task.wait(1)
+				continue
+			end
+
+			textLabel.Position = origPos
+
+			task.wait()
+
+			local textWidth = textLabel.TextBounds.X
+			local visibleWidth = textLabel.AbsoluteSize.X
+
+			if textWidth <= visibleWidth or visibleWidth <= 1 then
+				task.wait(2)
+				continue
+			end
+
+			local overflow = textWidth - visibleWidth + 8
+
+			task.wait(2)
+			if not (textLabel and textLabel.Parent) then break end
+			if Minimised or textLabel.TextTransparency >= 0.9 then
+				textLabel.Position = origPos
+				continue
+			end
+
+			local dur = math.clamp(overflow / 35, 0.5, 8)
+			local scrollTween = TweenService:Create(textLabel, TweenInfo.new(dur, Enum.EasingStyle.Linear), {
+				Position = UDim2.new(origPos.X.Scale, origPos.X.Offset - overflow, origPos.Y.Scale, origPos.Y.Offset)
+			})
+			scrollTween:Play()
+			scrollTween.Completed:Wait()
+
+			task.wait(1)
+			if not (textLabel and textLabel.Parent) then break end
+
+			local curTrans = textLabel.TextTransparency
+			TweenService:Create(textLabel, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+			task.wait(0.35)
+
+			if not (textLabel and textLabel.Parent) then break end
+
+			textLabel.Position = origPos
+
+			TweenService:Create(textLabel, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = curTrans}):Play()
+			task.wait(0.35)
+
+			task.wait(1.5)
+		end
+	end)
+end
+
 -- Tab
 function Window:CreateTab(Name, Image, CategoryParent)
     Window.Tabs[Name] = {Elements = {}}
@@ -4490,6 +4561,11 @@ function Window:CreateTab(Name, Image, CategoryParent)
     else
         TopTabButton.Image.Visible = false
         SideTabButton.Image.Visible = false
+    end
+
+	if Image and SideTabButton.Image.Visible then
+        SideTabButton.Image.BackgroundTransparency = 0
+        SideTabButton.Image.BackgroundColor3 = SelectedTheme and SelectedTheme.SidebarBackground or Color3.fromRGB(44, 44, 44)
     end
 
     TopTabButton.BackgroundTransparency = 1
@@ -4673,6 +4749,8 @@ local function Pick()
         end
     end
 end
+
+	StartMarquee(SideTabButton.Title)
 
     TopTabButton.Interact.MouseButton1Click:Connect(Pick)
     SideTabButton.Interact.MouseButton1Click:Connect(Pick)
