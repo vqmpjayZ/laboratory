@@ -15,7 +15,7 @@ local Window = ArrayFieldLibrary:CreateWindow({
     
     -- Optional: Set a default theme
     -- Can be: "Default", "Dark", "Light", "Ocean", "Purple", "Green", "Red", etc.
-    DefaultTheme = "Default", -- removes the choice from users to re-execute with their previously selected themes
+    DefaultTheme = "Default", -- removes the choice from users to re-execute with their previously selected themes [I'd remove this line]
     
     -- Configuration saving
     ConfigurationSaving = { -- configuration saving is enabled from settings
