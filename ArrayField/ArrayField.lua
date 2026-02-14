@@ -34,8 +34,8 @@ Useage Example at https://raw.githubusercontent.com/vqmpjayZ/laboratory/refs/hea
 Docs coming soon hopefully
 
 Change Logs (dd/mm/yy):
-// [19/1/2026] Released!
-
+// [19.1.2026] Released!
+// [14.2.2026] Tabs (text) slide(s) when too long now!
 ]]
 
 local TweenService = game:GetService("TweenService")
