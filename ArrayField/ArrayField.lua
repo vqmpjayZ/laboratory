@@ -1901,20 +1901,22 @@ local function ApplyTheme()
                             end
                             if cattab:FindFirstChild("Image") then
                                 cattab.Image.ImageColor3 = SelectedTheme.SideListItemImage
-                                if cattab.Image.BackgroundTransparency < 1 then
-                                    cattab.Image.BackgroundColor3 = SelectedTheme.SidebarBackground
-                                end
+                            end
+                            if cattab:FindFirstChild("IconMaskBg") then
+                                cattab.IconMaskBg.BackgroundColor3 = SelectedTheme.SidebarBackground
                             end
                         end
                     end
                 end
             else
-                if tabbtn:FindFirstChild("Title") then tabbtn.Title.TextColor3 = SelectedTheme.SideListItemTitle end
+                if tabbtn:FindFirstChild("Title") then
+                    tabbtn.Title.TextColor3 = SelectedTheme.SideListItemTitle
+                end
                 if tabbtn:FindFirstChild("Image") then
                     tabbtn.Image.ImageColor3 = SelectedTheme.SideListItemImage
-                    if tabbtn.Image.BackgroundTransparency < 1 then
-                        tabbtn.Image.BackgroundColor3 = SelectedTheme.SidebarBackground
-                    end
+                end
+                if tabbtn:FindFirstChild("IconMaskBg") then
+                    tabbtn.IconMaskBg.BackgroundColor3 = SelectedTheme.SidebarBackground
                 end
             end
         end
@@ -2096,227 +2098,227 @@ local function ApplyTheme()
     LoadingFrame.Subtitle.TextColor3 = SelectedTheme.LoadingSubtitle
     if LoadingFrame:FindFirstChild("Version") then LoadingFrame.Version.TextColor3 = SelectedTheme.LoadingVersion end
 
-    for _, tabPage in pairs(Elements:GetChildren()) do
-        if tabPage:IsA("ScrollingFrame") and tabPage.Name ~= "Template" then
+		for _, tabPage in pairs(Elements:GetChildren()) do
+			if tabPage:IsA("ScrollingFrame") and tabPage.Name ~= "Template" then
 
-            for _, element in pairs(tabPage:GetDescendants()) do
+				for _, element in pairs(tabPage:GetDescendants()) do
 
-                if element.Name == "Progress" and element:IsA("Frame") then
-                    element.BackgroundColor3 = SelectedTheme.SliderProgress
-                end
+					if element.Name == "Progress" and element:IsA("Frame") then
+						element.BackgroundColor3 = SelectedTheme.SliderProgress
+					end
 
-                if element.Name == "Main" and element.Parent and element.Parent:FindFirstChild("Title") and element:FindFirstChild("Progress") then
-                    element.BackgroundColor3 = SelectedTheme.SliderBackground
-                    if element:FindFirstChild("UIStroke") then
-                        element.UIStroke.Color = SelectedTheme.SliderStroke
-                    end
-                    if element:FindFirstChild("Information") then
-                        element.Information.TextColor3 = SelectedTheme.TextColor
-                    end
-                end
+					if element.Name == "Main" and element.Parent and element.Parent:FindFirstChild("Title") and element:FindFirstChild("Progress") then
+						element.BackgroundColor3 = SelectedTheme.SliderBackground
+						if element:FindFirstChild("UIStroke") then
+							element.UIStroke.Color = SelectedTheme.SliderStroke
+						end
+						if element:FindFirstChild("Information") then
+							element.Information.TextColor3 = SelectedTheme.TextColor
+						end
+					end
 
-                if element.Name == "Switch" and element:IsA("Frame") and element:FindFirstChild("Indicator") then
-                    local indicator = element.Indicator
-                    local isOn = indicator.Position.X.Offset > -30
+					if element.Name == "Switch" and element:IsA("Frame") and element:FindFirstChild("Indicator") then
+						local indicator = element.Indicator
+						local isOn = indicator.Position.X.Offset > -30
 
-                    element.BackgroundColor3 = SelectedTheme.ToggleBackground
+						element.BackgroundColor3 = SelectedTheme.ToggleBackground
 
-                    if isOn then
-                        if element:FindFirstChild("UIStroke") then
-                            element.UIStroke.Color = SelectedTheme.ToggleEnabledOuterStroke
-                        end
-                        if indicator:FindFirstChild("UIStroke") then
-                            indicator.UIStroke.Color = SelectedTheme.ToggleEnabledStroke
-                        end
-                        indicator.BackgroundColor3 = SelectedTheme.ToggleEnabled
-                    else
-                        if element:FindFirstChild("UIStroke") then
-                            element.UIStroke.Color = SelectedTheme.ToggleDisabledOuterStroke
-                        end
-                        if indicator:FindFirstChild("UIStroke") then
-                            indicator.UIStroke.Color = SelectedTheme.ToggleDisabledStroke
-                        end
-                        indicator.BackgroundColor3 = SelectedTheme.ToggleDisabled
-                    end
-                end
+						if isOn then
+							if element:FindFirstChild("UIStroke") then
+								element.UIStroke.Color = SelectedTheme.ToggleEnabledOuterStroke
+							end
+							if indicator:FindFirstChild("UIStroke") then
+								indicator.UIStroke.Color = SelectedTheme.ToggleEnabledStroke
+							end
+							indicator.BackgroundColor3 = SelectedTheme.ToggleEnabled
+						else
+							if element:FindFirstChild("UIStroke") then
+								element.UIStroke.Color = SelectedTheme.ToggleDisabledOuterStroke
+							end
+							if indicator:FindFirstChild("UIStroke") then
+								indicator.UIStroke.Color = SelectedTheme.ToggleDisabledStroke
+							end
+							indicator.BackgroundColor3 = SelectedTheme.ToggleDisabled
+						end
+					end
 
-            for _, element in pairs(tabPage:GetDescendants()) do
-                if element.Name == "InputFrame" and element:IsA("Frame") and element:FindFirstChild("InputBox") then
-                    element.BackgroundColor3 = SelectedTheme.InputBackground
-                    if element:FindFirstChild("UIStroke") then
-                        element.UIStroke.Color = SelectedTheme.InputStroke
-                    end
-                end
+				for _, element in pairs(tabPage:GetDescendants()) do
+					if element.Name == "InputFrame" and element:IsA("Frame") and element:FindFirstChild("InputBox") then
+						element.BackgroundColor3 = SelectedTheme.InputBackground
+						if element:FindFirstChild("UIStroke") then
+							element.UIStroke.Color = SelectedTheme.InputStroke
+						end
+					end
 
-                if element.Name == "Toggle" and (element:IsA("ImageLabel") or element:IsA("ImageButton")) then
-                    local parent = element.Parent
-                    if parent and parent:FindFirstChild("Selected") and parent:FindFirstChild("List") then
-                        element.ImageColor3 = SelectedTheme.DropdownToggle
-                    end
-                end
+					if element.Name == "Toggle" and (element:IsA("ImageLabel") or element:IsA("ImageButton")) then
+						local parent = element.Parent
+						if parent and parent:FindFirstChild("Selected") and parent:FindFirstChild("List") then
+							element.ImageColor3 = SelectedTheme.DropdownToggle
+						end
+					end
 
-                if element.Name == "KeybindFrame" and element:IsA("Frame") and element:FindFirstChild("KeybindBox") then
-                    element.BackgroundColor3 = SelectedTheme.InputBackground
-                    if element:FindFirstChild("UIStroke") then
-                        element.UIStroke.Color = SelectedTheme.InputStroke
-                    end
-                end
+					if element.Name == "KeybindFrame" and element:IsA("Frame") and element:FindFirstChild("KeybindBox") then
+						element.BackgroundColor3 = SelectedTheme.InputBackground
+						if element:FindFirstChild("UIStroke") then
+							element.UIStroke.Color = SelectedTheme.InputStroke
+						end
+					end
 
-                if element.Name == "List" and element:IsA("ScrollingFrame") and element.Parent and element.Parent:FindFirstChild("Selected") then
-                    for _, opt in pairs(element:GetChildren()) do
-                        if opt:IsA("Frame") and opt.Name ~= "Template" and opt.Name ~= "PlaceHolder" and opt.Name ~= "-SearchBar" then
-                            local isSelected = opt.BackgroundColor3 ~= Color3.fromRGB(30, 30, 30) and opt.BackgroundColor3 ~= SelectedTheme.SecondaryElementBackground
-                            if isSelected then
-                                opt.BackgroundColor3 = SelectedTheme.ElementBackgroundHover
-                            else
-                                opt.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-                            end
-                            if opt:FindFirstChild("UIStroke") then
-                                opt.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-                            end
-                            if opt:FindFirstChild("Title") then
-                                opt.Title.TextColor3 = SelectedTheme.TextColor
-                            end
-                        end
-                    end
-                end
+					if element.Name == "List" and element:IsA("ScrollingFrame") and element.Parent and element.Parent:FindFirstChild("Selected") then
+						for _, opt in pairs(element:GetChildren()) do
+							if opt:IsA("Frame") and opt.Name ~= "Template" and opt.Name ~= "PlaceHolder" and opt.Name ~= "-SearchBar" then
+								local isSelected = opt.BackgroundColor3 ~= Color3.fromRGB(30, 30, 30) and opt.BackgroundColor3 ~= SelectedTheme.SecondaryElementBackground
+								if isSelected then
+									opt.BackgroundColor3 = SelectedTheme.ElementBackgroundHover
+								else
+									opt.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+								end
+								if opt:FindFirstChild("UIStroke") then
+									opt.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+								end
+								if opt:FindFirstChild("Title") then
+									opt.Title.TextColor3 = SelectedTheme.TextColor
+								end
+							end
+						end
+					end
 
-                if element.Name == "ColorPicker" or element:FindFirstChild("CPBackground") then
-                    if element:IsA("Frame") then
-                        element.BackgroundColor3 = SelectedTheme.ElementBackground
-                        if element:FindFirstChild("UIStroke") then
-                            element.UIStroke.Color = SelectedTheme.ElementStroke
-                        end
-                        if element:FindFirstChild("Title") then
-                            element.Title.TextColor3 = SelectedTheme.TextColor
-                        end
-                        if element:FindFirstChild("HexInput") then
-                            element.HexInput.BackgroundColor3 = SelectedTheme.InputBackground
-                            if element.HexInput:FindFirstChild("UIStroke") then
-                                element.HexInput.UIStroke.Color = SelectedTheme.InputStroke
-                            end
-                            if element.HexInput:FindFirstChild("InputBox") then
-                                element.HexInput.InputBox.TextColor3 = SelectedTheme.TextColor
-                            end
-                        end
-                        if element:FindFirstChild("RGB") then
-                            local RGB = element.RGB
-                            for _, input in ipairs({RGB:FindFirstChild("RInput"), RGB:FindFirstChild("GInput"), RGB:FindFirstChild("BInput")}) do
-                                if input then
-                                    input.BackgroundColor3 = SelectedTheme.InputBackground
-                                    if input:FindFirstChild("UIStroke") then
-                                        input.UIStroke.Color = SelectedTheme.InputStroke
-                                    end
-                                    if input:FindFirstChild("InputBox") then
-                                        input.InputBox.TextColor3 = SelectedTheme.TextColor
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
+					if element.Name == "ColorPicker" or element:FindFirstChild("CPBackground") then
+						if element:IsA("Frame") then
+							element.BackgroundColor3 = SelectedTheme.ElementBackground
+							if element:FindFirstChild("UIStroke") then
+								element.UIStroke.Color = SelectedTheme.ElementStroke
+							end
+							if element:FindFirstChild("Title") then
+								element.Title.TextColor3 = SelectedTheme.TextColor
+							end
+							if element:FindFirstChild("HexInput") then
+								element.HexInput.BackgroundColor3 = SelectedTheme.InputBackground
+								if element.HexInput:FindFirstChild("UIStroke") then
+									element.HexInput.UIStroke.Color = SelectedTheme.InputStroke
+								end
+								if element.HexInput:FindFirstChild("InputBox") then
+									element.HexInput.InputBox.TextColor3 = SelectedTheme.TextColor
+								end
+							end
+							if element:FindFirstChild("RGB") then
+								local RGB = element.RGB
+								for _, input in ipairs({RGB:FindFirstChild("RInput"), RGB:FindFirstChild("GInput"), RGB:FindFirstChild("BInput")}) do
+									if input then
+										input.BackgroundColor3 = SelectedTheme.InputBackground
+										if input:FindFirstChild("UIStroke") then
+											input.UIStroke.Color = SelectedTheme.InputStroke
+										end
+										if input:FindFirstChild("InputBox") then
+											input.InputBox.TextColor3 = SelectedTheme.TextColor
+										end
+									end
+								end
+							end
+						end
+					end
 
-                if element.Name == "Selected" and element:IsA("TextLabel") and element.Parent and element.Parent:FindFirstChild("Toggle") and element.Parent:FindFirstChild("List") then
-                    element.TextColor3 = SelectedTheme.DropdownSelected
-                end
-            end
+					if element.Name == "Selected" and element:IsA("TextLabel") and element.Parent and element.Parent:FindFirstChild("Toggle") and element.Parent:FindFirstChild("List") then
+						element.TextColor3 = SelectedTheme.DropdownSelected
+					end
+				end
 
-            local function updateElementsInContainer(container)
-                for _, element in pairs(container:GetChildren()) do
-                    if element:IsA("Frame") and element.Name ~= "Template" and element.Name ~= "Placeholder" and element.Name ~= "SectionSpacing" then
+				local function updateElementsInContainer(container)
+					for _, element in pairs(container:GetChildren()) do
+						if element:IsA("Frame") and element.Name ~= "Template" and element.Name ~= "Placeholder" and element.Name ~= "SectionSpacing" then
 
-                        if element.Name == "SectionTitle" then
-                            if element:FindFirstChild("Title") then
-                                element.Title.TextColor3 = SelectedTheme.SectionTitleText or SelectedTheme.TextColor
-                            end
-                            if element:FindFirstChild("Holder") then
-                                updateElementsInContainer(element.Holder)
-                            end
-                        else
-                            local isLabel = element.Name == "Label" or (element:FindFirstChild("Title") and not element:FindFirstChild("Switch") and not element:FindFirstChild("Main") and not element:FindFirstChild("Interact") and not element:FindFirstChild("Content"))
-                            local isParagraph = element.Name == "Paragraph" or element:FindFirstChild("Content")
+							if element.Name == "SectionTitle" then
+								if element:FindFirstChild("Title") then
+									element.Title.TextColor3 = SelectedTheme.SectionTitleText or SelectedTheme.TextColor
+								end
+								if element:FindFirstChild("Holder") then
+									updateElementsInContainer(element.Holder)
+								end
+							else
+								local isLabel = element.Name == "Label" or (element:FindFirstChild("Title") and not element:FindFirstChild("Switch") and not element:FindFirstChild("Main") and not element:FindFirstChild("Interact") and not element:FindFirstChild("Content"))
+								local isParagraph = element.Name == "Paragraph" or element:FindFirstChild("Content")
 
-                            local hasCustomBg = element:GetAttribute("HasCustomBackground")
+								local hasCustomBg = element:GetAttribute("HasCustomBackground")
 
-                            if (isLabel or isParagraph) and hasCustomBg then
-                                local bgR = element:GetAttribute("CustomBgR")
-                                local bgG = element:GetAttribute("CustomBgG")
-                                local bgB = element:GetAttribute("CustomBgB")
-                                if bgR and bgG and bgB then
-                                    element.BackgroundColor3 = Color3.new(bgR, bgG, bgB)
-                                end
+								if (isLabel or isParagraph) and hasCustomBg then
+									local bgR = element:GetAttribute("CustomBgR")
+									local bgG = element:GetAttribute("CustomBgG")
+									local bgB = element:GetAttribute("CustomBgB")
+									if bgR and bgG and bgB then
+										element.BackgroundColor3 = Color3.new(bgR, bgG, bgB)
+									end
 
-                                if isLabel then
-                                    local textR = element:GetAttribute("CustomTextR")
-                                    local textG = element:GetAttribute("CustomTextG")
-                                    local textB = element:GetAttribute("CustomTextB")
-                                    if textR and textG and textB and element:FindFirstChild("Title") then
-                                        element.Title.TextColor3 = Color3.new(textR, textG, textB)
-                                    end
-                                    if element:FindFirstChild("LabelIcon") then
-                                        element.LabelIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-                                    end
-                                end
+									if isLabel then
+										local textR = element:GetAttribute("CustomTextR")
+										local textG = element:GetAttribute("CustomTextG")
+										local textB = element:GetAttribute("CustomTextB")
+										if textR and textG and textB and element:FindFirstChild("Title") then
+											element.Title.TextColor3 = Color3.new(textR, textG, textB)
+										end
+										if element:FindFirstChild("LabelIcon") then
+											element.LabelIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+										end
+									end
 
-                                if isParagraph then
-                                    local titleR = element:GetAttribute("CustomTitleR")
-                                    local titleG = element:GetAttribute("CustomTitleG")
-                                    local titleB = element:GetAttribute("CustomTitleB")
-                                    local contentR = element:GetAttribute("CustomContentR")
-                                    local contentG = element:GetAttribute("CustomContentG")
-                                    local contentB = element:GetAttribute("CustomContentB")
-                                    if titleR and titleG and titleB and element:FindFirstChild("Title") then
-                                        element.Title.TextColor3 = Color3.new(titleR, titleG, titleB)
-                                    end
-                                    if contentR and contentG and contentB and element:FindFirstChild("Content") then
-                                        element.Content.TextColor3 = Color3.new(contentR, contentG, contentB)
-                                    end
-                                    if element:FindFirstChild("ParagraphIcon") then
-                                        element.ParagraphIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-                                    end
-                                end
+									if isParagraph then
+										local titleR = element:GetAttribute("CustomTitleR")
+										local titleG = element:GetAttribute("CustomTitleG")
+										local titleB = element:GetAttribute("CustomTitleB")
+										local contentR = element:GetAttribute("CustomContentR")
+										local contentG = element:GetAttribute("CustomContentG")
+										local contentB = element:GetAttribute("CustomContentB")
+										if titleR and titleG and titleB and element:FindFirstChild("Title") then
+											element.Title.TextColor3 = Color3.new(titleR, titleG, titleB)
+										end
+										if contentR and contentG and contentB and element:FindFirstChild("Content") then
+											element.Content.TextColor3 = Color3.new(contentR, contentG, contentB)
+										end
+										if element:FindFirstChild("ParagraphIcon") then
+											element.ParagraphIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+										end
+									end
 
-                                if element:FindFirstChild("UIStroke") then
-                                    element.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-                                end
-                            elseif isLabel or isParagraph then
-                                element.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-                                if element:FindFirstChild("UIStroke") then
-                                    element.UIStroke.Color = SelectedTheme.SecondaryElementStroke
-                                end
-                                if element:FindFirstChild("Title") then
-                                    element.Title.TextColor3 = SelectedTheme.TextColor
-                                end
-                                if element:FindFirstChild("Content") then
-                                    element.Content.TextColor3 = SelectedTheme.TextColor
-                                end
-                                if element:FindFirstChild("LabelIcon") then
-                                    element.LabelIcon.ImageColor3 = SelectedTheme.TextColor
-                                end
-                                if element:FindFirstChild("ParagraphIcon") then
-                                    element.ParagraphIcon.ImageColor3 = SelectedTheme.TextColor
-                                end
-                            else
-                                element.BackgroundColor3 = SelectedTheme.ElementBackground
-                                if element:FindFirstChild("UIStroke") then
-                                    element.UIStroke.Color = SelectedTheme.ElementStroke
-                                end
-                                if element:FindFirstChild("Title") then
-                                    element.Title.TextColor3 = SelectedTheme.TextColor
-                                end
-                            end
+									if element:FindFirstChild("UIStroke") then
+										element.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+									end
+								elseif isLabel or isParagraph then
+									element.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+									if element:FindFirstChild("UIStroke") then
+										element.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+									end
+									if element:FindFirstChild("Title") then
+										element.Title.TextColor3 = SelectedTheme.TextColor
+									end
+									if element:FindFirstChild("Content") then
+										element.Content.TextColor3 = SelectedTheme.TextColor
+									end
+									if element:FindFirstChild("LabelIcon") then
+										element.LabelIcon.ImageColor3 = SelectedTheme.TextColor
+									end
+									if element:FindFirstChild("ParagraphIcon") then
+										element.ParagraphIcon.ImageColor3 = SelectedTheme.TextColor
+									end
+								else
+									element.BackgroundColor3 = SelectedTheme.ElementBackground
+									if element:FindFirstChild("UIStroke") then
+										element.UIStroke.Color = SelectedTheme.ElementStroke
+									end
+									if element:FindFirstChild("Title") then
+										element.Title.TextColor3 = SelectedTheme.TextColor
+									end
+								end
 
-                            if element:FindFirstChild("Holder") then
-                                updateElementsInContainer(element.Holder)
-                            end
-                        end
-                    end
-                end
-            end
-            updateElementsInContainer(tabPage)
-        end
-    end
-end
+								if element:FindFirstChild("Holder") then
+									updateElementsInContainer(element.Holder)
+								end
+							end
+						end
+					end
+				end
+				updateElementsInContainer(tabPage)
+			end
+		end
+	end
 end
 
 local function AddDraggingFunctionality(DragPoint, MainFrame)
@@ -7901,4 +7903,5 @@ end
 
     return Window
 end
+
 return ArrayFieldLibrary
