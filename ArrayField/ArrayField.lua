@@ -34,7 +34,7 @@ Useage Example at https://raw.githubusercontent.com/vqmpjayZ/laboratory/refs/hea
 Docs coming soon hopefully
 
 Change Logs (dd/mm/yy):
-// [19/1/2026] Released!
+// [19.1.2026] Released!
 // [14.2.2026] Tabs (text) slide(s) when too long now!
 
 ]]
@@ -2886,6 +2886,22 @@ function Hide()
         end
     end
 
+    for _, tabbtn in ipairs(SideList:GetChildren()) do
+        if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" and tabbtn.Name ~= "SideTemplate" then
+            if tabbtn.Name:match("^Category_") and tabbtn:FindFirstChild("Holder") then
+                for _, cattab in ipairs(tabbtn.Holder:GetChildren()) do
+                    if cattab:IsA("Frame") and cattab:FindFirstChild("IconMaskBg") then
+                        Tween(cattab.IconMaskBg, 0.3, {BackgroundTransparency = 1})
+                    end
+                end
+            else
+                if tabbtn:FindFirstChild("IconMaskBg") then
+                    Tween(tabbtn.IconMaskBg, 0.3, {BackgroundTransparency = 1})
+                end
+            end
+        end
+    end
+
     Tween(Main, 0.5, {Size = UDim2.new(0, 495, 0, 45), BackgroundTransparency = 1})
     Tween(Topbar, 0.5, {Size = UDim2.new(0, 495, 0, 45), BackgroundTransparency = 1})
     Tween(Topbar.Divider, 0.5, {BackgroundTransparency = 1})
@@ -2956,6 +2972,22 @@ function Unhide()
         end
     end
 
+    for _, tabbtn in ipairs(SideList:GetChildren()) do
+        if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" and tabbtn.Name ~= "SideTemplate" then
+            if tabbtn.Name:match("^Category_") and tabbtn:FindFirstChild("Holder") then
+                for _, cattab in ipairs(tabbtn.Holder:GetChildren()) do
+                    if cattab:IsA("Frame") and cattab:FindFirstChild("IconMaskBg") then
+                        cattab.IconMaskBg.BackgroundTransparency = 1
+                    end
+                end
+            else
+                if tabbtn:FindFirstChild("IconMaskBg") then
+                    tabbtn.IconMaskBg.BackgroundTransparency = 1
+                end
+            end
+        end
+    end
+
     Main.Visible = true
     Drag.Visible = true
     TabsList.Visible = true
@@ -3000,6 +3032,22 @@ function Unhide()
         task.spawn(function()
             OpenSideBar(true)
         end)
+    end
+
+    for _, tabbtn in ipairs(SideList:GetChildren()) do
+        if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" and tabbtn.Name ~= "SideTemplate" then
+            if tabbtn.Name:match("^Category_") and tabbtn:FindFirstChild("Holder") then
+                for _, cattab in ipairs(tabbtn.Holder:GetChildren()) do
+                    if cattab:IsA("Frame") and cattab:FindFirstChild("IconMaskBg") then
+                        Tween(cattab.IconMaskBg, 0.3, {BackgroundTransparency = 0})
+                    end
+                end
+            else
+                if tabbtn:FindFirstChild("IconMaskBg") then
+                    Tween(tabbtn.IconMaskBg, 0.3, {BackgroundTransparency = 0})
+                end
+            end
+        end
     end
 
     task.wait(0.35)
@@ -3109,6 +3157,22 @@ function Maximise()
             Tween(tabbtn.Image, 0.3, {ImageTransparency = 0.2})
             Tween(tabbtn.Title, 0.3, {TextTransparency = 0.2})
             Tween(tabbtn.UIStroke, 0.3, {Transparency = 0})
+        end
+    end
+
+    for _, tabbtn in ipairs(SideList:GetChildren()) do
+        if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" and tabbtn.Name ~= "SideTemplate" then
+            if tabbtn.Name:match("^Category_") and tabbtn:FindFirstChild("Holder") then
+                for _, cattab in ipairs(tabbtn.Holder:GetChildren()) do
+                    if cattab:IsA("Frame") and cattab:FindFirstChild("IconMaskBg") then
+                        Tween(cattab.IconMaskBg, 0.3, {BackgroundTransparency = 0})
+                    end
+                end
+            else
+                if tabbtn:FindFirstChild("IconMaskBg") then
+                    Tween(tabbtn.IconMaskBg, 0.3, {BackgroundTransparency = 0})
+                end
+            end
         end
     end
 
