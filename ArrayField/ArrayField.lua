@@ -35,7 +35,6 @@ Docs coming soon hopefully
 
 Change Logs (dd/mm/yy):
 // [19/1/2026] Released!
-// [14/2/2026] Made tab names move if too long
 
 ]]
 
@@ -4456,12 +4455,12 @@ local function StartMarquee(textLabel)
 			local textWidth = textLabel.TextBounds.X
 			local visibleWidth = textLabel.AbsoluteSize.X
 
-			if textWidth <= visibleWidth or visibleWidth <= 1 then
+			if textWidth <= visibleWidth - 4 or visibleWidth <= 1 then
 				task.wait(2)
 				continue
 			end
 
-			local overflow = textWidth - visibleWidth + 8
+			local overflow = textWidth - visibleWidth + 12
 
 			task.wait(2)
 			if not (textLabel and textLabel.Parent) then break end
@@ -4564,9 +4563,18 @@ function Window:CreateTab(Name, Image, CategoryParent)
         SideTabButton.Image.Visible = false
     end
 
-	if Image and SideTabButton.Image.Visible then
-        SideTabButton.Image.BackgroundTransparency = 0
-        SideTabButton.Image.BackgroundColor3 = SelectedTheme and SelectedTheme.SidebarBackground or Color3.fromRGB(44, 44, 44)
+    if Image and SideTabButton.Image.Visible then
+        local maskBg = Instance.new("Frame")
+        maskBg.Name = "IconMaskBg"
+        maskBg.BackgroundTransparency = 0
+        maskBg.BackgroundColor3 = SelectedTheme and SelectedTheme.SidebarBackground or Color3.fromRGB(44, 44, 44)
+        maskBg.BorderSizePixel = 0
+        maskBg.AnchorPoint = SideTabButton.Image.AnchorPoint
+        maskBg.Position = SideTabButton.Image.Position
+        maskBg.Size = UDim2.new(SideTabButton.Image.Size.X.Scale, SideTabButton.Image.Size.X.Offset + 6, SideTabButton.Image.Size.Y.Scale, SideTabButton.Image.Size.Y.Offset + 6)
+        maskBg.ZIndex = SideTabButton.Image.ZIndex
+        maskBg.Parent = SideTabButton
+        SideTabButton.Image.ZIndex = SideTabButton.Image.ZIndex + 1
     end
 
     TopTabButton.BackgroundTransparency = 1
