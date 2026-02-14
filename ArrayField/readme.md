@@ -1,2 +1,2 @@
 https://vadrifts.onrender.com/docs/arrayfield
-[![Discord](https://github.com/user-attachments/assets/656d9521-b879-4862-a6ac-1d7c3bd9c2bc)](https://discord.gg/WDbJ5wE2cR)
+[![Discord](blob:https://imgur.com/be51cfd5-d81c-4c85-888a-3e5d8fd10576)](https://discord.gg/WDbJ5wE2cR)
