@@ -3,7 +3,6 @@ https://vadrifts.onrender.com/docs/arrayfield
   <img
     src="https://github.com/user-attachments/assets/9ac071b0-0fea-45c5-a6a2-be5013ccd76c"
     alt="Discord"
-    width="1440"
-    height="2500"
+    style="max-width:100%; height:auto;"
   />
 </a>
