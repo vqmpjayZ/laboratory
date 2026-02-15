@@ -33,7 +33,7 @@ local function getIcon(name)
     }
 end
 
-local neon = (function() -- open sourced neon module
+local neon = (function()
     local module = {}
 
     do
@@ -240,9 +240,93 @@ local neon = (function() -- open sourced neon module
     return module
 end)()
 
-local function LoadUI()
-    local objects = game:GetObjects("rbxassetid://122378503168013")
+local function getAllNotificationContainers()
+    local containers = {}
+    
     local guiParent = (gethui and gethui()) or PlayerGui
+    
+    for _, gui in pairs(guiParent:GetChildren()) do
+        if gui:IsA("ScreenGui") then
+            local notifContainer = gui:FindFirstChild("Notifications", true)
+            if notifContainer then
+                table.insert(containers, notifContainer)
+            end
+        end
+    end
+    
+    return containers
+end
+
+local function updateNotificationPositions()
+    local allContainers = getAllNotificationContainers()
+    local allNotifications = {}
+    
+    for _, container in pairs(allContainers) do
+        for _, notif in pairs(container:GetChildren()) do
+            if notif:IsA("Frame") and notif.Name ~= "Template" and notif.Visible then
+                table.insert(allNotifications, notif)
+            end
+        end
+    end
+    
+    table.sort(allNotifications, function(a, b)
+        return a.AbsolutePosition.Y > b.AbsolutePosition.Y
+    end)
+    
+    for i, notif in ipairs(allNotifications) do
+        local targetY = 0.915 - ((i - 1) * 0.12)
+        notif:TweenPosition(
+            UDim2.new(0.5, 0, targetY, 0),
+            'Out',
+            'Quint',
+            0.5,
+            true
+        )
+    end
+end
+
+local function LoadUI()
+    local guiParent = (gethui and gethui()) or PlayerGui
+    
+    for _, gui in pairs(guiParent:GetChildren()) do
+        if gui:IsA("ScreenGui") and (gui.Name == "ArrayField" or gui.Name:find("ArrayField")) then
+            local existingNotifications = gui:FindFirstChild("Notifications", true)
+            if existingNotifications then
+                NotificationsModuleGui = gui
+                Notifications = existingNotifications
+                
+                local template = Notifications:FindFirstChild("Template")
+                if not template then
+                    local objects = game:GetObjects("rbxassetid://122378503168013")
+                    for _, obj in pairs(objects) do
+                        if obj:IsA("ScreenGui") then
+                            local notifContainer = obj:FindFirstChild("Notifications", true)
+                            if notifContainer and notifContainer:FindFirstChild("Template") then
+                                notifContainer.Template.Parent = Notifications
+                                Notifications.Template.Visible = false
+                            end
+                        end
+                    end
+                else
+                    template.Visible = false
+                end
+                
+                Notifications.ChildAdded:Connect(function()
+                    wait(0.1)
+                    updateNotificationPositions()
+                end)
+                
+                Notifications.ChildRemoved:Connect(function()
+                    wait(0.1)
+                    updateNotificationPositions()
+                end)
+                
+                return
+            end
+        end
+    end
+    
+    local objects = game:GetObjects("rbxassetid://122378503168013")
 
     local foundScreenGui = false
     for _, obj in pairs(objects) do
@@ -273,6 +357,31 @@ local function LoadUI()
         local template = Notifications:FindFirstChild("Template")
         if template then
             template.Visible = false
+        end
+        
+        Notifications.ChildAdded:Connect(function()
+            wait(0.1)
+            updateNotificationPositions()
+        end)
+        
+        Notifications.ChildRemoved:Connect(function()
+            wait(0.1)
+            updateNotificationPositions()
+        end)
+    end
+    
+    local allContainers = getAllNotificationContainers()
+    for _, container in pairs(allContainers) do
+        if container ~= Notifications then
+            container.ChildAdded:Connect(function()
+                wait(0.1)
+                updateNotificationPositions()
+            end)
+            
+            container.ChildRemoved:Connect(function()
+                wait(0.1)
+                updateNotificationPositions()
+            end)
         end
     end
 end
@@ -328,7 +437,7 @@ function NotificationModule:Notify(NotificationSettings)
                     NewAction.MouseButton1Click:Connect(function()
                         local Success, Response = pcall(Action.Callback)
                         if not Success then
-                            print("ArrayField Notification | Action: "..Action.Name.." Callback Error " ..tostring(Response))
+                            print("Notification Module | Action: "..Action.Name.." Callback Error " ..tostring(Response))
                         end
                         ActionCompleted = true
                     end)
@@ -344,15 +453,27 @@ function NotificationModule:Notify(NotificationSettings)
         if Notification:FindFirstChild("Description") then
             Notification.Description.Text = NotificationSettings.Content or "Unknown"
             Notification.Description.TextTransparency = 1
+            Notification.Description.TextWrapped = true
+            Notification.Description.TextXAlignment = Enum.TextXAlignment.Left
+            local currentSize = Notification.Description.Size
+            local currentPos = Notification.Description.Position
+            Notification.Description.Size = UDim2.new(0, 280, currentSize.Y.Scale, currentSize.Y.Offset)
+            Notification.Description.Position = UDim2.new(currentPos.X.Scale - 0.05, currentPos.X.Offset, currentPos.Y.Scale, currentPos.Y.Offset)
         end
 
         if NotificationSettings.Image and Notification:FindFirstChild("Icon") then
             pcall(function()
                 if type(NotificationSettings.Image) == "string" and not tonumber(NotificationSettings.Image) then
                     local asset = getIcon(NotificationSettings.Image)
-                    Notification.Icon.Image = "rbxassetid://" .. asset.id
-                    Notification.Icon.ImageRectOffset = asset.imageRectOffset
-                    Notification.Icon.ImageRectSize = asset.imageRectSize
+                    if asset then
+                        Notification.Icon.Image = "rbxassetid://" .. asset.id
+                        Notification.Icon.ImageRectOffset = asset.imageRectOffset
+                        Notification.Icon.ImageRectSize = asset.imageRectSize
+                    else
+                        Notification.Icon.Image = "rbxassetid://3944680095"
+                        Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
+                        Notification.Icon.ImageRectSize = Vector2.new(0, 0)
+                    end
                 else
                     Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
                     Notification.Icon.ImageRectOffset = Vector2.new(0, 0)
