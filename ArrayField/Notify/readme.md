@@ -16,7 +16,6 @@ A completely standalone notification system extracted from ArrayField Library. W
 
 ```lua
 local NotificationModule = loadstring(game:HttpGet("YOUR_URL_HERE"))()
-NotificationModule:Init()
 ```
 
 ## Basic Usage
