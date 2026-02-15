@@ -4562,6 +4562,23 @@ local function StartMarquee(textLabel)
 
 		local origPos = textLabel.Position
 
+		local isInCategory = parent.Parent and parent.Parent:IsA("Frame") and parent.Parent.Name == "Holder"
+
+		local function GetVisibleRight()
+			local right = parent.AbsolutePosition.X + parent.AbsoluteSize.X
+			local current = parent.Parent
+			while current and current:IsA("GuiObject") do
+				if current.ClipsDescendants then
+					local parentRight = current.AbsolutePosition.X + current.AbsoluteSize.X
+					if parentRight < right then
+						right = parentRight
+					end
+				end
+				current = current.Parent
+			end
+			return right
+		end
+
 		while textLabel and textLabel.Parent do
 			if Minimised or textLabel.TextTransparency >= 0.9 then
 				task.wait(1)
@@ -4573,14 +4590,17 @@ local function StartMarquee(textLabel)
 			task.wait()
 
 			local textWidth = textLabel.TextBounds.X
-			local visibleWidth = textLabel.AbsoluteSize.X
+			local visibleRight = GetVisibleRight()
+			local textLeft = textLabel.AbsolutePosition.X
+			local visibleWidth = visibleRight - textLeft
 
-			if textWidth <= visibleWidth - 4 or visibleWidth <= 1 then
+			local threshold = isInCategory and 3 or 2
+			if textWidth <= visibleWidth + threshold or visibleWidth <= 1 then
 				task.wait(2)
 				continue
 			end
 
-			local overflow = textWidth - visibleWidth + 12
+			local overflow = textWidth - visibleWidth + 5
 
 			task.wait(2)
 			if not (textLabel and textLabel.Parent) then break end
