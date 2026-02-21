@@ -7650,29 +7650,12 @@ end
 		        local entryColors = TypeColors[entryType] or TypeColors.log
 		        local prefix = Prefixes[entryType] or "LOG"
 		
-		        local formattedText
 		        local plainText
 		
 		        if ShowTimestamps then
 		            local timestamp = os.date("%H:%M:%S")
-		            formattedText = string.format(
-		                '<font color="rgb(%d,%d,%d)">[%s]</font> <font color="rgb(%d,%d,%d)">[%s]</font> <font color="rgb(%d,%d,%d)">%s</font>',
-		                120, 120, 120,
-		                timestamp,
-		                math.floor(entryColors.prefix.R * 255), math.floor(entryColors.prefix.G * 255), math.floor(entryColors.prefix.B * 255),
-		                prefix,
-		                math.floor(entryColors.text.R * 255), math.floor(entryColors.text.G * 255), math.floor(entryColors.text.B * 255),
-		                tostring(message)
-		            )
 		            plainText = string.format("[%s] [%s] %s", timestamp, prefix, tostring(message))
 		        else
-		            formattedText = string.format(
-		                '<font color="rgb(%d,%d,%d)">[%s]</font> <font color="rgb(%d,%d,%d)">%s</font>',
-		                math.floor(entryColors.prefix.R * 255), math.floor(entryColors.prefix.G * 255), math.floor(entryColors.prefix.B * 255),
-		                prefix,
-		                math.floor(entryColors.text.R * 255), math.floor(entryColors.text.G * 255), math.floor(entryColors.text.B * 255),
-		                tostring(message)
-		            )
 		            plainText = string.format("[%s] %s", prefix, tostring(message))
 		        end
 		
@@ -7681,8 +7664,8 @@ end
 		        local Entry = Instance.new("TextBox")
 		        Entry.Name = "Entry_" .. entryCount
 		        Entry.BackgroundTransparency = 1
-		        Entry.RichText = true
-		        Entry.TextColor3 = Color3.fromRGB(200, 200, 200)
+		        Entry.RichText = false
+		        Entry.TextColor3 = entryColors.text
 		        Entry.TextSize = 12
 		        Entry.Font = Enum.Font.Code
 		        Entry.TextXAlignment = Enum.TextXAlignment.Left
@@ -7690,16 +7673,10 @@ end
 		        Entry.TextEditable = false
 		        Entry.ClearTextOnFocus = false
 		        Entry.LayoutOrder = entryCount
-		        Entry.Text = formattedText
+		        Entry.Text = plainText
 		        Entry.ZIndex = 4
 		        Entry.Size = UDim2.new(1, 0, 0, 16)
 		        Entry.Parent = LogFrame
-		
-		        Entry:GetPropertyChangedSignal("Text"):Connect(function()
-		            if Entry.Text ~= formattedText then
-		                Entry.Text = formattedText
-		            end
-		        end)
 		
 		        task.defer(function()
 		            task.wait()
