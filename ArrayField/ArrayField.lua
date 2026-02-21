@@ -7454,7 +7454,7 @@ end
             Title.Name = "Title"
             Title.Text = ConsoleSettings.Title or "Console"
             Title.RichText = true
-            Title.Size = UDim2.new(1, -42, 0, 30)
+            Title.Size = UDim2.new(1, -62, 0, 30)
             Title.Position = UDim2.new(0, 12, 0, 0)
             Title.BackgroundTransparency = 1
             Title.TextSize = 13
@@ -7486,7 +7486,7 @@ end
                 end
 
                 Title.Position = UDim2.new(0, 32, 0, 0)
-                Title.Size = UDim2.new(1, -62, 0, 30)
+                Title.Size = UDim2.new(1, -82, 0, 30)
             end
 
             local ClearButton = Instance.new("ImageButton")
@@ -7504,6 +7504,21 @@ end
                 ClearButton.ImageRectSize = clearAsset.imageRectSize
             end
 
+            local CopyButton = Instance.new("ImageButton")
+            CopyButton.Name = "CopyButton"
+            CopyButton.Size = UDim2.new(0, 16, 0, 16)
+            CopyButton.Position = UDim2.new(1, -46, 0, 8)
+            CopyButton.BackgroundTransparency = 1
+            CopyButton.ZIndex = 4
+            CopyButton.Parent = Console
+
+            local copySuccess, copyAsset = pcall(getIcon, "copy")
+            if copySuccess then
+                CopyButton.Image = "rbxassetid://" .. copyAsset.id
+                CopyButton.ImageRectOffset = copyAsset.imageRectOffset
+                CopyButton.ImageRectSize = copyAsset.imageRectSize
+            end
+
             local LogFrame = Instance.new("ScrollingFrame")
             LogFrame.Name = "LogFrame"
             LogFrame.Size = UDim2.new(1, -16, 1, -38)
@@ -7512,7 +7527,6 @@ end
             LogFrame.ScrollBarThickness = 3
             LogFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
             LogFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-            LogFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
             LogFrame.ScrollingDirection = Enum.ScrollingDirection.Y
             LogFrame.ZIndex = 3
             LogFrame.Parent = Console
@@ -7536,6 +7550,10 @@ end
             LogPadding.PaddingBottom = UDim.new(0, 4)
             LogPadding.Parent = LogFrame
 
+            LogLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                LogFrame.CanvasSize = UDim2.new(0, 0, 0, LogLayout.AbsoluteContentSize.Y + 8)
+            end)
+
             local function DarkenColor(color, factor)
                 return Color3.fromRGB(
                     math.max(0, math.floor(color.R * 255 * factor)),
@@ -7551,6 +7569,7 @@ end
                 LogFrame.BackgroundColor3 = DarkenColor(SelectedTheme.SecondaryElementBackground, 0.45)
                 LogStroke.Color = DarkenColor(SelectedTheme.ElementStroke, 0.6)
                 ClearButton.ImageColor3 = SelectedTheme.TextColor
+                CopyButton.ImageColor3 = SelectedTheme.TextColor
                 if iconLabel then
                     iconLabel.ImageColor3 = SelectedTheme.TextColor
                 end
@@ -7575,6 +7594,7 @@ end
             LogFrame.ScrollBarImageTransparency = 1
             LogStroke.Transparency = 1
             ClearButton.ImageTransparency = 1
+            CopyButton.ImageTransparency = 1
             if iconLabel then
                 iconLabel.ImageTransparency = 1
             end
@@ -7586,6 +7606,7 @@ end
             TweenService:Create(LogFrame, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
             TweenService:Create(LogStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
             TweenService:Create(ClearButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+            TweenService:Create(CopyButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
             if iconLabel then
                 TweenService:Create(iconLabel, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
             end
@@ -7598,7 +7619,17 @@ end
                 TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
             end)
 
+            CopyButton.MouseEnter:Connect(function()
+                TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            end)
+
+            CopyButton.MouseLeave:Connect(function()
+                TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+            end)
+
             local entryCount = 0
+            local plainEntries = {}
+            local clearConfirming = false
 
             local function AddEntry(message, entryType)
                 entryCount = entryCount + 1
@@ -7623,6 +7654,7 @@ end
                 local prefix = Prefixes[entryType] or "LOG"
 
                 local formattedText
+                local plainText
 
                 if ShowTimestamps then
                     local timestamp = os.date("%H:%M:%S")
@@ -7635,6 +7667,7 @@ end
                         math.floor(entryColors.text.R * 255), math.floor(entryColors.text.G * 255), math.floor(entryColors.text.B * 255),
                         tostring(message)
                     )
+                    plainText = string.format("[%s] [%s] %s", timestamp, prefix, tostring(message))
                 else
                     formattedText = string.format(
                         '<font color="rgb(%d,%d,%d)">[%s]</font> <font color="rgb(%d,%d,%d)">%s</font>',
@@ -7643,27 +7676,45 @@ end
                         math.floor(entryColors.text.R * 255), math.floor(entryColors.text.G * 255), math.floor(entryColors.text.B * 255),
                         tostring(message)
                     )
+                    plainText = string.format("[%s] %s", prefix, tostring(message))
                 end
 
-                local Entry = Instance.new("TextLabel")
+                table.insert(plainEntries, plainText)
+
+                local Entry = Instance.new("TextBox")
                 Entry.Name = "Entry_" .. entryCount
                 Entry.BackgroundTransparency = 1
-                Entry.Size = UDim2.new(1, 0, 0, 0)
-                Entry.AutomaticSize = Enum.AutomaticSize.Y
                 Entry.RichText = true
                 Entry.TextColor3 = Color3.fromRGB(200, 200, 200)
                 Entry.TextSize = 12
                 Entry.Font = Enum.Font.Code
                 Entry.TextXAlignment = Enum.TextXAlignment.Left
                 Entry.TextWrapped = true
+                Entry.TextEditable = false
+                Entry.ClearTextOnFocus = false
                 Entry.LayoutOrder = entryCount
                 Entry.Text = formattedText
                 Entry.ZIndex = 4
+                Entry.Size = UDim2.new(1, 0, 0, 16)
                 Entry.Parent = LogFrame
+
+                Entry:GetPropertyChangedSignal("Text"):Connect(function()
+                    if Entry.Text ~= formattedText then
+                        Entry.Text = formattedText
+                    end
+                end)
+
+                task.defer(function()
+                    task.wait()
+                    if Entry and Entry.Parent then
+                        local boundsY = Entry.TextBounds.Y
+                        Entry.Size = UDim2.new(1, 0, 0, math.max(16, boundsY + 2))
+                    end
+                end)
 
                 local entries = {}
                 for _, child in ipairs(LogFrame:GetChildren()) do
-                    if child:IsA("TextLabel") then
+                    if child:IsA("TextBox") then
                         table.insert(entries, child)
                     end
                 end
@@ -7673,34 +7724,77 @@ end
                     table.remove(entries, 1)
                 end
 
+                while #plainEntries > MaxLines do
+                    table.remove(plainEntries, 1)
+                end
+
                 Entry.TextTransparency = 1
                 TweenService:Create(Entry, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
                 task.defer(function()
                     task.wait()
+                    task.wait()
                     if LogFrame and LogFrame.Parent then
-                        LogFrame.CanvasPosition = Vector2.new(0, LogFrame.AbsoluteCanvasSize.Y)
+                        LogFrame.CanvasPosition = Vector2.new(0, math.max(0, LogLayout.AbsoluteContentSize.Y - LogFrame.AbsoluteSize.Y))
                     end
                 end)
             end
 
             local function ClearEntries()
                 for _, child in ipairs(LogFrame:GetChildren()) do
-                    if child:IsA("TextLabel") then
+                    if child:IsA("TextBox") then
                         TweenService:Create(child, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
                     end
                 end
                 task.delay(0.25, function()
                     for _, child in ipairs(LogFrame:GetChildren()) do
-                        if child:IsA("TextLabel") then
+                        if child:IsA("TextBox") then
                             child:Destroy()
                         end
                     end
                     entryCount = 0
+                    plainEntries = {}
+                    LogFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+                    LogFrame.CanvasPosition = Vector2.new(0, 0)
                 end)
             end
 
-            ClearButton.MouseButton1Click:Connect(ClearEntries)
+            ClearButton.MouseButton1Click:Connect(function()
+                if #plainEntries == 0 then return end
+
+                if clearConfirming then
+                    clearConfirming = false
+                    ClearButton.ImageColor3 = SelectedTheme and SelectedTheme.TextColor or Color3.fromRGB(200, 200, 200)
+                    ClearEntries()
+                    return
+                end
+
+                clearConfirming = true
+                ClearButton.ImageColor3 = Color3.fromRGB(230, 70, 70)
+                TweenService:Create(ClearButton, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+
+                task.delay(2, function()
+                    if clearConfirming then
+                        clearConfirming = false
+                        ClearButton.ImageColor3 = SelectedTheme and SelectedTheme.TextColor or Color3.fromRGB(200, 200, 200)
+                        TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+                    end
+                end)
+            end)
+
+            CopyButton.MouseButton1Click:Connect(function()
+                if #plainEntries == 0 then return end
+                local text = table.concat(plainEntries, "\n")
+                if setclipboard then
+                    setclipboard(text)
+                elseif toclipboard then
+                    toclipboard(text)
+                end
+                TweenService:Create(CopyButton, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+                task.delay(0.15, function()
+                    TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+                end)
+            end)
 
             function ConsoleValue:Log(message)
                 AddEntry(tostring(message), "log")
