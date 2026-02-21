@@ -7420,404 +7420,449 @@ end
             return DropdownSettings
         end
 
-		function Tab:CreateConsole(ConsoleSettings, SectionParent)
-		    local ConsoleValue = {}
-		
-		    SectionParent = SectionParent or ConsoleSettings.SectionParent
-		
-		    local MaxLines = ConsoleSettings.MaxLines or 100
-		    local ConsoleHeight = ConsoleSettings.Height or 150
-		    local ShowTimestamps = ConsoleSettings.Timestamps ~= false
-		
-		    local Console = Instance.new("Frame")
-		    Console.Name = "Console"
-		    Console.BorderSizePixel = 0
-		    Console.ZIndex = 2
-		    Console.Visible = true
-		
-		    if SectionParent then
-		        Console.Size = UDim2.new(1, -12, 0, ConsoleHeight + 40)
-		    else
-		        Console.Size = UDim2.new(0, 465, 0, ConsoleHeight + 40)
-		    end
-		
-		    local ConsoleCorner = Instance.new("UICorner")
-		    ConsoleCorner.CornerRadius = UDim.new(0, 4)
-		    ConsoleCorner.Parent = Console
-		
-		    local ConsoleStroke = Instance.new("UIStroke")
-		    ConsoleStroke.Parent = Console
-		
-		    local Title = Instance.new("TextLabel")
-		    Title.Name = "Title"
-		    Title.Text = ConsoleSettings.Title or "Console"
-		    Title.RichText = true
-		    Title.Size = UDim2.new(1, -62, 0, 30)
-		    Title.Position = UDim2.new(0, 12, 0, 0)
-		    Title.BackgroundTransparency = 1
-		    Title.TextSize = 13
-		    Title.Font = Enum.Font.GothamBold
-		    Title.TextXAlignment = Enum.TextXAlignment.Left
-		    Title.TextYAlignment = Enum.TextYAlignment.Center
-		    Title.ZIndex = 3
-		    Title.Parent = Console
-		
-		    local iconLabel = nil
-		    if ConsoleSettings.Icon then
-		        iconLabel = Instance.new("ImageLabel")
-		        iconLabel.Name = "ConsoleIcon"
-		        iconLabel.Size = UDim2.new(0, 18, 0, 18)
-		        iconLabel.Position = UDim2.new(0, 10, 0, 7)
-		        iconLabel.BackgroundTransparency = 1
-		        iconLabel.ZIndex = 3
-		        iconLabel.Parent = Console
-		
-		        if typeof(ConsoleSettings.Icon) == "string" and not tonumber(ConsoleSettings.Icon) then
-		            local success, asset = pcall(getIcon, ConsoleSettings.Icon)
-		            if success then
-		                iconLabel.Image = "rbxassetid://" .. asset.id
-		                iconLabel.ImageRectOffset = asset.imageRectOffset
-		                iconLabel.ImageRectSize = asset.imageRectSize
-		            end
-		        else
-		            iconLabel.Image = "rbxassetid://" .. tostring(ConsoleSettings.Icon)
-		        end
-		
-		        Title.Position = UDim2.new(0, 32, 0, 0)
-		        Title.Size = UDim2.new(1, -82, 0, 30)
-		    end
-		
-		    local ClearButton = Instance.new("ImageButton")
-		    ClearButton.Name = "ClearButton"
-		    ClearButton.Size = UDim2.new(0, 16, 0, 16)
-		    ClearButton.Position = UDim2.new(1, -26, 0, 8)
-		    ClearButton.BackgroundTransparency = 1
-		    ClearButton.ZIndex = 4
-		    ClearButton.Parent = Console
-		
-		    local clearSuccess, clearAsset = pcall(getIcon, "trash-2")
-		    if clearSuccess then
-		        ClearButton.Image = "rbxassetid://" .. clearAsset.id
-		        ClearButton.ImageRectOffset = clearAsset.imageRectOffset
-		        ClearButton.ImageRectSize = clearAsset.imageRectSize
-		    end
-		
-		    local CopyButton = Instance.new("ImageButton")
-		    CopyButton.Name = "CopyButton"
-		    CopyButton.Size = UDim2.new(0, 16, 0, 16)
-		    CopyButton.Position = UDim2.new(1, -46, 0, 8)
-		    CopyButton.BackgroundTransparency = 1
-		    CopyButton.ZIndex = 4
-		    CopyButton.Parent = Console
-		
-		    local copySuccess, copyAsset = pcall(getIcon, "copy")
-		    if copySuccess then
-		        CopyButton.Image = "rbxassetid://" .. copyAsset.id
-		        CopyButton.ImageRectOffset = copyAsset.imageRectOffset
-		        CopyButton.ImageRectSize = copyAsset.imageRectSize
-		    end
-		
-		    local LogFrame = Instance.new("ScrollingFrame")
-		    LogFrame.Name = "LogFrame"
-		    LogFrame.Size = UDim2.new(1, -16, 1, -38)
-		    LogFrame.Position = UDim2.new(0, 8, 0, 32)
-		    LogFrame.BorderSizePixel = 0
-		    LogFrame.ScrollBarThickness = 3
-		    LogFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
-		    LogFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-		    LogFrame.ScrollingDirection = Enum.ScrollingDirection.Y
-		    LogFrame.ZIndex = 3
-		    LogFrame.Parent = Console
-		
-		    local LogCorner = Instance.new("UICorner")
-		    LogCorner.CornerRadius = UDim.new(0, 4)
-		    LogCorner.Parent = LogFrame
-		
-		    local LogStroke = Instance.new("UIStroke")
-		    LogStroke.Parent = LogFrame
-		
-		    local LogLayout = Instance.new("UIListLayout")
-		    LogLayout.SortOrder = Enum.SortOrder.LayoutOrder
-		    LogLayout.Padding = UDim.new(0, 1)
-		    LogLayout.Parent = LogFrame
-		
-		    local LogPadding = Instance.new("UIPadding")
-		    LogPadding.PaddingLeft = UDim.new(0, 6)
-		    LogPadding.PaddingRight = UDim.new(0, 6)
-		    LogPadding.PaddingTop = UDim.new(0, 4)
-		    LogPadding.PaddingBottom = UDim.new(0, 4)
-		    LogPadding.Parent = LogFrame
-		
-		    LogLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		        LogFrame.CanvasSize = UDim2.new(0, 0, 0, LogLayout.AbsoluteContentSize.Y + 8)
-		    end)
-		
-		    local function DarkenColor(color, factor)
-		        return Color3.fromRGB(
-		            math.max(0, math.floor(color.R * 255 * factor)),
-		            math.max(0, math.floor(color.G * 255 * factor)),
-		            math.max(0, math.floor(color.B * 255 * factor))
-		        )
-		    end
-		
-		    if SelectedTheme then
-		        Console.BackgroundColor3 = SelectedTheme.ElementBackground
-		        ConsoleStroke.Color = SelectedTheme.ElementStroke
-		        Title.TextColor3 = SelectedTheme.TextColor
-		        LogFrame.BackgroundColor3 = DarkenColor(SelectedTheme.SecondaryElementBackground, 0.45)
-		        LogStroke.Color = DarkenColor(SelectedTheme.ElementStroke, 0.6)
-		        ClearButton.ImageColor3 = SelectedTheme.TextColor
-		        CopyButton.ImageColor3 = SelectedTheme.TextColor
-		        if iconLabel then
-		            iconLabel.ImageColor3 = SelectedTheme.TextColor
-		        end
-		    end
-		
-		    Tab.Elements[ConsoleSettings.Title or "Console"] = {
-		        type = "console",
-		        section = SectionParent,
-		        element = Console
-		    }
-		
-		    if SectionParent then
-		        Console.Parent = SectionParent.Holder
-		    else
-		        Console.Parent = TabPage
-		    end
-		
-		    Console.BackgroundTransparency = 1
-		    ConsoleStroke.Transparency = 1
-		    Title.TextTransparency = 1
-		    LogFrame.BackgroundTransparency = 1
-		    LogFrame.ScrollBarImageTransparency = 1
-		    LogStroke.Transparency = 1
-		    ClearButton.ImageTransparency = 1
-		    CopyButton.ImageTransparency = 1
-		    if iconLabel then
-		        iconLabel.ImageTransparency = 1
-		    end
-		
-		    TweenService:Create(Console, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.15}):Play()
-		    TweenService:Create(ConsoleStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-		    TweenService:Create(Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-		    TweenService:Create(LogFrame, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.3}):Play()
-		    TweenService:Create(LogFrame, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
-		    TweenService:Create(LogStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-		    TweenService:Create(ClearButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-		    TweenService:Create(CopyButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-		    if iconLabel then
-		        TweenService:Create(iconLabel, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-		    end
-		
-		    ClearButton.MouseEnter:Connect(function()
-		        TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-		    end)
-		
-		    ClearButton.MouseLeave:Connect(function()
-		        TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-		    end)
-		
-		    CopyButton.MouseEnter:Connect(function()
-		        TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-		    end)
-		
-		    CopyButton.MouseLeave:Connect(function()
-		        TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-		    end)
-		
-		    local entryCount = 0
-		    local plainEntries = {}
-		    local clearConfirming = false
-		
-		    local function AddEntry(message, entryType)
-		        entryCount = entryCount + 1
-		
-		        local TypeColors = {
-		            log = {prefix = Color3.fromRGB(180, 180, 180), text = Color3.fromRGB(200, 200, 200)},
-		            warn = {prefix = Color3.fromRGB(230, 190, 50), text = Color3.fromRGB(230, 210, 100)},
-		            error = {prefix = Color3.fromRGB(230, 70, 70), text = Color3.fromRGB(230, 120, 120)},
-		            success = {prefix = Color3.fromRGB(70, 200, 70), text = Color3.fromRGB(120, 220, 120)},
-		            info = {prefix = Color3.fromRGB(100, 170, 230), text = Color3.fromRGB(140, 190, 230)}
-		        }
-		
-		        local Prefixes = {
-		            log = "LOG",
-		            warn = "WARN",
-		            error = "ERROR",
-		            success = "OK",
-		            info = "INFO"
-		        }
-		
-		        local entryColors = TypeColors[entryType] or TypeColors.log
-		        local prefix = Prefixes[entryType] or "LOG"
-		
-		        local plainText
-		
-		        if ShowTimestamps then
-		            local timestamp = os.date("%H:%M:%S")
-		            plainText = string.format("[%s] [%s] %s", timestamp, prefix, tostring(message))
-		        else
-		            plainText = string.format("[%s] %s", prefix, tostring(message))
-		        end
-		
-		        table.insert(plainEntries, plainText)
-		
-		        local Entry = Instance.new("TextBox")
-		        Entry.Name = "Entry_" .. entryCount
-		        Entry.BackgroundTransparency = 1
-		        Entry.RichText = false
-		        Entry.TextColor3 = entryColors.text
-		        Entry.TextSize = 12
-		        Entry.Font = Enum.Font.Code
-		        Entry.TextXAlignment = Enum.TextXAlignment.Left
-		        Entry.TextWrapped = true
-		        Entry.TextEditable = false
-		        Entry.ClearTextOnFocus = false
-		        Entry.LayoutOrder = entryCount
-		        Entry.Text = plainText
-		        Entry.ZIndex = 4
-		        Entry.Size = UDim2.new(1, 0, 0, 16)
-		        Entry.Parent = LogFrame
-		
-		        task.defer(function()
-		            task.wait()
-		            if Entry and Entry.Parent then
-		                local boundsY = Entry.TextBounds.Y
-		                Entry.Size = UDim2.new(1, 0, 0, math.max(16, boundsY + 2))
-		            end
-		        end)
-		
-		        local entries = {}
-		        for _, child in ipairs(LogFrame:GetChildren()) do
-		            if child:IsA("TextBox") then
-		                table.insert(entries, child)
-		            end
-		        end
-		
-		        while #entries > MaxLines do
-		            entries[1]:Destroy()
-		            table.remove(entries, 1)
-		        end
-		
-		        while #plainEntries > MaxLines do
-		            table.remove(plainEntries, 1)
-		        end
-		
-		        Entry.TextTransparency = 1
-		        TweenService:Create(Entry, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-		
-		        task.defer(function()
-		            task.wait()
-		            task.wait()
-		            if LogFrame and LogFrame.Parent then
-		                LogFrame.CanvasPosition = Vector2.new(0, math.max(0, LogLayout.AbsoluteContentSize.Y - LogFrame.AbsoluteSize.Y))
-		            end
-		        end)
-		    end
-		
-		    local function ClearEntries()
-		        for _, child in ipairs(LogFrame:GetChildren()) do
-		            if child:IsA("TextBox") then
-		                TweenService:Create(child, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-		            end
-		        end
-		        task.delay(0.25, function()
-		            for _, child in ipairs(LogFrame:GetChildren()) do
-		                if child:IsA("TextBox") then
-		                    child:Destroy()
-		                end
-		            end
-		            entryCount = 0
-		            plainEntries = {}
-		            LogFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-		            LogFrame.CanvasPosition = Vector2.new(0, 0)
-		        end)
-		    end
-		
-		    ClearButton.MouseButton1Click:Connect(function()
-		        if #plainEntries == 0 then return end
-		
-		        if clearConfirming then
-		            clearConfirming = false
-		            local originalColor = SelectedTheme and SelectedTheme.TextColor or Color3.fromRGB(200, 200, 200)
-		            TweenService:Create(ClearButton, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageColor3 = originalColor}):Play()
-		            ClearEntries()
-		            return
-		        end
-		
-		        clearConfirming = true
-		        TweenService:Create(ClearButton, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageColor3 = Color3.fromRGB(230, 70, 70)}):Play()
-		        TweenService:Create(ClearButton, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-		
-		        task.delay(2, function()
-		            if clearConfirming then
-		                clearConfirming = false
-		                local originalColor = SelectedTheme and SelectedTheme.TextColor or Color3.fromRGB(200, 200, 200)
-		                TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageColor3 = originalColor}):Play()
-		                TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-		            end
-		        end)
-		    end)
-		
-		    CopyButton.MouseButton1Click:Connect(function()
-		        if #plainEntries == 0 then return end
-		        local text = table.concat(plainEntries, "\n")
-		        if setclipboard then
-		            setclipboard(text)
-		        elseif toclipboard then
-		            toclipboard(text)
-		        end
-		        
-		        local originalColor = SelectedTheme and SelectedTheme.TextColor or Color3.fromRGB(200, 200, 200)
-		        TweenService:Create(CopyButton, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageColor3 = Color3.fromRGB(70, 230, 70)}):Play()
-		        TweenService:Create(CopyButton, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-		        
-		        task.delay(1.5, function()
-		            TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageColor3 = originalColor}):Play()
-		            TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-		        end)
-		    end)
-		
-		    function ConsoleValue:Log(message)
-		        AddEntry(tostring(message), "log")
-		    end
-		
-		    function ConsoleValue:Warn(message)
-		        AddEntry(tostring(message), "warn")
-		    end
-		
-		    function ConsoleValue:Error(message)
-		        AddEntry(tostring(message), "error")
-		    end
-		
-		    function ConsoleValue:Success(message)
-		        AddEntry(tostring(message), "success")
-		    end
-		
-		    function ConsoleValue:Info(message)
-		        AddEntry(tostring(message), "info")
-		    end
-		
-		    function ConsoleValue:Clear()
-		        ClearEntries()
-		    end
-		
-		    function ConsoleValue:Set(NewSettings)
-		        if NewSettings.Title then
-		            Title.Text = NewSettings.Title
-		        end
-		    end
-		
-		    function ConsoleValue:Destroy()
-		        Console:Destroy()
-		    end
-		
-		    function ConsoleValue:Visible(bool)
-		        Console.Visible = bool
-		    end
-		
-		    return ConsoleValue
-		end
+        function Tab:CreateConsole(ConsoleSettings, SectionParent)
+            local ConsoleValue = {}
+
+            SectionParent = SectionParent or ConsoleSettings.SectionParent
+
+            local MaxLines = ConsoleSettings.MaxLines or 100
+            local ConsoleHeight = 150
+            local ShowTimestamps = ConsoleSettings.Timestamps ~= false
+
+            local Console = Instance.new("Frame")
+            Console.Name = "Console"
+            Console.BorderSizePixel = 0
+            Console.ZIndex = 2
+            Console.Visible = true
+
+            if SectionParent then
+                Console.Size = UDim2.new(1, -12, 0, ConsoleHeight + 40)
+            else
+                Console.Size = UDim2.new(0, 465, 0, ConsoleHeight + 40)
+            end
+
+            local ConsoleCorner = Instance.new("UICorner")
+            ConsoleCorner.CornerRadius = UDim.new(0, 4)
+            ConsoleCorner.Parent = Console
+
+            local ConsoleStroke = Instance.new("UIStroke")
+            ConsoleStroke.Parent = Console
+
+            local Title = Instance.new("TextLabel")
+            Title.Name = "Title"
+            Title.Text = ConsoleSettings.Title or "Console"
+            Title.RichText = true
+            Title.Size = UDim2.new(1, -62, 0, 30)
+            Title.Position = UDim2.new(0, 12, 0, 0)
+            Title.BackgroundTransparency = 1
+            Title.TextSize = 13
+            Title.Font = Enum.Font.GothamBold
+            Title.TextXAlignment = Enum.TextXAlignment.Left
+            Title.TextYAlignment = Enum.TextYAlignment.Center
+            Title.ZIndex = 3
+            Title.Parent = Console
+
+            local iconLabel = nil
+            if ConsoleSettings.Icon then
+                iconLabel = Instance.new("ImageLabel")
+                iconLabel.Name = "ConsoleIcon"
+                iconLabel.Size = UDim2.new(0, 18, 0, 18)
+                iconLabel.Position = UDim2.new(0, 10, 0, 7)
+                iconLabel.BackgroundTransparency = 1
+                iconLabel.ZIndex = 3
+                iconLabel.Parent = Console
+
+                if typeof(ConsoleSettings.Icon) == "string" and not tonumber(ConsoleSettings.Icon) then
+                    local success, asset = pcall(getIcon, ConsoleSettings.Icon)
+                    if success then
+                        iconLabel.Image = "rbxassetid://" .. asset.id
+                        iconLabel.ImageRectOffset = asset.imageRectOffset
+                        iconLabel.ImageRectSize = asset.imageRectSize
+                    end
+                else
+                    iconLabel.Image = "rbxassetid://" .. tostring(ConsoleSettings.Icon)
+                end
+
+                Title.Position = UDim2.new(0, 32, 0, 0)
+                Title.Size = UDim2.new(1, -82, 0, 30)
+            end
+
+            local ClearButton = Instance.new("ImageButton")
+            ClearButton.Name = "ClearButton"
+            ClearButton.Size = UDim2.new(0, 16, 0, 16)
+            ClearButton.Position = UDim2.new(1, -26, 0, 8)
+            ClearButton.BackgroundTransparency = 1
+            ClearButton.ZIndex = 4
+            ClearButton.Parent = Console
+
+            local clearSuccess, clearAsset = pcall(getIcon, "trash-2")
+            if clearSuccess then
+                ClearButton.Image = "rbxassetid://" .. clearAsset.id
+                ClearButton.ImageRectOffset = clearAsset.imageRectOffset
+                ClearButton.ImageRectSize = clearAsset.imageRectSize
+            end
+
+            local ClearButtonTooltip = Instance.new("TextLabel")
+            ClearButtonTooltip.Name = "ClearTooltip"
+            ClearButtonTooltip.Text = "Clear (click twice)"
+            ClearButtonTooltip.Size = UDim2.new(0, 100, 0, 20)
+            ClearButtonTooltip.Position = UDim2.new(0.5, -50, 1, 5)
+            ClearButtonTooltip.AnchorPoint = Vector2.new(0.5, 0)
+            ClearButtonTooltip.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            ClearButtonTooltip.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ClearButtonTooltip.TextSize = 11
+            ClearButtonTooltip.Font = Enum.Font.Gotham
+            ClearButtonTooltip.ZIndex = 5
+            ClearButtonTooltip.Visible = false
+            ClearButtonTooltip.Parent = ClearButton
+
+            local ClearTooltipCorner = Instance.new("UICorner")
+            ClearTooltipCorner.CornerRadius = UDim.new(0, 4)
+            ClearTooltipCorner.Parent = ClearButtonTooltip
+
+            local CopyButton = Instance.new("ImageButton")
+            CopyButton.Name = "CopyButton"
+            CopyButton.Size = UDim2.new(0, 16, 0, 16)
+            CopyButton.Position = UDim2.new(1, -46, 0, 8)
+            CopyButton.BackgroundTransparency = 1
+            CopyButton.ZIndex = 4
+            CopyButton.Parent = Console
+
+            local copySuccess, copyAsset = pcall(getIcon, "copy")
+            if copySuccess then
+                CopyButton.Image = "rbxassetid://" .. copyAsset.id
+                CopyButton.ImageRectOffset = copyAsset.imageRectOffset
+                CopyButton.ImageRectSize = copyAsset.imageRectSize
+            end
+
+            local CopyButtonTooltip = Instance.new("TextLabel")
+            CopyButtonTooltip.Name = "CopyTooltip"
+            CopyButtonTooltip.Text = "Copy all"
+            CopyButtonTooltip.Size = UDim2.new(0, 60, 0, 20)
+            CopyButtonTooltip.Position = UDim2.new(0.5, -30, 1, 5)
+            CopyButtonTooltip.AnchorPoint = Vector2.new(0.5, 0)
+            CopyButtonTooltip.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            CopyButtonTooltip.TextColor3 = Color3.fromRGB(255, 255, 255)
+            CopyButtonTooltip.TextSize = 11
+            CopyButtonTooltip.Font = Enum.Font.Gotham
+            CopyButtonTooltip.ZIndex = 5
+            CopyButtonTooltip.Visible = false
+            CopyButtonTooltip.Parent = CopyButton
+
+            local CopyTooltipCorner = Instance.new("UICorner")
+            CopyTooltipCorner.CornerRadius = UDim.new(0, 4)
+            CopyTooltipCorner.Parent = CopyButtonTooltip
+
+            local LogFrame = Instance.new("ScrollingFrame")
+            LogFrame.Name = "LogFrame"
+            LogFrame.Size = UDim2.new(1, -16, 1, -38)
+            LogFrame.Position = UDim2.new(0, 8, 0, 32)
+            LogFrame.BorderSizePixel = 0
+            LogFrame.ScrollBarThickness = 3
+            LogFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+            LogFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+            LogFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+            LogFrame.ZIndex = 3
+            LogFrame.Parent = Console
+
+            local LogCorner = Instance.new("UICorner")
+            LogCorner.CornerRadius = UDim.new(0, 4)
+            LogCorner.Parent = LogFrame
+
+            local LogStroke = Instance.new("UIStroke")
+            LogStroke.Parent = LogFrame
+
+            local LogLayout = Instance.new("UIListLayout")
+            LogLayout.SortOrder = Enum.SortOrder.LayoutOrder
+            LogLayout.Padding = UDim.new(0, 1)
+            LogLayout.Parent = LogFrame
+
+            local LogPadding = Instance.new("UIPadding")
+            LogPadding.PaddingLeft = UDim.new(0, 6)
+            LogPadding.PaddingRight = UDim.new(0, 6)
+            LogPadding.PaddingTop = UDim.new(0, 4)
+            LogPadding.PaddingBottom = UDim.new(0, 4)
+            LogPadding.Parent = LogFrame
+
+            LogLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                LogFrame.CanvasSize = UDim2.new(0, 0, 0, LogLayout.AbsoluteContentSize.Y + 8)
+            end)
+
+            local function DarkenColor(color, factor)
+                return Color3.fromRGB(
+                    math.max(0, math.floor(color.R * 255 * factor)),
+                    math.max(0, math.floor(color.G * 255 * factor)),
+                    math.max(0, math.floor(color.B * 255 * factor))
+                )
+            end
+
+            if SelectedTheme then
+                Console.BackgroundColor3 = SelectedTheme.ElementBackground
+                ConsoleStroke.Color = SelectedTheme.ElementStroke
+                Title.TextColor3 = SelectedTheme.TextColor
+                LogFrame.BackgroundColor3 = DarkenColor(SelectedTheme.SecondaryElementBackground, 0.45)
+                LogStroke.Color = DarkenColor(SelectedTheme.ElementStroke, 0.6)
+                ClearButton.ImageColor3 = SelectedTheme.TextColor
+                CopyButton.ImageColor3 = SelectedTheme.TextColor
+                if iconLabel then
+                    iconLabel.ImageColor3 = SelectedTheme.TextColor
+                end
+            end
+
+            Tab.Elements[ConsoleSettings.Title or "Console"] = {
+                type = "console",
+                section = SectionParent,
+                element = Console
+            }
+
+            if SectionParent then
+                Console.Parent = SectionParent.Holder
+            else
+                Console.Parent = TabPage
+            end
+
+            Console.BackgroundTransparency = 1
+            ConsoleStroke.Transparency = 1
+            Title.TextTransparency = 1
+            LogFrame.BackgroundTransparency = 1
+            LogFrame.ScrollBarImageTransparency = 1
+            LogStroke.Transparency = 1
+            ClearButton.ImageTransparency = 1
+            CopyButton.ImageTransparency = 1
+            if iconLabel then
+                iconLabel.ImageTransparency = 1
+            end
+
+            TweenService:Create(Console, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.15}):Play()
+            TweenService:Create(ConsoleStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            TweenService:Create(LogFrame, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.3}):Play()
+            TweenService:Create(LogFrame, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
+            TweenService:Create(LogStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(ClearButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+            TweenService:Create(CopyButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+            if iconLabel then
+                TweenService:Create(iconLabel, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            end
+
+            ClearButton.MouseEnter:Connect(function()
+                ClearButtonTooltip.Visible = true
+                TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            end)
+
+            ClearButton.MouseLeave:Connect(function()
+                ClearButtonTooltip.Visible = false
+                TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+            end)
+
+            CopyButton.MouseEnter:Connect(function()
+                CopyButtonTooltip.Visible = true
+                TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            end)
+
+            CopyButton.MouseLeave:Connect(function()
+                CopyButtonTooltip.Visible = false
+                TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+            end)
+
+            local entryCount = 0
+            local plainEntries = {}
+            local clearConfirming = false
+
+            local function AddEntry(message, entryType)
+                entryCount = entryCount + 1
+
+                local TypeColors = {
+                    log = {prefix = Color3.fromRGB(180, 180, 180), text = Color3.fromRGB(200, 200, 200)},
+                    warn = {prefix = Color3.fromRGB(230, 190, 50), text = Color3.fromRGB(230, 210, 100)},
+                    error = {prefix = Color3.fromRGB(230, 70, 70), text = Color3.fromRGB(230, 120, 120)},
+                    success = {prefix = Color3.fromRGB(70, 200, 70), text = Color3.fromRGB(120, 220, 120)},
+                    info = {prefix = Color3.fromRGB(100, 170, 230), text = Color3.fromRGB(140, 190, 230)}
+                }
+
+                local Prefixes = {
+                    log = "LOG",
+                    warn = "WARN",
+                    error = "ERROR",
+                    success = "OK",
+                    info = "INFO"
+                }
+
+                local entryColors = TypeColors[entryType] or TypeColors.log
+                local prefix = Prefixes[entryType] or "LOG"
+
+                local plainText
+
+                if ShowTimestamps then
+                    local timestamp = os.date("%H:%M:%S")
+                    plainText = string.format("[%s] [%s] %s", timestamp, prefix, tostring(message))
+                else
+                    plainText = string.format("[%s] %s", prefix, tostring(message))
+                end
+
+                table.insert(plainEntries, plainText)
+
+                local Entry = Instance.new("TextBox")
+                Entry.Name = "Entry_" .. entryCount
+                Entry.BackgroundTransparency = 1
+                Entry.RichText = false
+                Entry.TextColor3 = entryColors.text
+                Entry.TextSize = 12
+                Entry.Font = Enum.Font.Code
+                Entry.TextXAlignment = Enum.TextXAlignment.Left
+                Entry.TextWrapped = true
+                Entry.TextEditable = false
+                Entry.ClearTextOnFocus = false
+                Entry.LayoutOrder = entryCount
+                Entry.Text = plainText
+                Entry.ZIndex = 4
+                Entry.Size = UDim2.new(1, 0, 0, 16)
+                Entry.Parent = LogFrame
+
+                task.defer(function()
+                    task.wait()
+                    if Entry and Entry.Parent then
+                        local boundsY = Entry.TextBounds.Y
+                        Entry.Size = UDim2.new(1, 0, 0, math.max(16, boundsY + 2))
+                    end
+                end)
+
+                local entries = {}
+                for _, child in ipairs(LogFrame:GetChildren()) do
+                    if child:IsA("TextBox") then
+                        table.insert(entries, child)
+                    end
+                end
+
+                while #entries > MaxLines do
+                    entries[1]:Destroy()
+                    table.remove(entries, 1)
+                end
+
+                while #plainEntries > MaxLines do
+                    table.remove(plainEntries, 1)
+                end
+
+                Entry.TextTransparency = 1
+                TweenService:Create(Entry, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+
+                task.defer(function()
+                    task.wait()
+                    task.wait()
+                    if LogFrame and LogFrame.Parent then
+                        LogFrame.CanvasPosition = Vector2.new(0, math.max(0, LogLayout.AbsoluteContentSize.Y - LogFrame.AbsoluteSize.Y))
+                    end
+                end)
+            end
+
+            local function ClearEntries()
+                for _, child in ipairs(LogFrame:GetChildren()) do
+                    if child:IsA("TextBox") then
+                        TweenService:Create(child, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                    end
+                end
+                task.delay(0.25, function()
+                    for _, child in ipairs(LogFrame:GetChildren()) do
+                        if child:IsA("TextBox") then
+                            child:Destroy()
+                        end
+                    end
+                    entryCount = 0
+                    plainEntries = {}
+                    LogFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+                    LogFrame.CanvasPosition = Vector2.new(0, 0)
+                end)
+            end
+
+            ClearButton.MouseButton1Click:Connect(function()
+                if #plainEntries == 0 then return end
+
+                if clearConfirming then
+                    clearConfirming = false
+                    ClearButtonTooltip.Text = "Clear (click twice)"
+                    local originalColor = SelectedTheme and SelectedTheme.TextColor or Color3.fromRGB(200, 200, 200)
+                    TweenService:Create(ClearButton, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageColor3 = originalColor}):Play()
+                    ClearEntries()
+                    return
+                end
+
+                clearConfirming = true
+                ClearButtonTooltip.Text = "Click again to confirm"
+                TweenService:Create(ClearButton, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageColor3 = Color3.fromRGB(230, 70, 70)}):Play()
+                TweenService:Create(ClearButton, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+
+                task.delay(2, function()
+                    if clearConfirming then
+                        clearConfirming = false
+                        ClearButtonTooltip.Text = "Clear (click twice)"
+                        local originalColor = SelectedTheme and SelectedTheme.TextColor or Color3.fromRGB(200, 200, 200)
+                        TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageColor3 = originalColor}):Play()
+                        TweenService:Create(ClearButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+                    end
+                end)
+            end)
+
+            CopyButton.MouseButton1Click:Connect(function()
+                if #plainEntries == 0 then return end
+                local text = table.concat(plainEntries, "\n")
+                if setclipboard then
+                    setclipboard(text)
+                elseif toclipboard then
+                    toclipboard(text)
+                end
+
+                CopyButtonTooltip.Text = "Copied!"
+                local originalColor = SelectedTheme and SelectedTheme.TextColor or Color3.fromRGB(200, 200, 200)
+                TweenService:Create(CopyButton, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageColor3 = Color3.fromRGB(70, 230, 70)}):Play()
+                TweenService:Create(CopyButton, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+
+                task.delay(1.5, function()
+                    CopyButtonTooltip.Text = "Copy all"
+                    TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageColor3 = originalColor}):Play()
+                    TweenService:Create(CopyButton, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
+                end)
+            end)
+
+            function ConsoleValue:Log(message)
+                AddEntry(tostring(message), "log")
+            end
+
+            function ConsoleValue:Warn(message)
+                AddEntry(tostring(message), "warn")
+            end
+
+            function ConsoleValue:Error(message)
+                AddEntry(tostring(message), "error")
+            end
+
+            function ConsoleValue:Success(message)
+                AddEntry(tostring(message), "success")
+            end
+
+            function ConsoleValue:Info(message)
+                AddEntry(tostring(message), "info")
+            end
+
+            function ConsoleValue:Clear()
+                ClearEntries()
+            end
+
+            function ConsoleValue:Set(NewSettings)
+                if NewSettings.Title then
+                    Title.Text = NewSettings.Title
+                end
+            end
+
+            function ConsoleValue:Destroy()
+                Console:Destroy()
+            end
+
+            function ConsoleValue:Visible(bool)
+                Console.Visible = bool
+            end
+
+            return ConsoleValue
+        end
 
         function Tab:CreateColorPicker(ColorPickerSettings)
             local ColorPicker = Elements.Template.ColorPicker:Clone()
