@@ -35,6 +35,7 @@ Change Logs (dd/mm/yy):
 // [19.1.2026] Released!
 // [14.2.2026] Tabs (text) slide(s) when too long now! // Added New Feature! The Console!
 // [21.2.2026] Made Console's output selectable + Copieable; Added confirmation button for clearing console; Made the Console not resizeable
+
 ]]
 
 local TweenService = game:GetService("TweenService")
