@@ -35,7 +35,7 @@ Change Logs (dd/mm/yy):
 // [19.1.2026] Released!
 // [14.2.2026] Tabs (text) slide(s) when too long now! // Added New Feature! The Console!
 // [21.2.2026] Made Console's output selectable + Copieable; Added confirmation button for clearing console; Made the Console not resizeable
-// [2.3.2026] Small Issue patches
+// [2.3.2026] Small Issue patches (Identified random console errors, Console rows; elements not fading out when minimizing properly)
 
 ]]
 
@@ -6661,61 +6661,78 @@ end
             TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
             function LabelValue:Set(NewSettings)
-                local newText, newIcon, newBg
-                if typeof(NewSettings) == "table" then
-                    newText = NewSettings.Text or NewSettings[1] or ""
-                    newIcon = NewSettings.Icon or NewSettings[2]
-                    newBg = NewSettings.Background
-                else
-                    newText = NewSettings or ""
-                end
-
-                Label.Title.Text = newText
-
-                task.wait()
-                updateLabelSize()
-
-                if newBg then
-                    if bgColors[newBg] then
-                        Label.BackgroundColor3 = bgColors[newBg].bg
-                        Label.Title.TextColor3 = bgColors[newBg].text
-                        if iconLabel then iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255) end
-                        Label:SetAttribute("HasCustomBackground", true)
-                        Label:SetAttribute("CustomBgR", bgColors[newBg].bg.R)
-                        Label:SetAttribute("CustomBgG", bgColors[newBg].bg.G)
-                        Label:SetAttribute("CustomBgB", bgColors[newBg].bg.B)
-                        Label:SetAttribute("CustomTextR", bgColors[newBg].text.R)
-                        Label:SetAttribute("CustomTextG", bgColors[newBg].text.G)
-                        Label:SetAttribute("CustomTextB", bgColors[newBg].text.B)
-                    elseif string.match(tostring(newBg), "^#%x%x%x%x%x%x$") then
-                        local r, g, b = string.match(newBg, "^#(%x%x)(%x%x)(%x%x)$")
-                        local bgColor = Color3.fromRGB(tonumber(r, 16), tonumber(g, 16), tonumber(b, 16))
-                        Label.BackgroundColor3 = bgColor
-                        Label.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-                        if iconLabel then iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255) end
-                        Label:SetAttribute("HasCustomBackground", true)
-                        Label:SetAttribute("CustomBgR", bgColor.R)
-                        Label:SetAttribute("CustomBgG", bgColor.G)
-                        Label:SetAttribute("CustomBgB", bgColor.B)
-                        Label:SetAttribute("CustomTextR", 1)
-                        Label:SetAttribute("CustomTextG", 1)
-                        Label:SetAttribute("CustomTextB", 1)
-                    end
-                elseif NewSettings.Background == nil and Label:GetAttribute("HasCustomBackground") then
-                    Label:SetAttribute("HasCustomBackground", nil)
-                    Label:SetAttribute("CustomBgR", nil)
-                    Label:SetAttribute("CustomBgG", nil)
-                    Label:SetAttribute("CustomBgB", nil)
-                    Label:SetAttribute("CustomTextR", nil)
-                    Label:SetAttribute("CustomTextG", nil)
-                    Label:SetAttribute("CustomTextB", nil)
-                    if SelectedTheme then
-                        Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-                        Label.Title.TextColor3 = SelectedTheme.TextColor
-                        if iconLabel then iconLabel.ImageColor3 = SelectedTheme.TextColor end
-                    end
-                end
-            end
+			    if not Label or not Label.Parent then return end
+			    
+			    local newText, newIcon, newBg
+			    if typeof(NewSettings) == "table" then
+			        newText = NewSettings.Text or NewSettings[1] or ""
+			        newIcon = NewSettings.Icon or NewSettings[2]
+			        newBg = NewSettings.Background
+			    else
+			        newText = NewSettings or ""
+			    end
+			
+			    if Label:FindFirstChild("Title") then
+			        Label.Title.Text = newText
+			    end
+			
+			    task.wait()
+			    if not Label or not Label.Parent then return end
+			    updateLabelSize()
+			
+			    if newBg then
+			        if bgColors[newBg] then
+			            Label.BackgroundColor3 = bgColors[newBg].bg
+			            if Label:FindFirstChild("Title") then
+			                Label.Title.TextColor3 = bgColors[newBg].text
+			            end
+			            if iconLabel and iconLabel.Parent then
+			                iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+			            end
+			            Label:SetAttribute("HasCustomBackground", true)
+			            Label:SetAttribute("CustomBgR", bgColors[newBg].bg.R)
+			            Label:SetAttribute("CustomBgG", bgColors[newBg].bg.G)
+			            Label:SetAttribute("CustomBgB", bgColors[newBg].bg.B)
+			            Label:SetAttribute("CustomTextR", bgColors[newBg].text.R)
+			            Label:SetAttribute("CustomTextG", bgColors[newBg].text.G)
+			            Label:SetAttribute("CustomTextB", bgColors[newBg].text.B)
+			        elseif string.match(tostring(newBg), "^#%x%x%x%x%x%x$") then
+			            local r, g, b = string.match(newBg, "^#(%x%x)(%x%x)(%x%x)$")
+			            local bgColor = Color3.fromRGB(tonumber(r, 16), tonumber(g, 16), tonumber(b, 16))
+			            Label.BackgroundColor3 = bgColor
+			            if Label:FindFirstChild("Title") then
+			                Label.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+			            end
+			            if iconLabel and iconLabel.Parent then
+			                iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+			            end
+			            Label:SetAttribute("HasCustomBackground", true)
+			            Label:SetAttribute("CustomBgR", bgColor.R)
+			            Label:SetAttribute("CustomBgG", bgColor.G)
+			            Label:SetAttribute("CustomBgB", bgColor.B)
+			            Label:SetAttribute("CustomTextR", 1)
+			            Label:SetAttribute("CustomTextG", 1)
+			            Label:SetAttribute("CustomTextB", 1)
+			        end
+			    elseif NewSettings.Background == nil and Label:GetAttribute("HasCustomBackground") then
+			        Label:SetAttribute("HasCustomBackground", nil)
+			        Label:SetAttribute("CustomBgR", nil)
+			        Label:SetAttribute("CustomBgG", nil)
+			        Label:SetAttribute("CustomBgB", nil)
+			        Label:SetAttribute("CustomTextR", nil)
+			        Label:SetAttribute("CustomTextG", nil)
+			        Label:SetAttribute("CustomTextB", nil)
+			        if SelectedTheme then
+			            Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+			            if Label:FindFirstChild("Title") then
+			                Label.Title.TextColor3 = SelectedTheme.TextColor
+			            end
+			            if iconLabel and iconLabel.Parent then
+			                iconLabel.ImageColor3 = SelectedTheme.TextColor
+			            end
+			        end
+			    end
+			end
 
             return LabelValue
         end
@@ -6877,70 +6894,95 @@ end
             end
 
             function ParagraphValue:Set(NewParagraphSettings)
-                Paragraph.Title.Text = NewParagraphSettings.Title or Paragraph.Title.Text
-                Paragraph.Content.Text = NewParagraphSettings.Content or Paragraph.Content.Text
-
-                if NewParagraphSettings.Background then
-                    local bg = NewParagraphSettings.Background
-                    if bgColors[bg] then
-                        Paragraph.BackgroundColor3 = bgColors[bg].bg
-                        Paragraph.Title.TextColor3 = bgColors[bg].title
-                        Paragraph.Content.TextColor3 = bgColors[bg].content
-                        if iconLabel then iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255) end
-                        Paragraph:SetAttribute("HasCustomBackground", true)
-                        Paragraph:SetAttribute("CustomBgR", bgColors[bg].bg.R)
-                        Paragraph:SetAttribute("CustomBgG", bgColors[bg].bg.G)
-                        Paragraph:SetAttribute("CustomBgB", bgColors[bg].bg.B)
-                        Paragraph:SetAttribute("CustomTitleR", bgColors[bg].title.R)
-                        Paragraph:SetAttribute("CustomTitleG", bgColors[bg].title.G)
-                        Paragraph:SetAttribute("CustomTitleB", bgColors[bg].title.B)
-                        Paragraph:SetAttribute("CustomContentR", bgColors[bg].content.R)
-                        Paragraph:SetAttribute("CustomContentG", bgColors[bg].content.G)
-                        Paragraph:SetAttribute("CustomContentB", bgColors[bg].content.B)
-                    elseif string.match(tostring(bg), "^#%x%x%x%x%x%x$") then
-                        local r, g, b = string.match(bg, "^#(%x%x)(%x%x)(%x%x)$")
-                        local bgColor = Color3.fromRGB(tonumber(r, 16), tonumber(g, 16), tonumber(b, 16))
-                        Paragraph.BackgroundColor3 = bgColor
-                        Paragraph.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-                        Paragraph.Content.TextColor3 = Color3.fromRGB(240, 240, 240)
-                        if iconLabel then iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255) end
-                        Paragraph:SetAttribute("HasCustomBackground", true)
-                        Paragraph:SetAttribute("CustomBgR", bgColor.R)
-                        Paragraph:SetAttribute("CustomBgG", bgColor.G)
-                        Paragraph:SetAttribute("CustomBgB", bgColor.B)
-                        Paragraph:SetAttribute("CustomTitleR", 1)
-                        Paragraph:SetAttribute("CustomTitleG", 1)
-                        Paragraph:SetAttribute("CustomTitleB", 1)
-                        Paragraph:SetAttribute("CustomContentR", 240/255)
-                        Paragraph:SetAttribute("CustomContentG", 240/255)
-                        Paragraph:SetAttribute("CustomContentB", 240/255)
-                    end
-                elseif NewParagraphSettings.Background == nil and Paragraph:GetAttribute("HasCustomBackground") then
-                    Paragraph:SetAttribute("HasCustomBackground", nil)
-                    Paragraph:SetAttribute("CustomBgR", nil)
-                    Paragraph:SetAttribute("CustomBgG", nil)
-                    Paragraph:SetAttribute("CustomBgB", nil)
-                    Paragraph:SetAttribute("CustomTitleR", nil)
-                    Paragraph:SetAttribute("CustomTitleG", nil)
-                    Paragraph:SetAttribute("CustomTitleB", nil)
-                    Paragraph:SetAttribute("CustomContentR", nil)
-                    Paragraph:SetAttribute("CustomContentG", nil)
-                    Paragraph:SetAttribute("CustomContentB", nil)
-                    if SelectedTheme then
-                        Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-                        Paragraph.Title.TextColor3 = SelectedTheme.TextColor
-                        local contentColor = SelectedTheme.TextColor
-                        Paragraph.Content.TextColor3 = Color3.fromRGB(
-                            math.max(0, contentColor.R * 255 - 40),
-                            math.max(0, contentColor.G * 255 - 40),
-                            math.max(0, contentColor.B * 255 - 40)
-                        )
-                        if iconLabel then iconLabel.ImageColor3 = SelectedTheme.TextColor end
-                    end
-                end
-
-                UpdateParagraphSize()
-            end
+			    if not Paragraph or not Paragraph.Parent then return end
+			    
+			    if Paragraph:FindFirstChild("Title") then
+			        Paragraph.Title.Text = NewParagraphSettings.Title or Paragraph.Title.Text
+			    end
+			    if Paragraph:FindFirstChild("Content") then
+			        Paragraph.Content.Text = NewParagraphSettings.Content or Paragraph.Content.Text
+			    end
+			
+			    if NewParagraphSettings.Background then
+			        local bg = NewParagraphSettings.Background
+			        if bgColors[bg] then
+			            Paragraph.BackgroundColor3 = bgColors[bg].bg
+			            if Paragraph:FindFirstChild("Title") then
+			                Paragraph.Title.TextColor3 = bgColors[bg].title
+			            end
+			            if Paragraph:FindFirstChild("Content") then
+			                Paragraph.Content.TextColor3 = bgColors[bg].content
+			            end
+			            if iconLabel and iconLabel.Parent then
+			                iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+			            end
+			            Paragraph:SetAttribute("HasCustomBackground", true)
+			            Paragraph:SetAttribute("CustomBgR", bgColors[bg].bg.R)
+			            Paragraph:SetAttribute("CustomBgG", bgColors[bg].bg.G)
+			            Paragraph:SetAttribute("CustomBgB", bgColors[bg].bg.B)
+			            Paragraph:SetAttribute("CustomTitleR", bgColors[bg].title.R)
+			            Paragraph:SetAttribute("CustomTitleG", bgColors[bg].title.G)
+			            Paragraph:SetAttribute("CustomTitleB", bgColors[bg].title.B)
+			            Paragraph:SetAttribute("CustomContentR", bgColors[bg].content.R)
+			            Paragraph:SetAttribute("CustomContentG", bgColors[bg].content.G)
+			            Paragraph:SetAttribute("CustomContentB", bgColors[bg].content.B)
+			        elseif string.match(tostring(bg), "^#%x%x%x%x%x%x$") then
+			            local r, g, b = string.match(bg, "^#(%x%x)(%x%x)(%x%x)$")
+			            local bgColor = Color3.fromRGB(tonumber(r, 16), tonumber(g, 16), tonumber(b, 16))
+			            Paragraph.BackgroundColor3 = bgColor
+			            if Paragraph:FindFirstChild("Title") then
+			                Paragraph.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+			            end
+			            if Paragraph:FindFirstChild("Content") then
+			                Paragraph.Content.TextColor3 = Color3.fromRGB(240, 240, 240)
+			            end
+			            if iconLabel and iconLabel.Parent then
+			                iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+			            end
+			            Paragraph:SetAttribute("HasCustomBackground", true)
+			            Paragraph:SetAttribute("CustomBgR", bgColor.R)
+			            Paragraph:SetAttribute("CustomBgG", bgColor.G)
+			            Paragraph:SetAttribute("CustomBgB", bgColor.B)
+			            Paragraph:SetAttribute("CustomTitleR", 1)
+			            Paragraph:SetAttribute("CustomTitleG", 1)
+			            Paragraph:SetAttribute("CustomTitleB", 1)
+			            Paragraph:SetAttribute("CustomContentR", 240/255)
+			            Paragraph:SetAttribute("CustomContentG", 240/255)
+			            Paragraph:SetAttribute("CustomContentB", 240/255)
+			        end
+			    elseif NewParagraphSettings.Background == nil and Paragraph:GetAttribute("HasCustomBackground") then
+			        Paragraph:SetAttribute("HasCustomBackground", nil)
+			        Paragraph:SetAttribute("CustomBgR", nil)
+			        Paragraph:SetAttribute("CustomBgG", nil)
+			        Paragraph:SetAttribute("CustomBgB", nil)
+			        Paragraph:SetAttribute("CustomTitleR", nil)
+			        Paragraph:SetAttribute("CustomTitleG", nil)
+			        Paragraph:SetAttribute("CustomTitleB", nil)
+			        Paragraph:SetAttribute("CustomContentR", nil)
+			        Paragraph:SetAttribute("CustomContentG", nil)
+			        Paragraph:SetAttribute("CustomContentB", nil)
+			        if SelectedTheme then
+			            Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
+			            if Paragraph:FindFirstChild("Title") then
+			                Paragraph.Title.TextColor3 = SelectedTheme.TextColor
+			            end
+			            if Paragraph:FindFirstChild("Content") then
+			                local contentColor = SelectedTheme.TextColor
+			                Paragraph.Content.TextColor3 = Color3.fromRGB(
+			                    math.max(0, contentColor.R * 255 - 40),
+			                    math.max(0, contentColor.G * 255 - 40),
+			                    math.max(0, contentColor.B * 255 - 40)
+			                )
+			            end
+			            if iconLabel and iconLabel.Parent then
+			                iconLabel.ImageColor3 = SelectedTheme.TextColor
+			            end
+			        end
+			    end
+			
+			    if not Paragraph or not Paragraph.Parent then return end
+			    UpdateParagraphSize()
+			end
 
             return ParagraphValue
         end
@@ -7344,48 +7386,64 @@ end
 
             AddOptions(DropdownSettings.Options, DropdownSettings.CurrentOption)
 
-            function DropdownSettings:Set(NewOption)
-                if typeof(NewOption) == "table" then
-                    for _, item in ipairs(DropdownSettings.Items.Selected) do
-                        item.Selected = false
-                        TweenService:Create(item.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.SecondaryElementBackground}):Play()
-                    end
-                    DropdownSettings.Items.Selected = {}
-
-                    for _, optName in ipairs(NewOption) do
-                        local item = DropdownSettings.Items[optName]
-                        if item then
-                            item.Selected = true
-                            table.insert(DropdownSettings.Items.Selected, item)
-                            TweenService:Create(item.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                        end
-                    end
-                    RefreshSelected()
-                else
-                    for _, item in ipairs(DropdownSettings.Items.Selected) do
-                        item.Selected = false
-                        TweenService:Create(item.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.SecondaryElementBackground}):Play()
-                    end
-                    DropdownSettings.Items.Selected = {}
-
-                    local item = DropdownSettings.Items[NewOption]
-                    if item then
-                        item.Selected = true
-                        table.insert(DropdownSettings.Items.Selected, item)
-                        TweenService:Create(item.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                        Dropdown.Selected.Text = NewOption
-                    end
-                end
-
-                local Success, Response = pcall(function()
-                    DropdownSettings.Callback(NewOption)
-                end)
-
-                if not Success then
-                    Error("Callback Error")
-                    print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
-                end
-            end
+           function DropdownSettings:Set(NewOption)
+			    if not Dropdown or not Dropdown.Parent then return end
+			    
+			    if typeof(NewOption) == "table" then
+			        for _, item in ipairs(DropdownSettings.Items.Selected) do
+			            if item and item.Selected then
+			                item.Selected = false
+			                if item.Option and item.Option.Parent then
+			                    TweenService:Create(item.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.SecondaryElementBackground}):Play()
+			                end
+			            end
+			        end
+			        DropdownSettings.Items.Selected = {}
+			
+			        for _, optName in ipairs(NewOption) do
+			            local item = DropdownSettings.Items[optName]
+			            if item then
+			                item.Selected = true
+			                table.insert(DropdownSettings.Items.Selected, item)
+			                if item.Option and item.Option.Parent then
+			                    TweenService:Create(item.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+			                end
+			            end
+			        end
+			        RefreshSelected()
+			    else
+			        for _, item in ipairs(DropdownSettings.Items.Selected) do
+			            if item and item.Selected then
+			                item.Selected = false
+			                if item.Option and item.Option.Parent then
+			                    TweenService:Create(item.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.SecondaryElementBackground}):Play()
+			                end
+			            end
+			        end
+			        DropdownSettings.Items.Selected = {}
+			
+			        local item = DropdownSettings.Items[NewOption]
+			        if item then
+			            item.Selected = true
+			            table.insert(DropdownSettings.Items.Selected, item)
+			            if item.Option and item.Option.Parent then
+			                TweenService:Create(item.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+			            end
+			            if Dropdown:FindFirstChild("Selected") then
+			                Dropdown.Selected.Text = NewOption
+			            end
+			        end
+			    end
+			
+			    local Success, Response = pcall(function()
+			        DropdownSettings.Callback(NewOption)
+			    end)
+			
+			    if not Success then
+			        Error("Callback Error")
+			        print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
+			    end
+			end
 
             function DropdownSettings:Error(text)
                 Error(text)
