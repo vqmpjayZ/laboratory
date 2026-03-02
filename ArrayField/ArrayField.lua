@@ -3108,14 +3108,22 @@ function Minimise()
     for _, tabbtn in ipairs(TopList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             Tween(tabbtn, 0.3, {BackgroundTransparency = 1})
-            Tween(tabbtn.Image, 0.3, {ImageTransparency = 1})
-            Tween(tabbtn.Title, 0.3, {TextTransparency = 1})
-            Tween(tabbtn.Shadow, 0.3, {ImageTransparency = 1})
-            Tween(tabbtn.UIStroke, 0.3, {Transparency = 1})
+            if tabbtn:FindFirstChild("Image") then
+                Tween(tabbtn.Image, 0.3, {ImageTransparency = 1})
+            end
+            if tabbtn:FindFirstChild("Title") then
+                Tween(tabbtn.Title, 0.3, {TextTransparency = 1})
+            end
+            if tabbtn:FindFirstChild("Shadow") then
+                Tween(tabbtn.Shadow, 0.3, {ImageTransparency = 1})
+            end
+            if tabbtn:FindFirstChild("UIStroke") then
+                Tween(tabbtn.UIStroke, 0.3, {Transparency = 1})
+            end
         end
     end
 
-	for _, tabbtn in ipairs(SideList:GetChildren()) do
+    for _, tabbtn in ipairs(SideList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" and tabbtn.Name ~= "SideTemplate" then
             if tabbtn.Name:match("^Category_") and tabbtn:FindFirstChild("Holder") then
                 for _, cattab in ipairs(tabbtn.Holder:GetChildren()) do
@@ -3146,6 +3154,8 @@ function Minimise()
     if Topbar:FindFirstChild("Settings") then
         Tween(Topbar.Settings, 0.4, {ImageTransparency = 1})
     end
+    
+    FadeOut(Elements, 0.3, {})
 
     task.wait(0.3)
     Elements.Visible = false
@@ -6515,17 +6525,32 @@ end
             end
 
             local Label = Elements.Template.Label:Clone()
+		    if not Label:FindFirstChild("Title") then
+		        warn("ArrayField: Label template missing Title")
+		        return LabelValue
+		    end
             Label.Title.Text = labelText
             Label.Title.RichText = true
             Label.Title.TextWrapped = true
             Label.Visible = true
 
-            local function updateLabelSize()
-                local textBounds = Label.Title.TextBounds
-                local padding = 20
-                local newHeight = math.max(40, textBounds.Y + padding)
-                Label.Size = UDim2.new(Label.Size.X.Scale, Label.Size.X.Offset, 0, newHeight)
-            end
+			local function updateLabelSize()
+			    local textBounds = Label.Title.TextBounds
+			    local padding = 20
+			    local leftOffset = iconName and 38 or 15
+			    local availableWidth = Label.AbsoluteSize.X - leftOffset - 15
+			    
+			    local textService = game:GetService("TextService")
+			    local actualHeight = textService:GetTextSize(
+			        Label.Title.Text,
+			        Label.Title.TextSize,
+			        Label.Title.Font,
+			        Vector2.new(availableWidth, math.huge)
+			    ).Y
+			    
+			    local newHeight = math.max(40, actualHeight + padding)
+			    Label.Size = UDim2.new(Label.Size.X.Scale, Label.Size.X.Offset, 0, newHeight)
+			end
 
             local bgColors = {
                 warn = {bg = Color3.fromRGB(180, 130, 30), text = Color3.fromRGB(255, 255, 255)},
@@ -6566,34 +6591,35 @@ end
             end
 
             local iconLabel = nil
-            if iconName then
-                iconLabel = Instance.new("ImageLabel")
-                iconLabel.Name = "LabelIcon"
-                iconLabel.Size = UDim2.new(0, 20, 0, 20)
-                iconLabel.Position = UDim2.new(0, 12, 0.5, 0)
-                iconLabel.AnchorPoint = Vector2.new(0, 0.5)
-                iconLabel.BackgroundTransparency = 1
-                iconLabel.ZIndex = 3
-                iconLabel.ImageColor3 = background and Color3.fromRGB(255, 255, 255) or (SelectedTheme and SelectedTheme.TextColor or Label.Title.TextColor3)
-                iconLabel.Parent = Label
-
-                if typeof(iconName) == "string" and not tonumber(iconName) then
-                    local success, asset = pcall(getIcon, iconName)
-                    if success then
-                        iconLabel.Image = "rbxassetid://" .. asset.id
-                        iconLabel.ImageRectOffset = asset.imageRectOffset
-                        iconLabel.ImageRectSize = asset.imageRectSize
-                    end
-                else
-                    iconLabel.Image = "rbxassetid://" .. tostring(iconName)
-                    iconLabel.ImageRectOffset = Vector2.new(0, 0)
-                    iconLabel.ImageRectSize = Vector2.new(0, 0)
-                end
-
-                Label.Title.TextXAlignment = Enum.TextXAlignment.Left
-                Label.Title.Position = UDim2.new(0, 38, 0.5, 0)
-                Label.Title.AnchorPoint = Vector2.new(0, 0.5)
-            end
+			if iconLabel then
+			    iconLabel = Instance.new("ImageLabel")
+			    iconLabel.Name = "LabelIcon"
+			    iconLabel.Size = UDim2.new(0, 20, 0, 20)
+			    iconLabel.Position = UDim2.new(0, 12, 0.5, 0)
+			    iconLabel.AnchorPoint = Vector2.new(0, 0.5)
+			    iconLabel.BackgroundTransparency = 1
+			    iconLabel.ZIndex = 3
+			    iconLabel.ImageColor3 = background and Color3.fromRGB(255, 255, 255) or (SelectedTheme and SelectedTheme.TextColor or Label.Title.TextColor3)
+			    iconLabel.Parent = Label
+			
+			    if typeof(iconName) == "string" and not tonumber(iconName) then
+			        local success, asset = pcall(getIcon, iconName)
+			        if success then
+			            iconLabel.Image = "rbxassetid://" .. asset.id
+			            iconLabel.ImageRectOffset = asset.imageRectOffset
+			            iconLabel.ImageRectSize = asset.imageRectSize
+			        end
+			    else
+			        iconLabel.Image = "rbxassetid://" .. tostring(iconName)
+			        iconLabel.ImageRectOffset = Vector2.new(0, 0)
+			        iconLabel.ImageRectSize = Vector2.new(0, 0)
+			    end
+			
+			    Label.Title.TextXAlignment = Enum.TextXAlignment.Left
+			    Label.Title.Position = UDim2.new(0, 38, 0.5, 0)
+			    Label.Title.AnchorPoint = Vector2.new(0, 0.5)
+			    Label.Title.Size = UDim2.new(1, -53, 1, 0)
+			end
 
             Tab.Elements[labelText] = {
                 type = 'label',
@@ -6903,9 +6929,20 @@ end
             return ParagraphValue
         end
 
-        function Tab:CreateDropdown(DropdownSettings)
-            local Dropdown = Elements.Template.Dropdown:Clone()
-            Dropdown.List.Template.Visible = false
+		function Tab:CreateDropdown(DropdownSettings)
+		    local Dropdown = Elements.Template.Dropdown:Clone()
+		    
+		    if not Dropdown:FindFirstChild("List") then
+		        warn("ArrayField: Dropdown template missing List")
+		        return
+		    end
+		    
+		    if not Dropdown:FindFirstChild("Title") then
+		        warn("ArrayField: Dropdown template missing Title")
+		        return
+		    end
+		    
+		    Dropdown.List.Template.Visible = false
             local SearchBar = Dropdown.List["-SearchBar"]
             local DropdownDebounce = false
 
@@ -7670,90 +7707,98 @@ end
             local clearConfirming = false
 
             local function AddEntry(message, entryType)
-                entryCount = entryCount + 1
-
-                local TypeColors = {
-                    log = {prefix = Color3.fromRGB(180, 180, 180), text = Color3.fromRGB(200, 200, 200)},
-                    warn = {prefix = Color3.fromRGB(230, 190, 50), text = Color3.fromRGB(230, 210, 100)},
-                    error = {prefix = Color3.fromRGB(230, 70, 70), text = Color3.fromRGB(230, 120, 120)},
-                    success = {prefix = Color3.fromRGB(70, 200, 70), text = Color3.fromRGB(120, 220, 120)},
-                    info = {prefix = Color3.fromRGB(100, 170, 230), text = Color3.fromRGB(140, 190, 230)}
-                }
-
-                local Prefixes = {
-                    log = "LOG",
-                    warn = "WARN",
-                    error = "ERROR",
-                    success = "OK",
-                    info = "INFO"
-                }
-
-                local entryColors = TypeColors[entryType] or TypeColors.log
-                local prefix = Prefixes[entryType] or "LOG"
-
-                local plainText
-
-                if ShowTimestamps then
-                    local timestamp = os.date("%H:%M:%S")
-                    plainText = string.format("[%s] [%s] %s", timestamp, prefix, tostring(message))
-                else
-                    plainText = string.format("[%s] %s", prefix, tostring(message))
-                end
-
-                table.insert(plainEntries, plainText)
-
-                local Entry = Instance.new("TextBox")
-                Entry.Name = "Entry_" .. entryCount
-                Entry.BackgroundTransparency = 1
-                Entry.RichText = false
-                Entry.TextColor3 = entryColors.text
-                Entry.TextSize = 12
-                Entry.Font = Enum.Font.Code
-                Entry.TextXAlignment = Enum.TextXAlignment.Left
-                Entry.TextWrapped = true
-                Entry.TextEditable = false
-                Entry.ClearTextOnFocus = false
-                Entry.LayoutOrder = entryCount
-                Entry.Text = plainText
-                Entry.ZIndex = 4
-                Entry.Size = UDim2.new(1, 0, 0, 16)
-                Entry.Parent = LogFrame
-
-                task.defer(function()
-                    task.wait()
-                    if Entry and Entry.Parent then
-                        local boundsY = Entry.TextBounds.Y
-                        Entry.Size = UDim2.new(1, 0, 0, math.max(16, boundsY + 2))
-                    end
-                end)
-
-                local entries = {}
-                for _, child in ipairs(LogFrame:GetChildren()) do
-                    if child:IsA("TextBox") then
-                        table.insert(entries, child)
-                    end
-                end
-
-                while #entries > MaxLines do
-                    entries[1]:Destroy()
-                    table.remove(entries, 1)
-                end
-
-                while #plainEntries > MaxLines do
-                    table.remove(plainEntries, 1)
-                end
-
-                Entry.TextTransparency = 1
-                TweenService:Create(Entry, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
-                task.defer(function()
-                    task.wait()
-                    task.wait()
-                    if LogFrame and LogFrame.Parent then
-                        LogFrame.CanvasPosition = Vector2.new(0, math.max(0, LogLayout.AbsoluteContentSize.Y - LogFrame.AbsoluteSize.Y))
-                    end
-                end)
-            end
+			    entryCount = entryCount + 1
+			
+			    local TypeColors = {
+			        log = {prefix = Color3.fromRGB(180, 180, 180), text = Color3.fromRGB(200, 200, 200)},
+			        warn = {prefix = Color3.fromRGB(230, 190, 50), text = Color3.fromRGB(230, 210, 100)},
+			        error = {prefix = Color3.fromRGB(230, 70, 70), text = Color3.fromRGB(230, 120, 120)},
+			        success = {prefix = Color3.fromRGB(70, 200, 70), text = Color3.fromRGB(120, 220, 120)},
+			        info = {prefix = Color3.fromRGB(100, 170, 230), text = Color3.fromRGB(140, 190, 230)}
+			    }
+			
+			    local Prefixes = {
+			        log = "LOG",
+			        warn = "WARN",
+			        error = "ERROR",
+			        success = "OK",
+			        info = "INFO"
+			    }
+			
+			    local entryColors = TypeColors[entryType] or TypeColors.log
+			    local prefix = Prefixes[entryType] or "LOG"
+			
+			    local plainText
+			
+			    if ShowTimestamps then
+			        local timestamp = os.date("%H:%M:%S")
+			        plainText = string.format("[%s] [%s] %s", timestamp, prefix, tostring(message))
+			    else
+			        plainText = string.format("[%s] %s", prefix, tostring(message))
+			    end
+			
+			    table.insert(plainEntries, plainText)
+			
+			    local Entry = Instance.new("TextBox")
+			    Entry.Name = "Entry_" .. entryCount
+			    Entry.BackgroundTransparency = 1
+			    Entry.RichText = false
+			    Entry.TextColor3 = entryColors.text
+			    Entry.TextSize = 12
+			    Entry.Font = Enum.Font.Code
+			    Entry.TextXAlignment = Enum.TextXAlignment.Left
+			    Entry.TextYAlignment = Enum.TextYAlignment.Top
+			    Entry.TextWrapped = true
+			    Entry.TextEditable = false
+			    Entry.ClearTextOnFocus = false
+			    Entry.MultiLine = true
+			    Entry.LayoutOrder = entryCount
+			    Entry.Text = plainText
+			    Entry.ZIndex = 4
+			    Entry.Size = UDim2.new(1, 0, 0, 16)
+			    Entry.Parent = LogFrame
+			
+			    task.defer(function()
+			        task.wait()
+			        if Entry and Entry.Parent then
+			            local textService = game:GetService("TextService")
+			            local textSize = textService:GetTextSize(
+			                Entry.Text,
+			                Entry.TextSize,
+			                Entry.Font,
+			                Vector2.new(Entry.AbsoluteSize.X - 4, math.huge)
+			            )
+			            Entry.Size = UDim2.new(1, 0, 0, math.max(16, textSize.Y + 4))
+			        end
+			    end)
+			
+			    local entries = {}
+			    for _, child in ipairs(LogFrame:GetChildren()) do
+			        if child:IsA("TextBox") then
+			            table.insert(entries, child)
+			        end
+			    end
+			
+			    while #entries > MaxLines do
+			        entries[1]:Destroy()
+			        table.remove(entries, 1)
+			    end
+			
+			    while #plainEntries > MaxLines do
+			        table.remove(plainEntries, 1)
+			    end
+			
+			    Entry.TextTransparency = 1
+			    TweenService:Create(Entry, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+			
+			    task.defer(function()
+			        task.wait()
+			        task.wait()
+			        if LogFrame and LogFrame.Parent then
+			            LogFrame.CanvasPosition = Vector2.new(0, math.max(0, LogLayout.AbsoluteContentSize.Y - LogFrame.AbsoluteSize.Y))
+			        end
+			    end)
+			end
 
             local function ClearEntries()
                 for _, child in ipairs(LogFrame:GetChildren()) do
