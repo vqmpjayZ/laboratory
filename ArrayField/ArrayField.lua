@@ -35,7 +35,7 @@ Change Logs (dd/mm/yy):
 // [19.1.2026] Released!
 // [14.2.2026] Tabs (text) slide(s) when too long now! // Added New Feature! The Console!
 // [21.2.2026] Made Console's output selectable + Copieable; Added confirmation button for clearing console; Made the Console not resizeable
-// [2.3.2026] Small Issue patches (Identified random console errors, Console rows; elements not fading out when minimizing properly)
+// [2.3.2026] Small Issue patches (Fixed random identified console (F9) errors; CreateConsole rows not showing; some elements not fading out properly when minimizing)
 
 ]]
 
