@@ -35,6 +35,7 @@ Change Logs (dd/mm/yy):
 // [19.1.2026] Released!
 // [14.2.2026] Tabs (text) slide(s) when too long now! // Added New Feature! The Console!
 // [21.2.2026] Made Console's output selectable + Copieable; Added confirmation button for clearing console; Made the Console not resizeable
+// [2.3.2026] Small Issue patches
 
 ]]
 
@@ -3154,13 +3155,10 @@ function Minimise()
     if Topbar:FindFirstChild("Settings") then
         Tween(Topbar.Settings, 0.4, {ImageTransparency = 1})
     end
-    
-    FadeOut(Elements, 0.3, {})
 
     task.wait(0.3)
     Elements.Visible = false
     TabsList.Visible = false
-    SideTabList.Visible = false
     Drag.Visible = false
 
     task.wait(0.2)
@@ -3199,9 +3197,15 @@ function Maximise()
     for _, tabbtn in ipairs(TopList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             Tween(tabbtn, 0.3, {BackgroundTransparency = 0.7})
-            Tween(tabbtn.Image, 0.3, {ImageTransparency = 0.2})
-            Tween(tabbtn.Title, 0.3, {TextTransparency = 0.2})
-            Tween(tabbtn.UIStroke, 0.3, {Transparency = 0})
+            if tabbtn:FindFirstChild("Image") then
+                Tween(tabbtn.Image, 0.3, {ImageTransparency = 0.2})
+            end
+            if tabbtn:FindFirstChild("Title") then
+                Tween(tabbtn.Title, 0.3, {TextTransparency = 0.2})
+            end
+            if tabbtn:FindFirstChild("UIStroke") then
+                Tween(tabbtn.UIStroke, 0.3, {Transparency = 0})
+            end
         end
     end
 
@@ -6512,27 +6516,39 @@ end
         end
 
         function Tab:CreateLabel(LabelSettings, SectionParent)
-            local LabelValue = {}
-
-            local labelText, iconName, background
-            if typeof(LabelSettings) == "table" then
-                labelText = LabelSettings.Text or LabelSettings[1] or ""
-                iconName = LabelSettings.Icon or LabelSettings[2]
-                background = LabelSettings.Background
-                SectionParent = LabelSettings.SectionParent or SectionParent
-            else
-                labelText = LabelSettings or ""
-            end
-
-            local Label = Elements.Template.Label:Clone()
-		    if not Label:FindFirstChild("Title") then
-		        warn("ArrayField: Label template missing Title")
-		        return LabelValue
+		    local LabelValue = {}
+		
+		    local labelText, iconName, background
+		    if typeof(LabelSettings) == "table" then
+		        labelText = LabelSettings.Text or LabelSettings[1] or ""
+		        iconName = LabelSettings.Icon or LabelSettings[2]
+		        background = LabelSettings.Background
+		        SectionParent = LabelSettings.SectionParent or SectionParent
+		    else
+		        labelText = LabelSettings or ""
 		    end
-            Label.Title.Text = labelText
-            Label.Title.RichText = true
-            Label.Title.TextWrapped = true
-            Label.Visible = true
+		
+		    local Label = Elements.Template.Label:Clone()
+		    
+		    if not Label:FindFirstChild("Title") then
+		        local newTitle = Instance.new("TextLabel")
+		        newTitle.Name = "Title"
+		        newTitle.BackgroundTransparency = 1
+		        newTitle.Size = UDim2.new(1, -30, 1, 0)
+		        newTitle.Position = UDim2.new(0, 15, 0.5, 0)
+		        newTitle.AnchorPoint = Vector2.new(0, 0.5)
+		        newTitle.Font = Enum.Font.Gotham
+		        newTitle.TextSize = 14
+		        newTitle.TextXAlignment = Enum.TextXAlignment.Left
+		        newTitle.TextYAlignment = Enum.TextYAlignment.Center
+		        newTitle.ZIndex = 3
+		        newTitle.Parent = Label
+		    end
+		    
+		    Label.Title.Text = labelText
+		    Label.Title.RichText = true
+		    Label.Title.TextWrapped = true
+		    Label.Visible = true
 
 			local function updateLabelSize()
 			    local textBounds = Label.Title.TextBounds
@@ -6933,13 +6949,29 @@ end
 		    local Dropdown = Elements.Template.Dropdown:Clone()
 		    
 		    if not Dropdown:FindFirstChild("List") then
-		        warn("ArrayField: Dropdown template missing List")
-		        return
-		    end
-		    
-		    if not Dropdown:FindFirstChild("Title") then
-		        warn("ArrayField: Dropdown template missing Title")
-		        return
+		        local newList = Instance.new("ScrollingFrame")
+		        newList.Name = "List"
+		        newList.Size = UDim2.new(1, 0, 0, 135)
+		        newList.Position = UDim2.new(0, 0, 0, 44)
+		        newList.BackgroundColor3 = SelectedTheme.DropdownListBackground
+		        newList.ScrollBarThickness = 3
+		        newList.ScrollBarImageColor3 = SelectedTheme.DropdownListScrollBar
+		        newList.BorderSizePixel = 0
+		        newList.ZIndex = 5
+		        
+		        local listLayout = Instance.new("UIListLayout")
+		        listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+		        listLayout.Padding = UDim.new(0, 2)
+		        listLayout.Parent = newList
+		        
+		        local listPadding = Instance.new("UIPadding")
+		        listPadding.PaddingLeft = UDim.new(0, 8)
+		        listPadding.PaddingRight = UDim.new(0, 8)
+		        listPadding.PaddingTop = UDim.new(0, 8)
+		        listPadding.PaddingBottom = UDim.new(0, 8)
+		        listPadding.Parent = newList
+		        
+		        newList.Parent = Dropdown
 		    end
 		    
 		    Dropdown.List.Template.Visible = false
